@@ -98,6 +98,17 @@
     nav.classList.remove('is-open');
   }));
 
+  /* ---------------- Tournaments page: filters, then stop (no home-page widgets there) ---------------- */
+  if (!document.getElementById('price-grid')) {
+    $$('.ev-filter').forEach((b) => b.addEventListener('click', () => {
+      $$('.ev-filter').forEach((x) => x.classList.toggle('is-active', x === b));
+      const f = b.dataset.filter;
+      $$('.ev-card').forEach((c) => { c.hidden = f !== 'all' && c.dataset.kind !== f; });
+    }));
+    initCommon();
+    return;
+  }
+
   /* ---------------- Khabarovsk time (UTC+10) ---------------- */
   function khvNow() {
     const now = new Date();
@@ -298,16 +309,20 @@
     phone.value = p.join('');
   });
 
-  /* ---------------- Reveal on scroll (content stays visible without JS/observer) ---------------- */
-  if ('IntersectionObserver' in window) {
-    document.documentElement.classList.add('js-reveal');
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (en.isIntersecting) { en.target.classList.add('is-visible'); io.unobserve(en.target); }
-      });
-    }, { threshold: 0.12 });
-    $$('.reveal').forEach((el, i) => { el.style.transitionDelay = (i % 4) * 80 + 'ms'; io.observe(el); });
-  }
+  initCommon();
 
-  $('#year').textContent = new Date().getFullYear();
+  /* ---------------- Reveal on scroll + footer year (shared by all pages) ---------------- */
+  function initCommon() {
+    if ('IntersectionObserver' in window) {
+      document.documentElement.classList.add('js-reveal');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) { en.target.classList.add('is-visible'); io.unobserve(en.target); }
+        });
+      }, { threshold: 0.12 });
+      $$('.reveal').forEach((el, i) => { el.style.transitionDelay = (i % 4) * 80 + 'ms'; io.observe(el); });
+    }
+    const y = $('#year');
+    if (y) y.textContent = new Date().getFullYear();
+  }
 })();
