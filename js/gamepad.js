@@ -1,4 +1,4 @@
-/* EROFEY CYBER ARENA — interactive 3D gamepad (three.js)
+/* Фиджитал центр Хабаровск — interactive 3D gamepad (three.js)
  * Procedurally built controller: tilt follows the cursor, drag to spin,
  * click buttons / D-pad / sticks, keyboard (WASD + IJKL/U, arrows, Q/E),
  * and a real connected gamepad (Gamepad API) is mirrored on the model.
@@ -337,12 +337,12 @@ function init() {
     g.textAlign = 'center'; g.textBaseline = 'middle';
     g.shadowColor = '#5a6bff'; g.shadowBlur = 18;
     g.fillStyle = '#7d8cff';
-    g.font = '400 54px "Press Start 2P", monospace';
-    g.fillText('EROFEY', W / 2, H / 2 - 22);
+    g.font = '400 50px "Press Start 2P", monospace';
+    g.fillText('ФИДЖИТАЛ', W / 2, H / 2 - 22);
     g.shadowColor = '#b44bff';
     g.fillStyle = '#c690ff';
     g.font = '400 22px "Press Start 2P", monospace';
-    g.fillText('CYBER ARENA', W / 2, H / 2 + 42);
+    g.fillText('ХАБАРОВСК', W / 2, H / 2 + 42);
     tpTex.needsUpdate = true;
   }
   drawTouchpad();

@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EROFEY CYBER ARENA — компьютерный клуб в Хабаровске</title>
-  <meta name="description" content="Компьютерный клуб 24/7 на базе «Ерофей Арены» в Хабаровске: 40 ПК на RTX 4070 Ti, мониторы 240 Гц, VIP, PS5-зона и буткемпы. Первый час — в подарок.">
+  <title>Фиджитал центр Хабаровск</title>
+  <meta name="description" content="Фиджитал центр Хабаровск: компьютерный зал на RTX 4060 и мониторах 240 Гц, PlayStation, VR, Nintendo Switch, зоны воркаута, стритбола и футбола. Первый час — бесплатно. Открыто 10:00–21:00.">
   <meta name="theme-color" content="#05041a">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2305041a'/%3E%3Cpath d='M9 8h14v4H13v2h8v4h-8v2h10v4H9z' fill='%23675bff'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2305041a'/%3E%3Cpath d='M8 9h11v4h-7v10H8z' fill='%234fb6ff'/%3E%3Crect x='21' y='7' width='3' height='3' fill='%23b44bff'/%3E%3Crect x='21' y='12' width='3' height='3' fill='%238b6bff'/%3E%3Crect x='16' y='16' width='3' height='3' fill='%236d86ff'/%3E%3Crect x='21' y='17' width='3' height='3' fill='%234fb6ff'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Press+Start+2P&family=Unbounded:wght@500;700;900&display=swap" rel="stylesheet">
@@ -20,20 +20,22 @@
 <!-- ============ HEADER ============ -->
 <header class="header" id="top">
   <div class="container header__inner">
-    <a href="#top" class="logo" aria-label="EROFEY CYBER ARENA — на главную">
-      <span class="logo__mark">E</span>
-      <span class="logo__text"><b>EROFEY</b><small>CYBER ARENA</small></span>
+    <a href="#top" class="logo" aria-label="Фиджитал центр Хабаровск — на главную">
+      <span class="logo__mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40"><path d="M9 12h13v5h-8v13H9z" fill="#fff"/><rect x="26" y="7" width="4" height="4" fill="#e3c4ff"/><rect x="26" y="13" width="4" height="4" fill="#fff"/><rect x="20" y="20" width="4" height="4" fill="#fff"/><rect x="26" y="19" width="4" height="4" fill="#fff"/><rect x="31" y="13" width="3" height="3" fill="#e3c4ff"/></svg>
+      </span>
+      <span class="logo__text"><b>ФИДЖИТАЛ</b><small>ЦЕНТР · ХАБАРОВСК</small></span>
     </a>
     <nav class="nav" id="nav">
       <a href="#zones">Зоны</a>
-      <a href="#prices">Тарифы</a>
-      <a href="#hardware">Железо</a>
+      <a href="#prices">Цены</a>
+      <a href="#hardware">Компьютеры</a>
       <a href="#games">Игры</a>
-      <a href="#events">Турниры</a>
+      <a href="#rules">Правила</a>
       <a href="#contacts">Контакты</a>
     </nav>
     <div class="header__cta">
-      <a class="header__phone" href="tel:+74212000000"><span class="dot-live"></span>+7 (4212) 00-00-00</a>
+      <a class="header__phone" href="tel:+74212455522"><span class="dot-live"></span>+7 (4212) 45-55-22</a>
       <a href="#booking" class="btn btn--primary btn--sm">Забронировать</a>
     </div>
     <button class="burger" id="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -50,47 +52,43 @@
     <div class="hero__blob hero__blob--2"></div>
     <div class="hero__giant">GAME&nbsp;ON</div>
     <div class="hero__code">
-      <span>&lt;ping: 4ms&gt;</span><span>fps: 360</span><span>&lt;/lobby&gt;</span><span>rtx_4070ti</span><span>240Hz</span>
+      <span>&lt;phygital&gt;</span><span>fps: 240</span><span>&lt;/lobby&gt;</span><span>rtx_4060</span><span>VR</span>
     </div>
   </div>
 
   <div class="container hero__inner">
     <div class="hero__content">
-      <div class="eyebrow"><span class="dot-live"></span>Открыто 24/7 · Хабаровск · «Ерофей Арена»</div>
+      <div class="eyebrow"><span class="dot-live" id="open-dot"></span><span id="open-status">Ежедневно 10:00–21:00</span> · «Ерофей Арена»</div>
       <h1 class="hero__title">
-        <span class="pixel-title">EROFEY</span>
-        <span class="pixel-title pixel-title--grad">CYBER ARENA</span>
+        <span class="pixel-title">ФИДЖИТАЛ</span>
+        <span class="pixel-title pixel-title--grad">ЦЕНТР ХАБАРОВСК</span>
       </h1>
-      <p class="hero__lead">Киберклуб внутри главной арены города. <b>40 мощных ПК</b>, PS5-зона, VIP и закрытые буткемпы — <span class="accent">играй там, где болеют тысячи.</span></p>
+      <p class="hero__lead">Киберспорт и настоящий спорт под одной крышей: <b>компьютерный зал, PlayStation, VR и Nintendo Switch</b>, а рядом — площадки для воркаута, стритбола и футбола. <span class="accent">Сыграй в цифре, докажи на поле.</span></p>
 
       <div class="chips">
         <span class="chip">Играй</span><i class="chip-line"></i>
-        <span class="chip">Побеждай</span><i class="chip-line"></i>
-        <span class="chip">Отдыхай</span>
+        <span class="chip">Тренируйся</span><i class="chip-line"></i>
+        <span class="chip">Побеждай</span>
       </div>
 
       <div class="offer cut-frame">
-        <div class="offer__badge">ОФФЕР</div>
+        <div class="offer__badge">ПОДАРОК</div>
         <div class="offer__main">
           <div class="offer__title">Первый час — <span class="pixel">0 ₽</span></div>
-          <div class="offer__sub">+ баланс <b>x2</b> на первое пополнение для новых игроков</div>
-        </div>
-        <div class="offer__timer">
-          <small>до конца акции</small>
-          <span class="pixel" id="countdown">00:00:00</span>
+          <div class="offer__sub">Первый час игры <b>всегда бесплатно</b> — просто приходи и играй.</div>
         </div>
       </div>
 
       <div class="hero__actions">
         <a href="#booking" class="btn btn--primary">Забрать бесплатный час <span class="btn__arrow">→</span></a>
-        <a href="#zones" class="btn btn--ghost">Смотреть зоны</a>
+        <a href="#prices" class="btn btn--ghost">Смотреть цены</a>
       </div>
 
       <ul class="stats">
-        <li><b class="pixel">40</b><span>игровых ПК</span></li>
+        <li><b class="pixel">20</b><span>игровых ПК</span></li>
         <li><b class="pixel">240</b><span>Гц мониторы</span></li>
-        <li><b class="pixel">1</b><span>Гбит/с канал</span></li>
-        <li><b class="pixel">24/7</b><span>без выходных</span></li>
+        <li><b class="pixel">7</b><span>игровых зон</span></li>
+        <li><b class="pixel">110</b><span>₽ за час в будни</span></li>
       </ul>
     </div>
 
@@ -122,37 +120,37 @@
 <section class="section" id="why">
   <div class="container">
     <div class="section__head">
-      <h2 class="h2">Не просто клуб —<br><span class="grad">это арена</span></h2>
-      <p class="section__note">Мы собрали всё, что бесит в обычных клубах, и <span class="accent">сделали наоборот.</span></p>
+      <h2 class="h2">Что такое<br><span class="grad">фиджитал?</span></h2>
+      <p class="section__note">Физический спорт + цифровой. Сначала матч в игре, потом — <span class="accent">на настоящей площадке.</span></p>
     </div>
     <div class="why-grid">
       <article class="why-card reveal">
         <div class="why-card__icon">
           <svg viewBox="0 0 48 48"><rect x="6" y="10" width="36" height="22" rx="2"/><path d="M18 38h12M24 32v6"/></svg>
         </div>
-        <h3>RTX 4070 Ti + 240 Гц</h3>
-        <p>Ни одного «офисного» ПК. Стабильные 300+ FPS в CS2 и Valorant на любом месте в зале.</p>
+        <h3>RTX 4060 + 240 Гц</h3>
+        <p>20 одинаковых игровых ПК на i5-13600KF с мониторами Samsung Odyssey G4. Плавная картинка в любом шутере.</p>
       </article>
       <article class="why-card reveal">
         <div class="why-card__icon">
-          <svg viewBox="0 0 48 48"><path d="M6 20a26 26 0 0 1 36 0M12 26a17 17 0 0 1 24 0M18 32a8 8 0 0 1 12 0"/><circle cx="24" cy="38" r="2"/></svg>
+          <svg viewBox="0 0 48 48"><path d="M6 20c0-4 3-6 7-6h22c4 0 7 2 7 6v6c0 4-3 6-7 6h-6l-3-4h-4l-3 4h-6c-4 0-7-2-7-6z"/><circle cx="16" cy="23" r="3"/><circle cx="32" cy="23" r="3"/></svg>
         </div>
-        <h3>Пинг от 4 мс</h3>
-        <p>Выделенный оптический канал 1 Гбит/с и резервная линия. Лаги — не наша история.</p>
+        <h3>VR и консоли</h3>
+        <p>Виртуальная реальность, PlayStation и Nintendo Switch — для компании, свидания или дня рождения.</p>
       </article>
       <article class="why-card reveal">
         <div class="why-card__icon">
-          <svg viewBox="0 0 48 48"><path d="M16 6h16l2 18H14zM14 24h20v6H14zM20 30v8M28 30v8M12 40h24"/></svg>
+          <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17"/><path d="M24 7v34M7 24h34M12 12c6 6 6 18 0 24M36 12c-6 6-6 18 0 24"/></svg>
         </div>
-        <h3>Кресла, а не табуретки</h3>
-        <p>Профессиональные игровые кресла, механические клавиатуры и мыши топ-сегмента.</p>
+        <h3>Спортивные зоны</h3>
+        <p>Площадки для воркаута, стритбола и футбола. Аренда для команды — от 500 ₽ в час.</p>
       </article>
       <article class="why-card reveal">
         <div class="why-card__icon">
           <svg viewBox="0 0 48 48"><path d="M8 40V18l16-10 16 10v22"/><path d="M18 40V28h12v12"/></svg>
         </div>
-        <h3>Инфраструктура арены</h3>
-        <p>Парковка, охрана, кафе и бар рядом. После матча на арене — сразу к нам за реваншем.</p>
+        <h3>Внутри «Ерофей Арены»</h3>
+        <p>Удобно добраться, есть парковка. После матча на арене — сразу к нам за реваншем.</p>
       </article>
     </div>
   </div>
@@ -163,80 +161,49 @@
   <div class="container">
     <div class="section__head">
       <h2 class="h2">Выбери свою <span class="grad">зону</span></h2>
-      <p class="section__note">Четыре формата игры — от быстрой катки после пар до недельного буткемпа команды.</p>
+      <p class="section__note">Пять форматов: от катки в CS2 до матча в футбол со своей командой.</p>
     </div>
 
     <div class="tabs" role="tablist">
-      <button class="tab is-active" role="tab" data-zone="pc">PC ZONE</button>
-      <button class="tab" role="tab" data-zone="vip">VIP</button>
-      <button class="tab" role="tab" data-zone="ps5">PS5 ZONE</button>
-      <button class="tab" role="tab" data-zone="boot">BOOTCAMP</button>
+      <button class="tab is-active" role="tab" data-zone="pc">PC</button>
+      <button class="tab" role="tab" data-zone="ps">PLAYSTATION</button>
+      <button class="tab" role="tab" data-zone="vr">VR</button>
+      <button class="tab" role="tab" data-zone="switch">SWITCH</button>
+      <button class="tab" role="tab" data-zone="sport">СПОРТ</button>
     </div>
 
     <div class="zone hud-frame">
       <div class="zone__media">
-        <div class="img-wrap"><img id="zone-img" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&q=75&auto=format&fit=crop" alt="Игровой зал PC ZONE" loading="lazy"></div>
-        <span class="zone__tag pixel" id="zone-tag">30 ПК</span>
+        <div class="img-wrap"><img id="zone-img" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&q=75&auto=format&fit=crop" alt="Компьютерный зал" loading="lazy"></div>
+        <span class="zone__tag pixel" id="zone-tag">20 ПК</span>
       </div>
       <div class="zone__info">
-        <h3 class="zone__title" id="zone-title">PC ZONE</h3>
-        <p class="zone__desc" id="zone-desc">Общий зал с неоновым светом и полной звукоизоляцией. Идеально, чтобы собрать пати и разнести рейтинг.</p>
+        <h3 class="zone__title" id="zone-title">PC ЗОНА</h3>
+        <p class="zone__desc" id="zone-desc"></p>
         <div class="zone__features-label">ЧТО ВНУТРИ:</div>
         <ul class="zone__features" id="zone-features"></ul>
         <div class="zone__price">
-          <span>от</span><b class="pixel" id="zone-price">120 ₽</b><span>/ час</span>
+          <span>от</span><b class="pixel" id="zone-price">110 ₽</b><span>/ час</span>
         </div>
-        <a href="#booking" class="btn btn--primary" id="zone-book">Забронировать PC ZONE</a>
+        <a href="#booking" class="btn btn--primary" id="zone-book">Забронировать</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ PRICES (ref 2) ============ -->
+<!-- ============ PRICES ============ -->
 <section class="section" id="prices">
   <div class="container">
     <div class="section__head">
-      <h2 class="h2">Тарифы <span class="grad">PC ZONE</span></h2>
-      <p class="section__note">Время — хабаровское. Сейчас действует тариф, подсвеченный <span class="accent">неоном</span>.</p>
+      <h2 class="h2">Прейскурант</h2>
+      <div class="daytoggle" role="group" aria-label="Тип дня">
+        <button class="daytoggle__btn" data-day="wd" type="button">Будни</button>
+        <button class="daytoggle__btn" data-day="we" type="button">Выходные</button>
+      </div>
     </div>
+    <p class="prices__note">Сегодня <b id="today-label">будний день</b> — показываем актуальные цены. Первый час игры — <span class="accent">бесплатно.</span></p>
 
-    <div class="tariffs">
-      <article class="tariff reveal" data-from="9" data-to="13">
-        <div class="tariff__now">● СЕЙЧАС</div>
-        <h3>Утренний</h3>
-        <div class="tariff__time"><span>09:00</span><span>13:00</span></div>
-        <div class="tariff__bar"><i style="--w:35%"></i></div>
-        <div class="tariff__price"><b class="pixel">120 ₽</b> / час</div>
-      </article>
-      <article class="tariff reveal" data-from="13" data-to="23">
-        <div class="tariff__now">● СЕЙЧАС</div>
-        <h3>Дневной</h3>
-        <div class="tariff__time"><span>13:00</span><span>23:00</span></div>
-        <div class="tariff__bar"><i style="--w:70%"></i></div>
-        <div class="tariff__price"><b class="pixel">170 ₽</b> / час</div>
-      </article>
-      <article class="tariff reveal" data-from="23" data-to="9">
-        <div class="tariff__now">● СЕЙЧАС</div>
-        <h3>Ночной</h3>
-        <div class="tariff__time"><span>23:00</span><span>09:00</span></div>
-        <div class="tariff__bar tariff__bar--night"><i style="--w:100%"></i></div>
-        <div class="tariff__price"><b class="pixel">140 ₽</b> / час</div>
-      </article>
-    </div>
-
-    <h3 class="h3">Пакеты — <span class="accent">выгоднее до 30%</span></h3>
-    <div class="packs">
-      <div class="pack reveal"><span class="pack__name">3 часа</span><b class="pixel">450 ₽</b><s>510 ₽</s></div>
-      <div class="pack reveal"><span class="pack__name">5 часов</span><b class="pixel">700 ₽</b><s>850 ₽</s></div>
-      <div class="pack pack--hot reveal"><span class="pack__hit">ХИТ</span><span class="pack__name">Ночь 23:00–09:00</span><b class="pixel">790 ₽</b><s>1400 ₽</s></div>
-      <div class="pack reveal"><span class="pack__name">Абонемент 20 ч</span><b class="pixel">2400 ₽</b><s>3400 ₽</s></div>
-    </div>
-
-    <div class="perks">
-      <div class="perk"><b>−20%</b> по билету на любое событие «Ерофей Арены» в день мероприятия</div>
-      <div class="perk"><b>−15%</b> студентам и школьникам 14+ по будням до 17:00</div>
-      <div class="perk"><b>+500 ₽</b> на баланс в день рождения</div>
-    </div>
+    <div class="price-grid" id="price-grid"></div>
   </div>
 </section>
 
@@ -244,49 +211,20 @@
 <section class="section" id="hardware">
   <div class="container">
     <div class="section__head">
-      <h2 class="h2">Наше <span class="grad">оборудование</span></h2>
-      <p class="section__note">Обновляем железо каждые 2 года. Никаких компромиссов.</p>
+      <h2 class="h2">Конфигурация <span class="grad">компьютеров</span></h2>
+      <p class="section__note">Все 20 мест собраны одинаково — неважно, за какой ПК ты сядешь.</p>
     </div>
-    <div class="hw-grid">
-      <article class="hw-card cut-frame reveal">
-        <div class="hw-card__img img-wrap"><img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=900&q=75&auto=format&fit=crop" alt="Игровой ПК" loading="lazy"></div>
-        <div class="hw-card__body">
-          <h3>PC ZONE</h3>
-          <dl class="specs">
-            <dt>Процессор</dt><dd>Intel Core i5-13600KF</dd>
-            <dt>Видеокарта</dt><dd>RTX 4070 Ti 12 GB</dd>
-            <dt>ОЗУ</dt><dd>32 GB DDR5 6000</dd>
-            <dt>Монитор</dt><dd>27" IPS 240 Гц</dd>
-            <dt>Периферия</dt><dd>HyperX / Logitech G</dd>
-          </dl>
-        </div>
-      </article>
-      <article class="hw-card cut-frame reveal">
-        <div class="hw-card__img img-wrap"><img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=900&q=75&auto=format&fit=crop" alt="VIP место" loading="lazy"></div>
-        <div class="hw-card__body">
-          <h3>VIP</h3>
-          <dl class="specs">
-            <dt>Процессор</dt><dd>Intel Core i7-14700KF</dd>
-            <dt>Видеокарта</dt><dd>RTX 4080 Super 16 GB</dd>
-            <dt>ОЗУ</dt><dd>32 GB DDR5 6400</dd>
-            <dt>Монитор</dt><dd>27" OLED 360 Гц</dd>
-            <dt>Периферия</dt><dd>Razer / Logitech Pro</dd>
-          </dl>
-        </div>
-      </article>
-      <article class="hw-card cut-frame reveal">
-        <div class="hw-card__img img-wrap"><img src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=900&q=75&auto=format&fit=crop" alt="PlayStation 5" loading="lazy"></div>
-        <div class="hw-card__body">
-          <h3>PS5 ZONE</h3>
-          <dl class="specs">
-            <dt>Консоль</dt><dd>PlayStation 5 Pro</dd>
-            <dt>Экран</dt><dd>65" 4K 120 Гц</dd>
-            <dt>Звук</dt><dd>Саундбар 5.1</dd>
-            <dt>Геймпады</dt><dd>4 × DualSense</dd>
-            <dt>Мебель</dt><dd>Диван на 4–6 человек</dd>
-          </dl>
-        </div>
-      </article>
+    <div class="config hud-frame">
+      <ul class="config__list">
+        <li class="reveal"><svg viewBox="0 0 48 48"><rect x="12" y="12" width="24" height="24" rx="2"/><path d="M18 18h8M18 30h6M16 6v6M24 6v6M32 6v6M16 36v6M24 36v6M32 36v6M6 16h6M6 24h6M6 32h6M36 16h6M36 24h6M36 32h6"/></svg><span>Процессор</span><b>Intel Core i5-13600KF</b></li>
+        <li class="reveal"><svg viewBox="0 0 48 48"><rect x="6" y="14" width="36" height="16" rx="1"/><path d="M11 19h4v6h-4zM19 19h4v6h-4zM27 19h4v6h-4zM35 19h3v6h-3zM10 30v6M38 30v6"/></svg><span>Оперативная память</span><b>16 ГБ DDR5</b></li>
+        <li class="reveal"><svg viewBox="0 0 48 48"><rect x="6" y="14" width="36" height="20" rx="2"/><circle cx="18" cy="24" r="6"/><circle cx="32" cy="24" r="6"/><path d="M4 10v28"/></svg><span>Видеокарта</span><b>NVIDIA RTX 4060</b></li>
+        <li class="reveal"><svg viewBox="0 0 48 48"><rect x="5" y="8" width="38" height="25" rx="2"/><path d="M18 40h12M24 33v7M11 14l5-5"/></svg><span>Монитор</span><b>Samsung Odyssey G4 G40B</b></li>
+        <li class="reveal"><svg viewBox="0 0 48 48"><rect x="4" y="16" width="40" height="20" rx="2"/><path d="M9 21h3M15 21h3M21 21h3M27 21h3M33 21h3M9 26h3M15 26h3M21 26h3M27 26h3M33 26h3M12 31h20M24 16v-6"/></svg><span>Клавиатура</span><b>Adamant TKL Black</b></li>
+        <li class="reveal"><svg viewBox="0 0 48 48"><rect x="14" y="10" width="20" height="30" rx="10"/><path d="M24 10v10M24 10c0-4 3-6 6-6"/></svg><span>Мышь</span><b>Mirror Black</b></li>
+        <li class="reveal"><svg viewBox="0 0 48 48"><path d="M8 30v-6a16 16 0 0 1 32 0v6"/><rect x="6" y="28" width="8" height="12" rx="3"/><rect x="34" y="28" width="8" height="12" rx="3"/><path d="M38 40c0 3-4 4-10 4"/></svg><span>Гарнитура</span><b>Genezis Black</b></li>
+        <li class="reveal"><svg viewBox="0 0 48 48"><path d="M16 6h16l2 18H14zM14 24h20v6H14zM24 30v8M14 42l10-4 10 4"/></svg><span>Игровое кресло</span><b>Zone 51 Clubpoint</b></li>
+      </ul>
     </div>
   </div>
 </section>
@@ -296,7 +234,7 @@
   <div class="games__bg img-wrap" aria-hidden="true"><img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1800&q=70&auto=format&fit=crop" alt="" loading="lazy"></div>
   <div class="container games__inner">
     <div class="games__left">
-      <h2 class="h2">Все топовые игры<br><span class="grad">уже установлены</span></h2>
+      <h2 class="h2">Популярные игры<br><span class="grad">уже установлены</span></h2>
       <div class="games__cloud">
         <span class="g g--1">CS2</span>
         <span class="g g--2">DOTA 2</span>
@@ -311,11 +249,11 @@
         <span class="g g--11">MINECRAFT</span>
         <span class="g g--12">EA FC</span>
       </div>
-      <p class="games__more">+ ещё 150 игр в Steam, Epic, Battle.net и Riot</p>
+      <p class="games__more">Полный список игр уточняй у администратора</p>
     </div>
     <aside class="faq-box hud-frame reveal">
       <div class="faq-box__label">А ЕСЛИ МОЕЙ ИГРЫ НЕТ?</div>
-      <p><span class="ring"></span><span>Скажи администратору — установим за наш счёт, а <b>время установки компенсируем</b> на баланс.</span></p>
+      <p><span class="ring"></span><span>Скажи администратору — <b>постараемся установить</b> нужную игру.</span></p>
       <p><span class="ring"></span><span>Свой аккаунт Steam / Battle.net — заходи под ним, все сохранения на месте.</span></p>
     </aside>
   </div>
@@ -324,66 +262,26 @@
   </div>
 </section>
 
-<!-- ============ EVENTS ============ -->
-<section class="section" id="events">
-  <div class="container">
-    <div class="section__head">
-      <h2 class="h2">Турниры и <span class="grad">ивенты</span></h2>
-      <p class="section__note">Каждую неделю — призовые. Регистрация прямо у админа или в нашем Telegram.</p>
-    </div>
-    <div class="events">
-      <article class="event cut-frame reveal">
-        <div class="event__date"><b class="pixel">ПТ</b><span>19:00</span></div>
-        <div class="event__body">
-          <h3>CS2 · 5×5 Friday Cup</h3>
-          <p>Еженедельный кубок для команд. Single elimination, BO1 → финал BO3.</p>
-        </div>
-        <div class="event__prize"><small>призовой</small><b class="pixel">30 000 ₽</b></div>
-      </article>
-      <article class="event cut-frame reveal">
-        <div class="event__date"><b class="pixel">СБ</b><span>16:00</span></div>
-        <div class="event__body">
-          <h3>Dota 2 · Mid Wars 1×1</h3>
-          <p>Мидовые дуэли до первой крови или двух вышек. Взнос — 0 ₽ для резидентов клуба.</p>
-        </div>
-        <div class="event__prize"><small>призовой</small><b class="pixel">15 000 ₽</b></div>
-      </article>
-      <article class="event cut-frame reveal">
-        <div class="event__date"><b class="pixel">ВС</b><span>18:00</span></div>
-        <div class="event__body">
-          <h3>EA FC · PS5 Sunday League</h3>
-          <p>Лига на диване: групповой этап и плей-офф, трансляция на большой экран.</p>
-        </div>
-        <div class="event__prize"><small>призы</small><b class="pixel">ЧАСЫ+</b></div>
-      </article>
-    </div>
-  </div>
-</section>
-
 <!-- ============ BOOKING ============ -->
 <section class="section" id="booking">
   <div class="container">
     <div class="booking hud-frame">
       <div class="booking__left">
-        <h2 class="h2">Забронируй место —<br><span class="grad">первый час в подарок</span></h2>
-        <p class="section__note">Оставь заявку: администратор подтвердит бронь в течение 5 минут. Оплата на месте.</p>
+        <h2 class="h2">Забронируй —<br><span class="grad">первый час в подарок</span></h2>
+        <p class="section__note">Выбери зону и время: калькулятор сразу покажет цену. Оставь телефон — администратор перезвонит и подтвердит бронь.</p>
         <ul class="booking__bullets">
-          <li>Бронь держим 15 минут после начала</li>
-          <li>Отмена бесплатно за 1 час</li>
-          <li>Можно забронировать несколько мест рядом для пати</li>
+          <li>Работаем ежедневно с 10:00 до 21:00</li>
+          <li>Пакеты на 3, 5 и 8 часов — выгоднее почасовой оплаты</li>
+          <li>Можно забронировать несколько мест рядом для компании</li>
         </ul>
+        <p class="booking__call">Или позвони: <a href="tel:+74212455522">+7 (4212) 45-55-22</a></p>
       </div>
 
       <form class="form" id="booking-form" novalidate>
         <div class="form__row">
           <label class="field">
             <span>Зона</span>
-            <select name="zone" id="f-zone">
-              <option value="pc">PC ZONE</option>
-              <option value="vip">VIP</option>
-              <option value="ps5">PS5 ZONE</option>
-              <option value="boot">BOOTCAMP (5 ПК)</option>
-            </select>
+            <select name="zone" id="f-zone"></select>
           </label>
           <label class="field">
             <span>Дата</span>
@@ -396,25 +294,20 @@
             <select name="start" id="f-start"></select>
           </label>
           <label class="field">
-            <span>Часов: <b id="f-hours-val">3</b></span>
-            <input type="range" min="1" max="12" value="3" name="hours" id="f-hours">
+            <span>Пакет</span>
+            <select name="hours" id="f-hours"></select>
           </label>
         </div>
         <div class="form__row">
           <label class="field">
             <span>Имя</span>
-            <input type="text" name="name" placeholder="Никнейм тоже подойдёт" required autocomplete="name">
+            <input type="text" name="name" id="f-name" placeholder="Никнейм тоже подойдёт" required autocomplete="name">
           </label>
           <label class="field">
             <span>Телефон</span>
-            <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required autocomplete="tel">
+            <input type="tel" name="phone" id="f-phone" placeholder="+7 (___) ___-__-__" required autocomplete="tel">
           </label>
         </div>
-        <label class="check">
-          <input type="checkbox" id="f-new" checked>
-          <span class="check__box"></span>
-          Я впервые в EROFEY CYBER ARENA — <b>первый час бесплатно</b>
-        </label>
 
         <div class="calc">
           <div class="calc__lines" id="calc-lines"></div>
@@ -427,15 +320,49 @@
   </div>
 </section>
 
+<!-- ============ RULES ============ -->
+<section class="section section--tight" id="rules">
+  <div class="container">
+    <div class="section__head">
+      <h2 class="h2">Правила <span class="grad">посещения</span></h2>
+      <p class="section__note">Правила поведения спортивного комплекса — по Постановлению Правительства РФ от 16 декабря 2013 г. № 1156.</p>
+    </div>
+    <div class="rules">
+      <div class="rules__col rules__col--ok cut-frame">
+        <h3>Посетители обязаны</h3>
+        <ul>
+          <li>Использовать спортивный объект и оборудование по назначению</li>
+          <li>Выполнять законные требования администрации спортивного комплекса</li>
+          <li>Соблюдать общественный порядок</li>
+          <li>Соблюдать санитарные нормы</li>
+          <li>Соблюдать правила безопасности при занятиях спортом</li>
+        </ul>
+      </div>
+      <div class="rules__col rules__col--no cut-frame">
+        <h3>Запрещено</h3>
+        <ul>
+          <li>Находиться в состоянии алкогольного, наркотического или токсического опьянения (ст. 20.21 КоАП РФ)</li>
+          <li>Курить, употреблять спиртные напитки, а также наркотические и токсические вещества (ст. 20.20 КоАП РФ)</li>
+          <li>Приносить взрывоопасные, пожароопасные, токсичные и сильно пахнущие вещества (включая файеры, петарды, газовые баллончики)</li>
+          <li>Приносить режущие и колющие предметы, любые виды огнестрельного, газового и холодного оружия</li>
+          <li>Приходить с животными и птицами (за исключением собак-проводников в намордниках)</li>
+          <li>Самостоятельно регулировать любое инженерно-техническое оборудование, в том числе спортивное</li>
+          <li>Совершать действия, которые влекут за собой порчу спортивного оборудования, инвентаря и иного имущества</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FAQ ============ -->
 <section class="section section--tight" id="faq">
   <div class="container faq">
     <h2 class="h2">Частые <span class="grad">вопросы</span></h2>
     <div class="faq__list">
-      <details class="faq__item"><summary>Со скольки лет можно играть?</summary><p>С 14 лет днём. После 22:00 — только 18+ с документом. Детей 10–13 лет пускаем с родителями.</p></details>
-      <details class="faq__item"><summary>Можно со своей периферией?</summary><p>Да, приносите свою мышь, клавиатуру и наушники — всё подключим. Есть бесплатные кейсы для хранения у резидентов.</p></details>
-      <details class="faq__item"><summary>Есть еда и напитки?</summary><p>Есть бар со снеками, энергетиками и горячими напитками. Доставка прямо к месту — через админа.</p></details>
-      <details class="faq__item"><summary>Как работает бонус x2?</summary><p>При первом пополнении от 500 ₽ мы удваиваем сумму на балансе. Бонус действует 30 дней.</p></details>
+      <details class="faq__item"><summary>Как получить бесплатный час?</summary><p>Просто приходи: первый час игры мы дарим всегда. Подробности уточни у администратора на месте или по телефону +7 (4212) 45-55-22.</p></details>
+      <details class="faq__item"><summary>Чем цены в будни отличаются от выходных?</summary><p>В будни дешевле: например, час за ПК стоит 110 ₽, а в выходные — 140 ₽. Полный прейскурант — в разделе «Цены».</p></details>
+      <details class="faq__item"><summary>Можно прийти со своей мышкой или наушниками?</summary><p>Да, приносите свою периферию — администратор поможет подключить.</p></details>
+      <details class="faq__item"><summary>Можно арендовать площадку для команды?</summary><p>Да: зоны стритбола и футбола сдаются почасово, зона воркаута — на 1 или 3 часа. Забронируйте заранее, особенно на выходные.</p></details>
     </div>
   </div>
 </section>
@@ -446,21 +373,22 @@
 <footer class="footer" id="contacts">
   <div class="container footer__grid">
     <div>
-      <a href="#top" class="logo"><span class="logo__mark">E</span><span class="logo__text"><b>EROFEY</b><small>CYBER ARENA</small></span></a>
-      <p class="footer__text">Компьютерный клуб на базе «Ерофей Арены». Хабаровск.</p>
+      <a href="#top" class="logo"><span class="logo__mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M9 12h13v5h-8v13H9z" fill="#fff"/><rect x="26" y="7" width="4" height="4" fill="#e3c4ff"/><rect x="26" y="13" width="4" height="4" fill="#fff"/><rect x="20" y="20" width="4" height="4" fill="#fff"/><rect x="26" y="19" width="4" height="4" fill="#fff"/><rect x="31" y="13" width="3" height="3" fill="#e3c4ff"/></svg></span><span class="logo__text"><b>ФИДЖИТАЛ</b><small>ЦЕНТР · ХАБАРОВСК</small></span></a>
+      <p class="footer__text">Цифровой и физический спорт в одном месте. Хабаровск, «Ерофей Арена».</p>
       <div class="socials">
-        <a href="#" aria-label="Telegram">TG</a><a href="#" aria-label="ВКонтакте">VK</a><a href="#" aria-label="YouTube">YT</a>
+        <a href="https://vk.ru/phygitalcenterkhv" target="_blank" rel="noopener" aria-label="Мы во ВКонтакте">VK</a>
+        <a href="https://vk.ru/phygitalcenterkhv" target="_blank" rel="noopener" class="socials__wide">Новости и турниры — в нашей группе</a>
       </div>
     </div>
     <div class="footer__col">
       <h4>Адрес</h4>
-      <p>г. Хабаровск, ул. Морозова, 83<br>«Ерофей Арена», вход со стороны парковки</p>
+      <p>г. Хабаровск, ул. Морозова, 83<br>«Ерофей Арена»</p>
       <h4>Режим работы</h4>
-      <p>Круглосуточно, без выходных</p>
+      <p>Ежедневно 10:00–21:00</p>
     </div>
     <div class="footer__col">
       <h4>Связь</h4>
-      <p><a href="tel:+74212000000">+7 (4212) 00-00-00</a><br><a href="mailto:hello@erofey-arena.example">hello@erofey-arena.example</a></p>
+      <p><a href="tel:+74212455522">+7 (4212) 45-55-22</a><br><a href="https://vk.ru/phygitalcenterkhv" target="_blank" rel="noopener">vk.ru/phygitalcenterkhv</a></p>
       <a href="#booking" class="btn btn--primary btn--sm">Забронировать</a>
     </div>
     <div class="footer__map cut-frame">
@@ -469,8 +397,8 @@
     </div>
   </div>
   <div class="container footer__bottom">
-    <span>© <span id="year">2026</span> EROFEY CYBER ARENA</span>
-    <span>Цены и характеристики носят демонстрационный характер</span>
+    <span>© <span id="year">2026</span> Фиджитал центр Хабаровск</span>
+    <span>Цены указаны в рублях, актуальность уточняйте у администратора</span>
   </div>
 </footer>
 
