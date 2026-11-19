@@ -98,17 +98,6 @@
     nav.classList.remove('is-open');
   }));
 
-  /* ---------------- Tournaments page: filters, then stop (no home-page widgets there) ---------------- */
-  if (!document.getElementById('price-grid')) {
-    $$('.ev-filter').forEach((b) => b.addEventListener('click', () => {
-      $$('.ev-filter').forEach((x) => x.classList.toggle('is-active', x === b));
-      const f = b.dataset.filter;
-      $$('.ev-card').forEach((c) => { c.hidden = f !== 'all' && c.dataset.kind !== f; });
-    }));
-    initCommon();
-    return;
-  }
-
   /* ---------------- Khabarovsk time (UTC+10) ---------------- */
   function khvNow() {
     const now = new Date();
