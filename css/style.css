@@ -600,7 +600,7 @@ kbd { font-family: var(--f-body); font-size: 10px; font-weight: 700; padding: 2p
 .ev-teaser { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .ev-poster { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(110,100,255,.3); background: var(--surface);
   clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px)); }
-.ev-poster img { width: 100%; aspect-ratio: 920 / 830; object-fit: cover; transition: transform .5s; }
+.ev-poster img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; transition: transform .5s; }
 .ev-poster:hover img { transform: scale(1.05); }
 .ev-poster span { position: relative; padding: 14px 16px 16px; font-size: 14px; font-weight: 800; border-top: 1px solid rgba(110,100,255,.25); background: var(--surface); }
 .ev-poster:hover span { color: var(--cyan); }
