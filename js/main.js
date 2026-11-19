@@ -156,10 +156,15 @@
   /* ---------------- Price list with weekday / weekend toggle ---------------- */
   const grid = $('#price-grid');
   let dayType = isWeekend(khvNow()) ? 'we' : 'wd';
-  $('#today-label').textContent = dayType === 'we' ? 'выходной' : 'будний день';
+  const todayType = dayType;
 
   function renderPrices() {
     $$('.daytoggle__btn').forEach((b) => b.classList.toggle('is-active', b.dataset.day === dayType));
+    const shown = dayType === 'we' ? 'на выходные (сб–вс)' : 'на будни (пн–пт)';
+    const today = todayType === 'we' ? 'выходной' : 'будний день';
+    $('#shown-label').innerHTML = dayType === todayType
+      ? `Показаны цены <b>${shown}</b> — сегодня ${today}, это ваши цены.`
+      : `Показаны цены <b>${shown}</b>. Сегодня ${today} — цены на сегодня на вкладке «${todayType === 'we' ? 'Выходные' : 'Будни'}».`;
     grid.innerHTML = '';
     const groups = [
       ['Игровые зоны', true, 'price-grid__row'],
