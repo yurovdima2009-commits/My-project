@@ -7,8 +7,10 @@
 <meta name="theme-color" content="#06061a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Орбита">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,16 +22,16 @@
   --bg-grad:radial-gradient(1100px 600px at 90% -10%,rgba(139,92,246,.32),transparent 60%),radial-gradient(800px 500px at -15% 35%,rgba(236,72,153,.16),transparent 60%),radial-gradient(900px 600px at 50% 120%,rgba(34,211,238,.10),transparent 60%);
   --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.09); --solid:#11113a; --dock:rgba(16,16,52,.72);
   --line:rgba(255,255,255,.1); --text:#f2f1ff; --muted:#9e9dc8; --input:rgba(255,255,255,.06);
-  --a1:#8b5cf6; --a2:#ec4899; --a3:#f59e0b; --a4:#22d3ee; --ok:#34d399; --danger:#fb7185;
+  --a1:#8b5cf6; --a2:#ec4899; --a3:#f59e0b; --a4:#22d3ee; --up:#34d399; --down:#fb7185; --danger:#fb7185;
   --grad:linear-gradient(120deg,#8b5cf6,#ec4899 55%,#f59e0b);
   --shadow:0 18px 50px -20px rgba(0,0,0,.7);
 }
 :root[data-theme="light"]{
   --bg:#fbf5ee;
   --bg-grad:radial-gradient(1100px 600px at 95% -15%,rgba(245,158,11,.28),transparent 60%),radial-gradient(800px 500px at -15% 30%,rgba(236,72,153,.14),transparent 60%),radial-gradient(900px 600px at 50% 120%,rgba(139,92,246,.16),transparent 60%);
-  --glass:rgba(255,255,255,.62); --glass-2:#fff; --solid:#fffaf4; --dock:rgba(255,250,244,.82);
+  --glass:rgba(255,255,255,.62); --glass-2:#fff; --solid:#fffaf4; --dock:rgba(255,250,244,.85);
   --line:rgba(70,40,110,.12); --text:#20163a; --muted:#7b7095; --input:rgba(70,40,110,.05);
-  --a1:#7c3aed; --a2:#db2777; --a3:#d97706; --a4:#0891b2; --ok:#059669; --danger:#e11d48;
+  --a1:#7c3aed; --a2:#db2777; --a3:#d97706; --a4:#0891b2; --up:#059669; --down:#e11d48; --danger:#e11d48;
   --grad:linear-gradient(120deg,#7c3aed,#db2777 55%,#f59e0b);
   --shadow:0 18px 40px -22px rgba(90,40,120,.35);
 }
@@ -39,36 +41,52 @@ body{background:var(--bg-grad),var(--bg);background-attachment:fixed;color:var(-
 #bgsky{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
-.app{max-width:680px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px calc(120px + env(safe-area-inset-bottom))}
+.app{max-width:680px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 16px calc(120px + env(safe-area-inset-bottom))}
 .hidden{display:none!important}
 .row{display:flex;gap:8px;align-items:center}
 .grow{flex:1;min-width:0}
 .sub{color:var(--muted);font-size:13px}
+.up{color:var(--up)} .down{color:var(--down)}
+.num{font-variant-numeric:tabular-nums}
 
-/* шапка */
-header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:6px 0 14px}
+/* шапка и HUD */
+header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:6px 0 12px}
 .hello{color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.02em}
-h1{font-family:var(--fh);font-weight:800;font-size:26px;line-height:1.1;margin:4px 0 0;letter-spacing:-.02em}
-.streak{font-family:var(--fh);font-size:13px;font-weight:700;padding:9px 12px;border-radius:14px;background:var(--glass);border:1px solid var(--line);white-space:nowrap}
+h1{font-family:var(--fh);font-weight:800;font-size:25px;line-height:1.12;margin:4px 0 0;letter-spacing:-.02em}
 .ib{flex:none;width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:grid;place-items:center;color:var(--text);padding:0}
 .ib svg{width:20px;height:20px}
 .ib:active{transform:scale(.94)}
+.hud{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 14px 10px 10px;border-radius:22px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);margin-bottom:14px;box-shadow:var(--shadow)}
+.lv{position:relative;width:48px;height:48px;flex:none}
+.lv svg{width:100%;height:100%;transform:rotate(-90deg)}
+.lv b{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fh);font-size:15px;font-weight:800}
+.hud .rank{font-family:var(--fh);font-size:13px;font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.hud .rank span{color:var(--muted);font-family:var(--fb);font-size:11px;font-weight:700}
+.xpbar{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:6px}
+.xpbar i{display:block;height:100%;border-radius:6px;background:var(--grad);transition:width .5s}
+.hud .res{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.coins{font-family:var(--fh);font-weight:800;font-size:15px;color:var(--a3);white-space:nowrap}
+.fire{font-size:12px;font-weight:800;white-space:nowrap}
 
 /* карточки */
 .card{background:var(--glass);border:1px solid var(--line);border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .ch{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font-family:var(--fh);font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 .ch b{color:var(--text);font-weight:700}
-input[type=text],input[type=date],textarea,select{width:100%;background:var(--input);border:1px solid var(--line);border-radius:14px;padding:12px 14px;outline:none;transition:border-color .2s,box-shadow .2s}
+input[type=text],input[type=date],input[type=number],textarea,select{width:100%;background:var(--input);border:1px solid var(--line);border-radius:14px;padding:12px 14px;outline:none;transition:border-color .2s,box-shadow .2s}
 input:focus,textarea:focus,select:focus{border-color:var(--a1);box-shadow:0 0 0 4px color-mix(in srgb,var(--a1) 22%,transparent)}
 ::placeholder{color:var(--muted);opacity:.8}
 textarea{resize:vertical;min-height:90px}
 select option{background:var(--solid)}
 .btn{border:0;background:var(--grad);color:#fff;border-radius:14px;padding:12px 18px;font-weight:800;white-space:nowrap;box-shadow:0 8px 24px -10px var(--a2);transition:transform .15s}
 .btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.4;pointer-events:none}
 .btn.sq{width:46px;height:46px;padding:0;font-size:22px;flex:none}
 .btn.soft{background:var(--glass-2);color:var(--text);box-shadow:none;border:1px solid var(--line)}
 .btn.danger{background:transparent;color:var(--danger);box-shadow:none;border:1px solid var(--line)}
+.btn.buy{background:var(--up);color:#032318;box-shadow:0 8px 24px -12px var(--up)}
+.btn.sell{background:var(--down);color:#fff;box-shadow:0 8px 24px -12px var(--down)}
 .btn.sm{padding:7px 12px;font-size:13px;border-radius:11px}
+.btn.full{width:100%}
 .addrow{display:flex;gap:8px;margin-top:10px}
 .hint{font-size:12px;color:var(--muted);margin-top:8px}
 .empty{color:var(--muted);font-size:14px;padding:10px 2px}
@@ -86,20 +104,20 @@ ul.list{list-style:none;margin:0;padding:0}
 .chk:active{transform:scale(.85)}
 .chk:checked{border-color:transparent;background:var(--grad);box-shadow:0 0 14px -2px var(--a2)}
 .chk:checked::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
-.meta{font-size:12px;color:var(--muted);display:flex;gap:6px 10px;flex-wrap:wrap;margin-top:3px}
+.chk.big{width:30px;height:30px}
+.meta{font-size:12px;color:var(--muted);display:flex;gap:6px 10px;flex-wrap:wrap;align-items:center;margin-top:3px}
 .chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--glass-2);border:1px solid var(--line);color:var(--text)}
 .chip.p1{color:var(--a3);border-color:color-mix(in srgb,var(--a3) 40%,transparent)}
-.chip.p2{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
-.chip.late{color:var(--danger)}
+.chip.p2,.chip.late{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
 .chip.acc{color:var(--a1)}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;min-height:0}
+.chip.gold{color:var(--a3)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .mini{flex:none;border:0;background:transparent;color:var(--muted);width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:13px;opacity:.75}
 .mini:hover{opacity:1;background:var(--glass-2)}
 .mini.del{font-size:20px;line-height:1}
 .mini.del:hover{color:var(--danger)}
 .mini.play{color:var(--a4);font-size:11px}
 .planet{flex:none;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff8,transparent 45%),var(--c);box-shadow:0 0 14px -2px var(--c);font-family:var(--fh);font-size:11px;font-weight:800;color:#fff;display:grid;place-items:center}
-.goal.done .planet{filter:saturate(1.2)}
 .goal:not(.done) .planet{background:transparent;border:2px solid var(--c);box-shadow:none;color:var(--c)}
 .group-title{font-family:var(--fh);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 0}
 .group-title:first-child{margin-top:2px}
@@ -107,7 +125,7 @@ ul.list{list-style:none;margin:0;padding:0}
 
 /* орбита */
 .hero{position:relative;margin:-4px 0 6px;text-align:center}
-.orbit{width:100%;max-width:330px;margin:0 auto;display:block;aspect-ratio:1}
+.orbit{width:100%;max-width:320px;margin:0 auto;display:block;aspect-ratio:1}
 .orbit svg{width:100%;height:100%;overflow:visible}
 .planets{transform-origin:150px 150px;animation:spin 90s linear infinite}
 .sun{animation:pulse 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
@@ -119,6 +137,17 @@ ul.list{list-style:none;margin:0;padding:0}
 .dayline b{font-family:var(--fh);font-size:15px}
 .today-link{border:0;background:none;color:var(--a1);font-weight:700;font-size:13px;padding:0}
 .fly{border:1px solid var(--line);background:var(--glass);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--text)}
+
+/* контракты */
+.quest{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.quest:last-child{border-bottom:0}
+.quest .qi{width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:18px;background:var(--glass-2);border:1px solid var(--line)}
+.quest .qt{font-weight:700;font-size:14px}
+.qbar{height:5px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:6px}
+.qbar i{display:block;height:100%;background:var(--grad);border-radius:5px}
+.quest.claimed{opacity:.55}
+.claim{animation:glowb 1.6s ease-in-out infinite}
+@keyframes glowb{50%{box-shadow:0 0 22px -2px var(--a3)}}
 
 /* настроение */
 .moods{display:flex;gap:6px}
@@ -135,12 +164,79 @@ ul.list{list-style:none;margin:0;padding:0}
 .segs::-webkit-scrollbar{display:none}
 .segs button{border:1px solid var(--line);background:var(--glass);border-radius:99px;padding:7px 14px;font-size:13px;font-weight:700;white-space:nowrap;color:var(--muted)}
 .segs button.on{background:var(--text);border-color:var(--text);color:var(--bg)}
+.subtabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;padding:4px;border-radius:18px;background:var(--glass);border:1px solid var(--line);margin-bottom:14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.subtabs button{border:0;background:transparent;border-radius:14px;padding:9px 4px;font-size:13px;font-weight:800;color:var(--muted)}
+.subtabs button.on{background:var(--grad);color:#fff;box-shadow:0 6px 18px -8px var(--a2)}
+
+/* привычки / биржа */
+.tape{overflow:hidden;white-space:nowrap;margin:0 -16px 14px;padding:9px 0;border-block:1px solid var(--line);background:var(--glass);font-family:var(--fh);font-size:11px;font-weight:700;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.tape .in{display:inline-block;animation:tape 28s linear infinite}
+.tape span{margin-right:26px}
+@keyframes tape{to{transform:translateX(-50%)}}
+.hb{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px dashed var(--line)}
+.hb:last-child{border-bottom:0}
+.hb-emo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:21px;background:var(--glass-2);border:1px solid var(--line);flex:none;transition:all .2s}
+.hb.done .hb-emo{background:color-mix(in srgb,var(--up) 18%,transparent);border-color:color-mix(in srgb,var(--up) 55%,transparent);box-shadow:0 0 18px -6px var(--up)}
+.hb .main{flex:1;min-width:0;cursor:pointer}
+.hb-name{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb-spark{width:72px;flex:none;cursor:pointer}
+.tick{font-family:var(--fh);font-size:9.5px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:6px;background:var(--glass-2);border:1px solid var(--line);color:var(--text)}
+.bigstat{font-family:var(--fh);font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.kpi{border-radius:16px;padding:10px 8px;background:var(--input);border:1px solid var(--line);min-width:0}
+.kpi b{display:block;font-family:var(--fh);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi span{font-size:10.5px;color:var(--muted);font-weight:700}
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.heat .wdh{font-size:10px;color:var(--muted);text-align:center;font-weight:700}
+.heat button{aspect-ratio:1;border-radius:9px;border:1px solid var(--line);background:var(--input);font-size:11px;font-weight:700;color:var(--muted);padding:0}
+.heat button.on{background:var(--up);color:#032318;border-color:var(--up)}
+.heat button.miss{border-color:color-mix(in srgb,var(--down) 60%,transparent);color:var(--down)}
+.heat button.off{opacity:.45}
+.heat button.fut{opacity:.15;pointer-events:none}
+.heat button.today{outline:2px solid var(--a1);outline-offset:1px}
+.emojis{display:flex;flex-wrap:wrap;gap:6px}
+.emojis button{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--input);font-size:20px;padding:0}
+.emojis button.on{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 20%,transparent)}
+.wd{display:flex;gap:4px}
+.wd button{flex:1;padding:9px 0;border-radius:10px;border:1px solid var(--line);background:var(--input);font-size:12px;font-weight:800;color:var(--muted)}
+.wd button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.tradebar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+
+/* деньги */
+.balance{border-radius:26px;padding:18px;margin-bottom:14px;color:#fff;background:radial-gradient(400px 200px at 100% 0,rgba(255,255,255,.25),transparent 60%),var(--grad);box-shadow:0 20px 50px -20px var(--a2);position:relative;overflow:hidden}
+.balance::after{content:"";position:absolute;right:-40px;bottom:-60px;width:180px;height:180px;border-radius:50%;border:24px solid rgba(255,255,255,.12)}
+.balance .lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.balance .bigstat{font-size:34px;margin:4px 0 12px}
+.balance .mrow{display:flex;gap:10px;position:relative;z-index:1}
+.balance .mrow div{flex:1;background:rgba(0,0,0,.18);border-radius:14px;padding:8px 10px}
+.balance .mrow small{display:block;font-size:11px;font-weight:700;opacity:.85}
+.balance .mrow b{font-family:var(--fh);font-size:14px}
+.catbar{display:flex;height:12px;border-radius:7px;overflow:hidden;margin:10px 0;background:var(--line)}
+.catbar i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted);font-weight:600}
+.legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:3px;background:var(--c);margin-right:5px}
+.cats{display:flex;flex-wrap:wrap;gap:6px}
+.cats button{border:1px solid var(--line);background:var(--input);border-radius:99px;padding:6px 11px;font-size:13px;font-weight:700;color:var(--muted)}
+.cats button.on{border-color:var(--a1);color:var(--text);background:color-mix(in srgb,var(--a1) 18%,transparent)}
+.tx{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px dashed var(--line)}
+.tx:last-child{border-bottom:0}
+.tx .ico{width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;font-size:18px;background:var(--glass-2);border:1px solid var(--line)}
+.tx .amt{font-family:var(--fh);font-weight:700;font-size:14px;white-space:nowrap}
+.jar{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+.jar:last-child{border-bottom:0}
+.pbar{height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin-top:6px}
+.pbar i{display:block;height:100%;border-radius:8px;background:var(--grad)}
+.side{font-family:var(--fh);font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:6px}
+.side.long{background:color-mix(in srgb,var(--up) 22%,transparent);color:var(--up)}
+.side.short{background:color-mix(in srgb,var(--down) 22%,transparent);color:var(--down)}
+.shop-it{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.shop-it:last-child{border-bottom:0}
+.shop-it .ico{width:44px;height:44px;border-radius:14px;flex:none;display:grid;place-items:center;font-size:22px;background:var(--glass-2);border:1px solid var(--line)}
 
 /* заметки */
 .search{display:flex;gap:8px;margin-bottom:14px}
 .notes-grid{columns:2 170px;column-gap:12px}
-.note{break-inside:avoid;margin-bottom:12px;border-radius:20px;padding:14px;border:1px solid var(--line);cursor:pointer;
-  background:linear-gradient(160deg,hsla(var(--h),85%,60%,.22),transparent 65%),var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .2s}
+.note{break-inside:avoid;margin-bottom:12px;border-radius:20px;padding:14px;border:1px solid var(--line);cursor:pointer;background:linear-gradient(160deg,hsla(var(--h),85%,60%,.22),transparent 65%),var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .2s}
 .note:hover{transform:translateY(-2px)}
 .note h3{margin:0 0 6px;font-family:var(--fh);font-size:14px;font-weight:700;line-height:1.3}
 .note p{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:8;-webkit-box-orient:vertical;overflow:hidden}
@@ -150,7 +246,7 @@ ul.list{list-style:none;margin:0;padding:0}
 .cap{flex:none;width:170px;border-radius:20px;padding:14px;border:1px dashed color-mix(in srgb,var(--a4) 50%,transparent);background:color-mix(in srgb,var(--a4) 8%,var(--glass));cursor:pointer}
 .cap .ic{font-size:24px}
 .cap b{display:block;font-family:var(--fh);font-size:13px;margin:6px 0 2px}
-.cap.ready{border-style:solid;border-color:var(--a3);background:color-mix(in srgb,var(--a3) 16%,var(--glass));box-shadow:0 0 24px -8px var(--a3);animation:glow 2s ease-in-out infinite}
+.cap.ready{border-style:solid;border-color:var(--a3);background:color-mix(in srgb,var(--a3) 16%,var(--glass));animation:glow 2s ease-in-out infinite}
 @keyframes glow{50%{box-shadow:0 0 34px -4px var(--a3)}}
 .banner{display:flex;gap:12px;align-items:center;cursor:pointer;border-color:color-mix(in srgb,var(--a3) 60%,transparent)}
 .banner .ic{font-size:30px}
@@ -164,15 +260,13 @@ ul.list{list-style:none;margin:0;padding:0}
 .track .node{position:absolute;top:11px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--solid);border:2px solid var(--line)}
 .track .node.on{background:var(--a2);border-color:var(--a2);box-shadow:0 0 10px var(--a2)}
 .track .rocket{position:absolute;top:0;margin-left:-14px;font-size:22px;transform:rotate(45deg);transition:left .5s;filter:drop-shadow(0 0 8px var(--a3))}
-.track .flag{position:absolute;right:-8px;top:2px;font-size:16px}
 .step{display:flex;gap:12px;align-items:center;padding:7px 0}
 .step .txt{flex:1;overflow-wrap:anywhere}
 .step.done .txt{color:var(--muted);text-decoration:line-through}
 .mission.won{border-color:color-mix(in srgb,var(--a3) 50%,transparent)}
 
 /* док */
-.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(440px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);align-items:center;
-  background:var(--dock);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);border:1px solid var(--line);border-radius:26px;padding:6px;z-index:15;box-shadow:0 20px 50px -15px rgba(0,0,0,.55)}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(440px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);align-items:center;background:var(--dock);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);border:1px solid var(--line);border-radius:26px;padding:6px;z-index:15;box-shadow:0 20px 50px -15px rgba(0,0,0,.55)}
 .dock button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-weight:700;padding:7px 0;border-radius:18px;transition:color .2s}
 .dock button svg{width:22px;height:22px}
 .dock button.on{color:var(--text)}
@@ -196,13 +290,18 @@ ul.list{list-style:none;margin:0;padding:0}
 .themes button{border:2px solid var(--line);border-radius:16px;padding:12px 6px;background:var(--input);font-weight:700;font-size:13px}
 .themes button i{display:block;height:34px;border-radius:10px;margin-bottom:6px}
 .themes button.on{border-color:var(--a1)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.stat{border-radius:16px;padding:10px 4px;text-align:center;background:var(--input);border:1px solid var(--line)}
-.stat b{display:block;font-family:var(--fh);font-size:18px}
-.stat span{font-size:10px;color:var(--muted);font-weight:700}
+.ach{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ach div{border-radius:16px;padding:10px 6px;text-align:center;background:var(--input);border:1px solid var(--line)}
+.ach div i{display:block;font-style:normal;font-size:24px}
+.ach div b{display:block;font-size:11.5px;margin-top:2px}
+.ach div small{display:block;font-size:10px;color:var(--muted);line-height:1.25;margin-top:2px}
+.ach div.lock{opacity:.4;filter:grayscale(1)}
+.ach div.got{border-color:color-mix(in srgb,var(--a3) 50%,transparent);background:color-mix(in srgb,var(--a3) 10%,var(--input))}
+.steps-ol{margin:0;padding-left:20px}
+.steps-ol li{margin-bottom:8px}
 .capsule-open{font-size:17px;line-height:1.55;white-space:pre-wrap;padding:16px;border-radius:18px;background:color-mix(in srgb,var(--a3) 10%,var(--input));border:1px solid color-mix(in srgb,var(--a3) 40%,transparent)}
 
-/* оверлеи: небо и фокус */
+/* оверлеи */
 .overlay{position:fixed;inset:0;z-index:40;display:none;background:#04041a;color:#f2f1ff}
 .overlay.open{display:block;animation:fade .35s}
 @keyframes fade{from{opacity:0}}
@@ -227,9 +326,10 @@ ul.list{list-style:none;margin:0;padding:0}
 .focus-in .btn.soft{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.14)}
 .focus-in .done-msg{font-family:var(--fh);font-size:16px}
 
-.toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translate(-50%,10px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:700;opacity:0;transition:all .25s;pointer-events:none;z-index:60;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translate(-50%,10px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:700;opacity:0;transition:all .25s;pointer-events:none;z-index:60;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .spark{position:fixed;width:7px;height:7px;border-radius:50%;pointer-events:none;z-index:70}
+.float{position:fixed;z-index:80;font-family:var(--fh);font-weight:800;font-size:15px;color:#fbbf24;pointer-events:none;text-shadow:0 0 14px rgba(245,158,11,.7);white-space:nowrap}
 .view-in{animation:vin .35s cubic-bezier(.2,.9,.3,1)}
 @keyframes vin{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -244,11 +344,19 @@ ul.list{list-style:none;margin:0;padding:0}
       <h1 id="title"></h1>
     </div>
     <div class="row">
-      <span class="streak hidden" id="streak" title="Дней подряд с выполненными делами"></span>
       <button class="ib" id="skyBtn" title="Моё небо" aria-label="Моё небо"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 10l-5.5 4 1.9 7L12 17.3 6.6 21l1.9-7L3 10l6.8-1.4z"/></svg></button>
       <button class="ib" id="setBtn" title="Настройки" aria-label="Настройки"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></button>
     </div>
   </header>
+
+  <button class="hud" id="hud" aria-label="Профиль игрока">
+    <div class="lv"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" style="stroke:var(--line)" stroke-width="4"/><circle id="lvRing" cx="24" cy="24" r="20" fill="none" style="stroke:var(--a2)" stroke-width="4" stroke-linecap="round" stroke-dasharray="125.66" stroke-dashoffset="125.66"/></svg><b id="lvNum">1</b></div>
+    <div class="grow"><div class="rank"><b id="rankName">Кадет</b><span id="xpText"></span></div><div class="xpbar"><i id="xpBar"></i></div></div>
+    <div class="res"><span class="coins num" id="coinsVal">₵ 0</span><span class="fire" id="fireVal"></span></div>
+  </button>
+
+  <div class="subtabs hidden" id="dealTabs"><button data-v="tasks">✓ Задачи</button><button data-v="missions">🚀 Миссии</button><button data-v="notes">✎ Заметки</button></div>
+  <div class="subtabs hidden" id="moneyTabs"><button data-v="wallet">💳 Кошелёк</button><button data-v="trades">📊 Сделки</button><button data-v="shop">🎁 Награды</button></div>
 
   <!-- ДЕНЬ -->
   <section id="v-day">
@@ -265,9 +373,17 @@ ul.list{list-style:none;margin:0;padding:0}
       <form class="addrow" id="goalForm"><input type="text" id="goalInput" placeholder="Самое важное на сегодня…" maxlength="200" autocomplete="off"><button class="btn sq" aria-label="Добавить">+</button></form>
     </div>
     <div class="card">
+      <div class="ch"><span>📈 Привычки</span><b id="habitsCount"></b></div>
+      <div id="dayHabits"></div>
+    </div>
+    <div class="card">
       <div class="ch"><span>✓ Задачи</span><b id="tasksCount"></b></div>
       <ul class="list" id="dayTasks"></ul>
       <form class="addrow" id="dayTaskForm"><input type="text" id="dayTaskInput" placeholder="Задача на этот день…  (! — важно)" maxlength="300" autocomplete="off"><button class="btn sq" aria-label="Добавить">+</button></form>
+    </div>
+    <div class="card" id="questCard">
+      <div class="ch"><span>📜 Контракты дня</span><b id="questCount"></b></div>
+      <div id="quests"></div>
     </div>
     <div class="card">
       <div class="ch"><span>☾ Фаза дня</span></div>
@@ -285,61 +401,128 @@ ul.list{list-style:none;margin:0;padding:0}
       <div class="hint">Пиши как думаешь: «сегодня», «завтра», «в пятницу», «через 3 дня», «25.12» · «!» — важно, «!!» — срочно</div>
     </form>
     <div class="segs" id="taskFilter">
-      <button data-f="active" class="on">Активные</button>
-      <button data-f="inbox">Без даты</button>
-      <button data-f="done">Выполненные</button>
-      <button data-f="all">Все</button>
+      <button data-f="active" class="on">Активные</button><button data-f="inbox">Без даты</button><button data-f="done">Выполненные</button><button data-f="all">Все</button>
     </div>
     <div class="card" id="tasksBox"></div>
-  </section>
-
-  <!-- ЗАМЕТКИ -->
-  <section id="v-notes" class="hidden">
-    <div class="search">
-      <input type="text" id="noteSearch" class="grow" placeholder="Поиск по заметкам и #тегам" autocomplete="off">
-      <button class="btn sq" id="newNote" aria-label="Новая заметка">+</button>
-    </div>
-    <div class="ch" id="capsTitle"><span>⧗ Капсулы времени</span><button class="btn soft sm" id="newCap">+ Капсула</button></div>
-    <div class="caps" id="caps"></div>
-    <div class="notes-grid" id="notesGrid"></div>
   </section>
 
   <!-- МИССИИ -->
   <section id="v-missions" class="hidden">
     <div class="segs" id="planFilter">
-      <button data-h="all" class="on">Все</button>
-      <button data-h="week">Неделя</button>
-      <button data-h="month">Месяц</button>
-      <button data-h="year">Год</button>
-      <button data-h="life">Мечты</button>
+      <button data-h="all" class="on">Все</button><button data-h="week">Неделя</button><button data-h="month">Месяц</button><button data-h="year">Год</button><button data-h="life">Мечты</button>
     </div>
     <div id="plansBox"></div>
-    <button class="btn" id="newPlan" style="width:100%">+ Новая миссия</button>
+    <button class="btn full" id="newPlan">+ Новая миссия</button>
+  </section>
+
+  <!-- ЗАМЕТКИ -->
+  <section id="v-notes" class="hidden">
+    <div class="search"><input type="text" id="noteSearch" class="grow" placeholder="Поиск по заметкам и #тегам" autocomplete="off"><button class="btn sq" id="newNote" aria-label="Новая заметка">+</button></div>
+    <div class="ch"><span>⧗ Капсулы времени</span><button class="btn soft sm" id="newCap">+ Капсула</button></div>
+    <div class="caps" id="caps"></div>
+    <div class="notes-grid" id="notesGrid"></div>
+  </section>
+
+  <!-- БИРЖА ПРИВЫЧЕК -->
+  <section id="v-habits" class="hidden">
+    <div class="tape" id="tape"></div>
+    <div class="card">
+      <div class="ch"><span>Индекс дисциплины</span><span id="idxChange"></span></div>
+      <div class="bigstat num" id="idxVal">—</div>
+      <div id="idxChart" style="margin-top:10px"></div>
+      <div class="kpis">
+        <div class="kpi"><b class="num" id="pfVal">₵ 0</b><span>портфель</span></div>
+        <div class="kpi"><b class="num" id="pfPnl">—</b><span>прибыль</span></div>
+        <div class="kpi"><b class="num" id="pfCash">₵ 0</b><span>свободно</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><span>Мои акции-привычки</span><button class="btn soft sm" id="newHabit">+ Привычка</button></div>
+      <div id="habitList"></div>
+      <div class="hint">Отмечай привычку — акция растёт (+2–6% в день, чем длиннее серия, тем быстрее). Пропуск — падение на 7%. Покупай акции за кредиты ₵ и зарабатывай на своей дисциплине.</div>
+    </div>
+  </section>
+
+  <!-- КОШЕЛЁК -->
+  <section id="v-wallet" class="hidden">
+    <div class="balance">
+      <div class="lbl">Баланс</div>
+      <div class="bigstat num" id="balVal">0</div>
+      <div class="mrow"><div><small id="monthName">Доходы</small><b class="num" id="wIn">+0</b></div><div><small>Расходы</small><b class="num" id="wOut">−0</b></div></div>
+    </div>
+    <form class="card" id="txForm">
+      <div class="subtabs" id="txType" style="margin-bottom:10px"><button type="button" data-t="out" class="on">− Расход</button><button type="button" data-t="in">+ Доход</button></div>
+      <div class="row"><input type="text" id="txAmount" inputmode="decimal" placeholder="Сумма" autocomplete="off" style="max-width:130px;font-family:var(--fh);font-weight:700"><input type="text" id="txNote" class="grow" placeholder="На что / откуда" maxlength="100" autocomplete="off"><button class="btn sq" aria-label="Добавить">+</button></div>
+      <div class="cats" id="txCats" style="margin-top:10px"></div>
+    </form>
+    <div class="card">
+      <div class="ch"><span>Расходы за месяц</span><b id="mOutTotal"></b></div>
+      <div class="catbar" id="catBar"></div>
+      <div class="legend" id="catLegend"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span>🐷 Копилки</span><button class="btn soft sm" id="newJar">+ Копилка</button></div>
+      <div id="jars"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span>История</span></div>
+      <div id="txList"></div>
+    </div>
+  </section>
+
+  <!-- СДЕЛКИ -->
+  <section id="v-trades" class="hidden">
+    <div class="card">
+      <div class="ch"><span>Журнал трейдера</span><span id="trCount"></span></div>
+      <div class="bigstat num" id="trPnl">0</div>
+      <div class="sub">чистый результат закрытых сделок</div>
+      <div id="eqChart" style="margin-top:12px"></div>
+      <div class="kpis">
+        <div class="kpi"><b class="num" id="trWin">—</b><span>винрейт</span></div>
+        <div class="kpi"><b class="num" id="trAvgW">—</b><span>ср. прибыль</span></div>
+        <div class="kpi"><b class="num" id="trAvgL">—</b><span>ср. убыток</span></div>
+      </div>
+    </div>
+    <button class="btn full" id="newTrade" style="margin-bottom:14px">+ Новая сделка</button>
+    <div class="card" id="openBox"></div>
+    <div class="card" id="closedBox"></div>
+  </section>
+
+  <!-- МАГАЗИН НАГРАД -->
+  <section id="v-shop" class="hidden">
+    <div class="card" style="text-align:center">
+      <div class="sub">Заработано честным трудом</div>
+      <div class="bigstat num" style="color:var(--a3)" id="shopCoins">₵ 0</div>
+      <div class="sub" style="margin-top:6px">Кредиты ₵ дают за задачи, цели, привычки, полёты и контракты. Трать их на то, что любишь — без чувства вины.</div>
+    </div>
+    <div class="card">
+      <div class="ch"><span>🎁 Витрина наград</span><button class="btn soft sm" id="newReward">+ Награда</button></div>
+      <div id="shopList"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span>Последние операции ₵</span></div>
+      <div id="ledgerList"></div>
+    </div>
   </section>
 </div>
 
 <nav class="dock">
-  <button data-view="day" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(-28 12 12)"/></svg>День</button>
-  <button data-view="tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5l2 2 3.5-4M3.5 15.5l2 2 3.5-4M13 7h8M13 16h8"/></svg>Задачи</button>
+  <button data-g="day" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(-28 12 12)"/></svg>День</button>
+  <button data-g="deals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5l2 2 3.5-4M3.5 15.5l2 2 3.5-4M13 7h8M13 16h8"/></svg>Дела</button>
   <button class="plus" id="captureBtn" aria-label="Быстро записать"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-  <button data-view="notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg>Заметки</button>
-  <button data-view="missions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2.5c3.2 2.2 4.9 6.3 3.8 11.2L14 16.5h-4l-1.8-2.8C7.1 8.8 8.8 4.7 12 2.5z"/><circle cx="12" cy="9.5" r="1.7"/><path d="M8.3 13.5L5.5 16l1 3.2 2.8-1.5M15.7 13.5l2.8 2.5-1 3.2-2.8-1.5M12 19v2.5"/></svg>Миссии</button>
+  <button data-g="habits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5.5-5.5 4 3.5L21 6.5"/><path d="M15 6.5h6v6"/></svg>Биржа</button>
+  <button data-g="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="14" rx="3"/><path d="M3 11h18M16 15.5h2"/><path d="M6 6.5l9.5-3.5 2 3.5"/></svg>Капитал</button>
 </nav>
 <button class="fpill hidden" id="fpill"></button>
 
-<!-- Небо -->
 <div class="overlay" id="sky" role="dialog" aria-label="Моё небо">
   <canvas id="skyCanvas"></canvas>
   <div class="sky-ui">
-    <div class="sky-top">
-      <div><h2>Моё небо</h2><div class="sub" id="skyStats"></div></div>
-      <button class="ib" id="skyClose" aria-label="Закрыть">✕</button>
-    </div>
+    <div class="sky-top"><div><h2>Моё небо</h2><div class="sub" id="skyStats"></div></div><button class="ib" id="skyClose" aria-label="Закрыть">✕</button></div>
     <div class="sky-tip" id="skyTip"></div>
   </div>
 </div>
 
-<!-- Фокус -->
 <div class="overlay" id="focus" role="dialog" aria-label="Режим полёта">
   <div class="focus-in">
     <button class="ib x" id="fClose" aria-label="Свернуть">✕</button>
@@ -379,7 +562,10 @@ const todayIso = () => iso(new Date());
 const addDays = (s, n) => { const d = fromIso(s); d.setDate(d.getDate()+n); return iso(d); };
 const diffDays = (a, b) => Math.round((fromIso(b) - fromIso(a)) / 864e5);
 const fmt = (s, o={day:'numeric', month:'long'}) => fromIso(s).toLocaleDateString('ru-RU', o);
-const cap1 = s => s[0].toUpperCase() + s.slice(1);
+const cap1 = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+const fmtN = (n, d=2) => Number(n || 0).toLocaleString('ru-RU', {maximumFractionDigits:d});
+const sgn = n => n > 0 ? '+' : n < 0 ? '−' : '';
+const num = v => { const x = parseFloat(String(v).replace(/\s/g,'').replace(',', '.')); return isFinite(x) ? x : NaN; };
 function relDay(s){
   const t = todayIso();
   if (s === t) return 'Сегодня';
@@ -388,25 +574,46 @@ function relDay(s){
   if (s === addDays(t,2)) return 'Послезавтра';
   return cap1(fromIso(s).toLocaleDateString('ru-RU',{weekday:'long'}));
 }
-function plural(n, a, b, c){ const m10 = n%10, m100 = n%100; return m10===1&&m100!==11 ? a : (m10>=2&&m10<=4&&(m100<12||m100>14)) ? b : c; }
+function plural(n, a, b, c){ n = Math.abs(n); const m10 = n%10, m100 = n%100; return m10===1&&m100!==11 ? a : (m10>=2&&m10<=4&&(m100<12||m100>14)) ? b : c; }
 function hash(s){ let h = 2166136261; for (let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h>>>0; }
 function rng(seed){ let a = seed>>>0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a>>>15, 1 | a); t = t + Math.imul(t ^ t>>>7, 61 | t) ^ t; return ((t ^ t>>>14)>>>0) / 4294967296; }; }
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ================= данные =================
-const LISTS = ['tasks','goals','notes','plans','capsules','focus'];
-const empty = () => ({ v:2, tasks:[], goals:[], notes:[], plans:[], capsules:[], focus:[], days:{}, settings:{theme:'dark'} });
-function normalize(d){
-  d = Object.assign(empty(), d || {});
+const LISTS = ['tasks','goals','notes','plans','capsules','focus','habits','ledger','shop'];
+const defaultShop = () => [
+  {id:uid(), emoji:'📺', name:'Серия любимого сериала', price:80},
+  {id:uid(), emoji:'🍕', name:'Вкусняшка без угрызений', price:120},
+  {id:uid(), emoji:'🎮', name:'Час игр', price:150},
+  {id:uid(), emoji:'😴', name:'Поспать подольше', price:200},
+  {id:uid(), emoji:'🛍', name:'Маленькая покупка для себя', price:500},
+];
+const empty = () => ({ v:3, tasks:[], goals:[], notes:[], plans:[], capsules:[], focus:[], habits:[],
+  ledger:[{ref:'start', c:100, xp:0, r:'Стартовый капитал', at:Date.now()}], shop:defaultShop(),
+  money:{tx:[], jars:[], trades:[]}, game:{}, days:{}, settings:{theme:'dark', cur:'₽', tcur:'$'} });
+function normalize(raw){
+  const v0 = (raw && raw.v) || 0;
+  const d = Object.assign(empty(), raw || {});
   for (const k of LISTS) if (!Array.isArray(d[k])) d[k] = [];
   if (!d.days || typeof d.days !== 'object') d.days = {};
-  d.settings = Object.assign({theme:'dark'}, d.settings);
+  d.money = Object.assign({tx:[], jars:[], trades:[]}, d.money);
+  for (const k of ['tx','jars','trades']) if (!Array.isArray(d.money[k])) d.money[k] = [];
+  d.game = Object.assign({}, d.game);
+  d.settings = Object.assign({theme:'dark', cur:'₽', tcur:'$'}, d.settings);
   for (const p of d.plans) if (!Array.isArray(p.steps)) p.steps = [];
-  if (d.v !== 2){ d.v = 2; d.settings.theme = 'dark'; } // переход на «Орбиту»: включаем фирменную тему
+  for (const h of d.habits){ h.log = h.log || {}; h.days = Array.isArray(h.days) && h.days.length ? h.days : [0,1,2,3,4,5,6]; h.shares = h.shares || 0; h.cost = h.cost || 0; }
+  if (v0 < 2) d.settings.theme = 'dark';
+  if (v0 < 3){
+    if (!d.ledger.some(l => l.ref === 'start')) d.ledger.push({ref:'start', c:100, xp:0, r:'Стартовый капитал', at:Date.now()});
+    const nt = d.tasks.filter(t => t.done).length, ng = d.goals.filter(g => g.done).length;
+    if (nt + ng && !d.ledger.some(l => l.ref === 'retro')) d.ledger.push({ref:'retro', c:nt*5 + ng*10, xp:nt*10 + ng*25, r:'Опыт прошлых дней', at:Date.now()});
+    if (!d.shop.length) d.shop = defaultShop();
+  }
+  d.v = 3;
   return d;
 }
 let db;
-try { db = normalize(JSON.parse(localStorage.getItem(KEY))); } catch { db = empty(); }
+try { db = normalize(JSON.parse(localStorage.getItem(KEY))); } catch { db = normalize(null); }
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(db)); } catch { toast('Не удалось сохранить'); } }
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 
@@ -416,12 +623,32 @@ const HORIZONS = {week:'Неделя', month:'Месяц', year:'Год', life:'
 const MOODS = [['🌑','пусто'],['🌒','так себе'],['🌓','ровно'],['🌔','хорошо'],['🌕','сияю']];
 const PC = ['var(--a4)','var(--a2)','var(--a3)'];
 const QUESTIONS = ['Что сегодня принесло радость?','Чему я научился сегодня?','За что я благодарен сегодня?','Что можно было сделать лучше?','Какой момент дня хочется запомнить?','Что меня вдохновило?','Кому я сегодня помог — или кто помог мне?','Что меня удивило?','Что я сделал для своего здоровья?','Какой маленький шаг к большой цели я сделал?','Что я откладываю и почему?','Что бы я сказал себе утром этого дня?','С кем было приятно пообщаться?','Что дало энергию, а что её забрало?','Чем я горжусь сегодня?','Что я сделаю завтра иначе?'];
-const TITLES = {day:'', tasks:'Задачи', notes:'Заметки', missions:'Миссии'};
+const GROUP = {day:'day', tasks:'deals', missions:'deals', notes:'deals', habits:'habits', wallet:'money', trades:'money', shop:'money'};
+const TITLES = {day:'', tasks:'Дела', missions:'Дела', notes:'Дела', habits:'Биржа привычек', wallet:'Капитал', trades:'Капитал', shop:'Капитал'};
+const WDN = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const HABIT_EMOJI = ['💪','🏃','📚','💧','🧘','🛌','🥗','🦷','🇬🇧','💻','🎸','✍️','🚭','🌅','🧹','💊','🚶','🧠'];
+const CAT_OUT = [['food','🍔','Еда'],['transport','🚌','Транспорт'],['fun','🎮','Развлечения'],['shop','🛍','Покупки'],['home','🏠','Дом'],['phone','📱','Связь'],['study','📚','Учёба'],['health','💊','Здоровье'],['gift','🎁','Подарки'],['other','📦','Другое']];
+const CAT_IN = [['salary','💼','Зарплата'],['side','🛠','Подработка'],['gift_in','🎁','Подарок'],['trade','📈','Трейдинг'],['pocket','👛','Карманные'],['other_in','💰','Другое']];
+const CAT_JAR = ['jar','🐷','Копилка'];
+const CAT_COLORS = ['#8b5cf6','#ec4899','#f59e0b','#22d3ee','#34d399','#f472b6','#a78bfa','#fb7185','#fbbf24','#94a3b8'];
+const CAT_GUESS = [
+  [/кофе|еда|обед|ужин|завтрак|продукт|пицц|бургер|кафе|ресторан|шаурм|макдон|вкусно|перекус|снек/i,'food'],
+  [/такси|метро|автобус|бензин|проезд|электрич|самокат/i,'transport'],
+  [/игр|кино|steam|подписк|концерт|spotify|netflix|xbox/i,'fun'],
+  [/одежд|кроссов|wb|wildberries|ozon|озон|покупк|худи|футболк/i,'shop'],
+  [/аренд|квартир|коммунал/i,'home'],
+  [/телефон|интернет|связь|мобил/i,'phone'],
+  [/курс|книг|учеб|репетит|школ/i,'study'],
+  [/аптек|врач|лекарств|спортзал|абонемент/i,'health'],
+  [/подар/i,'gift'],
+];
+const CAT_GUESS_IN = [[/зарплат|зп|аванс/i,'salary'],[/подработ|фриланс|заказ/i,'side'],[/трейд|профит|сделк|крипт|акци/i,'trade'],[/карманн|родител|мама|папа/i,'pocket'],[/подар/i,'gift_in']];
 
 let view = 'day', curDay = todayIso(), taskFilter = 'active', planFilter = 'all';
+let lastDeals = 'tasks', lastMoney = 'wallet';
 
-// ================= общее =================
-function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>t.classList.remove('show'), 2000); }
+// ================= эффекты =================
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>t.classList.remove('show'), 2400); }
 function burst(el){
   if (reduced || !el) return;
   const r = el.getBoundingClientRect(), x = r.left + r.width/2, y = r.top + r.height/2;
@@ -435,6 +662,80 @@ function burst(el){
       {duration:550+Math.random()*350, easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish = () => s.remove();
   }
   if (navigator.vibrate) navigator.vibrate(12);
+}
+function floatText(el, text){
+  if (!el) return;
+  const r = el.getBoundingClientRect(), s = document.createElement('div');
+  s.className = 'float'; s.textContent = text; s.style.left = (r.left + r.width/2) + 'px'; s.style.top = r.top + 'px';
+  document.body.append(s);
+  if (reduced){ setTimeout(() => s.remove(), 900); return; }
+  s.animate([{transform:'translate(-50%,0) scale(.7)',opacity:0},{transform:'translate(-50%,-18px) scale(1.1)',opacity:1,offset:.2},{transform:'translate(-50%,-56px) scale(1)',opacity:0}],{duration:1100,easing:'ease-out'}).onfinish = () => s.remove();
+}
+
+// ================= игра: кредиты, опыт, уровни =================
+const coins = () => db.ledger.reduce((a,l) => a + l.c, 0);
+const xpTotal = () => db.ledger.reduce((a,l) => a + (l.xp || 0), 0);
+const need = L => 100 + (L-1)*50;
+function levelInfo(xp = xpTotal()){ let L = 1, rest = xp; while (rest >= need(L)){ rest -= need(L); L++; } return {L, cur:rest, need:need(L)}; }
+const RANKS = [[1,'Кадет'],[3,'Пилот'],[5,'Навигатор'],[8,'Капитан'],[12,'Командор'],[17,'Адмирал'],[25,'Легенда галактики']];
+const rankOf = L => RANKS.filter(r => L >= r[0]).pop()[1];
+function reward(ref, c, xp, r, el){
+  if (db.ledger.some(l => l.ref === ref)) return;
+  db.ledger.push({ref, c, xp, r, at:Date.now()});
+  if (el) floatText(el, c ? `+${c} ₵` : `+${xp} XP`);
+  levelCheck();
+}
+function unreward(ref){ db.ledger = db.ledger.filter(l => l.ref !== ref); levelCheck(); }
+function spend(amount, r, kind){
+  if (coins() < amount){ toast(`Не хватает ${amount - coins()} ₵`); return false; }
+  db.ledger.push({ref:kind+':'+uid(), c:-amount, xp:0, r, at:Date.now()}); return true;
+}
+function levelCheck(){
+  const L = levelInfo().L;
+  if (db.game.lastLevel == null){ db.game.lastLevel = L; return; }
+  if (L > db.game.lastLevel){
+    for (let k = db.game.lastLevel + 1; k <= L; k++) if (!db.ledger.some(l => l.ref === 'lvl:'+k)) db.ledger.push({ref:'lvl:'+k, c:50, xp:0, r:`Премия за уровень ${k}`, at:Date.now()});
+    db.game.lastLevel = L;
+    setTimeout(() => { toast(`⭐ Уровень ${L}! Ранг: ${rankOf(L)} · премия +50 ₵`); burst($('#hud .lv')); }, 350);
+  } else if (L < db.game.lastLevel) db.game.lastLevel = L;
+}
+function renderHud(){
+  const li = levelInfo(), c = coins(), st = streak();
+  $('#lvNum').textContent = li.L;
+  $('#lvRing').style.strokeDashoffset = 125.66 * (1 - li.cur/li.need);
+  $('#rankName').textContent = rankOf(li.L);
+  $('#xpText').textContent = `${li.cur} / ${li.need} XP`;
+  $('#xpBar').style.width = (li.cur/li.need*100) + '%';
+  $('#coinsVal').textContent = `₵ ${fmtN(c,0)}`;
+  $('#fireVal').textContent = st ? `🔥 ${st} ${plural(st,'день','дня','дней')}` : '🔥 0';
+}
+
+// достижения
+const ACH = [
+  ['star1','✦','Первая звезда','Выполни первое дело', () => skyItems().length >= 1],
+  ['star50','🌌','Созвездие','50 звёзд на небе', () => skyItems().length >= 50],
+  ['streak7','🔥','Неделя огня','7 дней подряд', () => streak() >= 7],
+  ['streak30','☄️','Месяц огня','30 дней подряд', () => streak() >= 30],
+  ['ipo','📈','IPO','Выпусти первую привычку', () => db.habits.length > 0],
+  ['bull','🐂','Бычий рынок','Привычка дороже 150', () => db.habits.some(h => habitStats(h).price >= 150)],
+  ['investor','💼','Инвестор','Купи акции привычки', () => db.habits.some(h => h.shares > 0)],
+  ['rich','💰','Магнат','1000 ₵ на счету', () => coins() >= 1000],
+  ['pilot','🚀','Пилот','60 минут полёта', () => db.focus.reduce((a,f) => a + f.min, 0) >= 60],
+  ['capsule','📦','Хрононавт','Капсула времени', () => db.capsules.length > 0],
+  ['trader','📊','Трейдер','5 сделок в журнале', () => db.money.trades.length >= 5],
+  ['saver','🐷','Копилка полна','Накопи на цель', () => db.money.jars.some(j => j.target > 0 && j.saved >= j.target)],
+  ['mission','🏆','Миссия','Заверши миссию', () => db.plans.some(p => p.archived)],
+  ['contracts','📜','Наёмник','10 контрактов', () => db.ledger.filter(l => l.ref.startsWith('quest:')).length >= 10],
+  ['lvl10','👑','Командир','Достигни 10 уровня', () => levelInfo().L >= 10],
+];
+function checkAch(){
+  if (!Array.isArray(db.game.ach)){ db.game.ach = ACH.filter(a => a[4]()).map(a => a[0]); save(); return; }
+  for (const a of ACH){
+    if (db.game.ach.includes(a[0]) || !a[4]()) continue;
+    db.game.ach.push(a[0]);
+    reward('ach:'+a[0], 50, 25, `Достижение «${a[2]}»`);
+    save(); setTimeout(() => toast(`🏅 Достижение: ${a[2]} · +50 ₵`), 700);
+  }
 }
 
 // тема
@@ -460,6 +761,29 @@ function drawBgSky(){
   }
 }
 let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawBgSky(); if ($('#sky').classList.contains('open')) layoutSky(); }, 150); });
+
+// ================= графики =================
+let sparkN = 0;
+function spark(vals, w, h, o={}){
+  if (!vals.length) vals = [0];
+  if (vals.length === 1) vals = [vals[0], vals[0]];
+  const n = vals.length, min = Math.min(...vals, o.zero ? 0 : Infinity), max = Math.max(...vals, o.zero ? 0 : -Infinity), r = (max - min) || 1, p = 3;
+  const Y = v => p + (1 - (v - min)/r) * (h - 2*p);
+  const pts = vals.map((v,i) => [(i/(n-1))*w, Y(v)]);
+  const up = o.up ?? (vals[n-1] >= vals[0]);
+  const col = up ? 'var(--up)' : 'var(--down)';
+  const line = pts.map((q,i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('');
+  const id = 'sg' + (++sparkN);
+  const zero = o.zero ? `<line x1="0" x2="${w}" y1="${Y(0)}" y2="${Y(0)}" style="stroke:var(--muted);stroke-opacity:.4;stroke-dasharray:3 4;vector-effect:non-scaling-stroke"/>` : '';
+  const last = pts[n-1];
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${o.height || h}" preserveAspectRatio="none" style="display:block;overflow:visible">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${col};stop-opacity:.35"/><stop offset="1" style="stop-color:${col};stop-opacity:0"/></linearGradient></defs>
+    ${zero}
+    ${o.area === false ? '' : `<path d="${line}L${w} ${h}L0 ${h}Z" style="fill:url(#${id})"/>`}
+    <path d="${line}" style="fill:none;stroke:${col};stroke-width:${o.sw || 1.8};vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round"/>
+    ${o.dot ? `<circle cx="${last[0]}" cy="${last[1]}" r="3.5" style="fill:${col}"/>` : ''}
+  </svg>`;
+}
 
 // ================= разбор естественного языка =================
 const WD = [[/^(воскресенье|вс)$/,0],[/^(понедельник|пн)$/,1],[/^(вторник|вт)$/,2],[/^(сред[ау]|ср)$/,3],[/^(четверг|чт)$/,4],[/^(пятниц[ау]|пт)$/,5],[/^(суббот[ау]|сб)$/,6]];
@@ -487,28 +811,41 @@ function parseText(text){
   });
   return { title: s.replace(/\s+/g,' ').trim(), date, prio, tags };
 }
+function parseMoney(text){
+  const m = text.match(/(^|\s)([+-]?)\s*(\d[\d\s]*(?:[.,]\d{1,2})?)(?=\s|$)/);
+  if (!m) return null;
+  const amount = num(m[3]); if (!(amount > 0)) return null;
+  const note = (text.slice(0, m.index) + ' ' + text.slice(m.index + m[0].length)).replace(/\s+/g,' ').trim();
+  const type = m[2] === '+' ? 'in' : 'out';
+  const g = (type === 'in' ? CAT_GUESS_IN : CAT_GUESS).find(([re]) => re.test(note));
+  return {amount, type, note, cat: g ? g[1] : (type === 'in' ? 'other_in' : 'other')};
+}
 function previewChips(p, opt={}){
   const c = [];
   if (p.date) c.push(`<span class="chip acc">📅 ${esc(relDay(p.date))}, ${esc(fmt(p.date))}</span>`);
   else if (opt.inbox) c.push(`<span class="chip">📥 без даты</span>`);
   if (p.prio) c.push(`<span class="chip p${p.prio}">${p.prio===2?'🔥':'⚡'} ${PRIO[p.prio]}</span>`);
-  if (opt.tags) p.tags.forEach(t => c.push(`<span class="chip">#${esc(t)}</span>`));
+  if (opt.tags) (p.tags || []).forEach(t => c.push(`<span class="chip">#${esc(t)}</span>`));
   return c.join('');
 }
+const catInfo = id => [...CAT_OUT, ...CAT_IN, CAT_JAR].find(c => c[0] === id) || ['other','📦','Другое'];
 
 // ================= навигация =================
 function setView(v){
   view = v;
-  for (const k of Object.keys(TITLES)){ const el = $('#v-'+k); el.classList.toggle('hidden', k !== v); if (k === v){ el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); } }
-  $$('.dock [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
+  if (GROUP[v] === 'deals') lastDeals = v;
+  if (GROUP[v] === 'money') lastMoney = v;
+  for (const k of Object.keys(GROUP)){ const el = $('#v-'+k); el.classList.toggle('hidden', k !== v); if (k === v){ el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); } }
+  $$('.dock [data-g]').forEach(b => b.classList.toggle('on', b.dataset.g === GROUP[v]));
+  $('#dealTabs').classList.toggle('hidden', GROUP[v] !== 'deals');
+  $('#moneyTabs').classList.toggle('hidden', GROUP[v] !== 'money');
+  $$('.subtabs [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   render(); scrollTo(0,0);
 }
 function render(){
-  renderHeader();
-  if (view === 'day') renderDay();
-  if (view === 'tasks') renderTasks();
-  if (view === 'notes') renderNotes();
-  if (view === 'missions') renderMissions();
+  checkAch();
+  renderHeader(); renderHud();
+  ({day:renderDay, tasks:renderTasks, missions:renderMissions, notes:renderNotes, habits:renderHabits, wallet:renderWallet, trades:renderTrades, shop:renderShop})[view]();
 }
 function renderHeader(){
   const h = new Date().getHours();
@@ -516,15 +853,12 @@ function renderHeader(){
   const dateStr = cap1(new Date().toLocaleDateString('ru-RU',{weekday:'long', day:'numeric', month:'long'}));
   $('#hello').textContent = view === 'day' ? hi + ' ✦' : dateStr;
   $('#title').textContent = view === 'day' ? dateStr : TITLES[view];
-  const st = streak();
-  $('#streak').classList.toggle('hidden', !st);
-  $('#streak').textContent = `🔥 ${st}`;
-  $('#streak').title = `${st} ${plural(st,'день','дня','дней')} подряд с выполненными делами`;
 }
 function activeDays(){
   const s = new Set();
   for (const t of db.tasks) if (t.done) s.add(t.doneAt ? iso(new Date(t.doneAt)) : (t.date || iso(new Date(t.createdAt))));
   for (const g of db.goals) if (g.done) s.add(g.date);
+  for (const h of db.habits) for (const d in h.log) s.add(d);
   return s;
 }
 function streak(){
@@ -533,6 +867,7 @@ function streak(){
 }
 
 // ================= задачи (строка) =================
+const TASK_REWARD = [10, 15, 20];
 function sortTasks(a,b){ return (a.done - b.done) || ((b.prio||0) - (a.prio||0)) || (a.createdAt - b.createdAt); }
 function taskLi(t, o={}){
   const late = t.date && !t.done && t.date < todayIso();
@@ -543,6 +878,7 @@ function taskLi(t, o={}){
   const fm = db.focus.filter(f => f.taskId === t.id).reduce((a,f) => a + f.min, 0);
   if (fm) meta.push(`<span>⏱ ${fm} мин</span>`);
   if (t.note) meta.push('<span>✎ описание</span>');
+  if (!t.done) meta.push(`<span class="chip gold">+${TASK_REWARD[t.prio||0]} ₵</span>`);
   return `<li class="it ${t.done?'done':''} p${t.prio||0}" data-id="${t.id}">
     <input type="checkbox" class="chk" data-act="tt" ${t.done?'checked':''} aria-label="Готово">
     <div class="txt" data-act="et">${esc(t.title)}${meta.length?`<div class="meta">${meta.join('')}</div>`:''}</div>
@@ -557,22 +893,23 @@ function arcPath(r, d0, d1){
   const [x0,y0] = polar(r,d0), [x1,y1] = polar(r,d1);
   return `M${x0.toFixed(2)} ${y0.toFixed(2)}A${r} ${r} 0 ${d1-d0>180?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
 }
-function dayData(){
-  const goals = db.goals.filter(g => g.date === curDay);
-  const tasks = db.tasks.filter(t => t.date === curDay).sort(sortTasks);
-  const late = curDay === todayIso() ? db.tasks.filter(t => t.date && t.date < curDay && !t.done).sort((a,b)=>a.date.localeCompare(b.date)) : [];
-  return {goals, tasks, late};
-}
-// Safari не понимает var() в SVG-атрибутах — переносим их в style
-function cssVars(svg){
+function cssVars(svg){ // Safari не понимает var() в SVG-атрибутах — переносим их в style
   return svg.replace(/<[a-zA-Z][^>]*>/g, tag => {
     const st = [];
     tag = tag.replace(/\s(fill|stroke|font-family)="(var\([^"]*\))"/g, (m, a, v) => { st.push(`${a}:${v}`); return ''; });
     return st.length ? tag.replace(/\/?>$/, e => ` style="${st.join(';')}"${e}`) : tag;
   });
 }
+const habitsOn = date => db.habits.filter(h => !h.archived && (h.days.includes(fromIso(date).getDay()) || h.log[date]));
+function dayData(){
+  const goals = db.goals.filter(g => g.date === curDay);
+  const tasks = db.tasks.filter(t => t.date === curDay).sort(sortTasks);
+  const late = curDay === todayIso() ? db.tasks.filter(t => t.date && t.date < curDay && !t.done).sort((a,b)=>a.date.localeCompare(b.date)) : [];
+  const habits = habitsOn(curDay).map(h => ({done: !!h.log[curDay]}));
+  return {goals, tasks, late, habits};
+}
 function renderOrbit(d){
-  const all = [...d.goals, ...d.tasks, ...d.late], done = all.filter(x => x.done).length;
+  const all = [...d.goals, ...d.tasks, ...d.late, ...d.habits], done = all.filter(x => x.done).length;
   const pct = all.length ? done / all.length : 0;
   const t0 = todayIso(), now = new Date();
   const frac = curDay === t0 ? (now.getHours()*60 + now.getMinutes())/1440 : curDay < t0 ? 1 : 0;
@@ -623,7 +960,6 @@ function renderDay(){
   $('#dayLabel').textContent = curDay === t0 ? 'Сегодня' : `${relDay(curDay)}, ${fmt(curDay)}`;
   $('#toToday').classList.toggle('hidden', curDay === t0);
 
-  // капсулы, которые открылись
   const ready = db.capsules.filter(c => !c.opened && c.openAt <= t0);
   $('#capBanner').innerHTML = ready.length && curDay === t0 ? `<div class="card banner" data-act="cap" data-id="${ready[0].id}">
     <span class="ic">📦</span><div class="grow"><b>Письмо из прошлого открылось!</b><div class="sub">Написано ${esc(fmt(iso(new Date(ready[0].createdAt)),{day:'numeric',month:'long',year:'numeric'}))} · нажми, чтобы прочитать</div></div></div>` : '';
@@ -631,17 +967,25 @@ function renderDay(){
   $('#goals').innerHTML = d.goals.length ? d.goals.map((g,i) => `
     <li class="it goal ${g.done?'done':''}" data-id="${g.id}">
       <span class="planet" style="--c:${PC[i%3]}">${i+1}</span>
-      <div class="txt" data-act="tg">${esc(g.text)}</div>
+      <div class="txt" data-act="tg">${esc(g.text)}${g.done?'':'<div class="meta"><span class="chip gold">+25 ₵</span></div>'}</div>
       <input type="checkbox" class="chk" data-act="tg" ${g.done?'checked':''} aria-label="Готово">
       <button class="mini del" data-act="dg" aria-label="Удалить">×</button></li>`).join('')
     : '<li class="empty">Выбери до трёх главных целей — они станут планетами твоего дня.</li>';
   $('#goalsCount').textContent = d.goals.length ? `${d.goals.filter(g=>g.done).length}/${d.goals.length}` : '';
   $('#goalForm').classList.toggle('hidden', d.goals.length >= 3);
 
+  const hs = habitsOn(curDay);
+  $('#dayHabits').innerHTML = hs.length ? hs.map(h => habitRow(h, curDay)).join('')
+    : (db.habits.length ? '<div class="empty">На этот день привычек нет.</div>'
+    : `<div class="empty">Привычка — это акция на твоей личной бирже: делаешь каждый день — растёт в цене.</div><button class="btn soft sm" data-act="newhabit">+ Выпустить первую привычку</button>`);
+  $('#habitsCount').textContent = hs.length ? `${hs.filter(h => h.log[curDay]).length}/${hs.length}` : '';
+
   const list = [...d.late.map(t => taskLi(t,{showLate:true})), ...d.tasks.map(t => taskLi(t))];
   $('#dayTasks').innerHTML = list.join('') || '<li class="empty">Свободное небо. Добавь задачу ниже или нажми «+».</li>';
   const tAll = d.tasks.length + d.late.length;
   $('#tasksCount').textContent = tAll ? `${[...d.tasks, ...d.late].filter(t=>t.done).length}/${tAll}` : '';
+
+  renderQuests();
 
   const day = db.days[curDay] || {};
   $('#moods').innerHTML = MOODS.map(([e,l],i) => `<button type="button" data-mood="${i}" class="${day.mood===i?'on':''}"><span>${e}</span><small>${l}</small></button>`).join('');
@@ -673,7 +1017,205 @@ $('#moods').onclick = e => {
   save(); renderDay();
 };
 let noteT;
-$('#dayNote').oninput = () => { clearTimeout(noteT); noteT = setTimeout(() => { (db.days[curDay] ||= {}).note = $('#dayNote').value; save(); }, 300); };
+$('#dayNote').oninput = () => { clearTimeout(noteT); noteT = setTimeout(() => { (db.days[curDay] ||= {}).note = $('#dayNote').value; save(); if (curDay === todayIso()) renderQuests(); }, 400); };
+
+// ================= контракты дня =================
+const doneOn = (t, d) => t.done && t.doneAt && iso(new Date(t.doneAt)) === d;
+const QUESTS = {
+  tasks3: {i:'⚔️', t:'Выполни 3 задачи', c:30, xp:20, p:d => [db.tasks.filter(t => doneOn(t,d)).length, 3]},
+  goals:  {i:'🪐', t:'Закрой все цели дня', c:40, xp:30, p:d => { const g = db.goals.filter(x => x.date === d); return [g.length && g.every(x => x.done) ? 1 : 0, 1]; }},
+  habits: {i:'📈', t:'Отметь все привычки дня', c:40, xp:30, need:() => db.habits.length > 0, p:d => { const h = habitsOn(d); return [h.filter(x => x.log[d]).length, Math.max(1, h.length)]; }},
+  focus:  {i:'🚀', t:'15 минут в режиме полёта', c:25, xp:20, p:d => [Math.min(15, db.focus.filter(f => f.date === d).reduce((a,f) => a + f.min, 0)), 15]},
+  reflect:{i:'🌗', t:'Отметь фазу и запиши итог дня', c:15, xp:10, p:d => { const x = db.days[d] || {}; return [(x.mood != null ? 1 : 0) + ((x.note || '').trim() ? 1 : 0), 2]; }},
+  early:  {i:'🌅', t:'Сделай задачу до полудня', c:20, xp:15, p:d => [db.tasks.some(t => doneOn(t,d) && new Date(t.doneAt).getHours() < 12) ? 1 : 0, 1]},
+  money:  {i:'💳', t:'Запиши доход или расход', c:10, xp:5, p:d => [db.money.tx.some(t => t.date === d) ? 1 : 0, 1]},
+  note:   {i:'✎', t:'Сохрани мысль в заметки', c:10, xp:5, p:d => [db.notes.some(n => iso(new Date(n.updatedAt)) === d) ? 1 : 0, 1]},
+  urgent: {i:'🔥', t:'Закрой срочную или важную задачу', c:25, xp:20, p:d => [db.tasks.some(t => doneOn(t,d) && t.prio) ? 1 : 0, 1]},
+};
+function questsFor(d){
+  const keys = Object.keys(QUESTS).filter(k => !QUESTS[k].need || QUESTS[k].need()).sort();
+  const r = rng(hash('q' + d));
+  for (let i = keys.length - 1; i > 0; i--){ const j = Math.floor(r() * (i+1)); [keys[i], keys[j]] = [keys[j], keys[i]]; }
+  return keys.slice(0, 3);
+}
+function renderQuests(){
+  const t0 = todayIso(), show = curDay === t0;
+  $('#questCard').classList.toggle('hidden', !show); if (!show) return;
+  const ks = questsFor(t0); let claimed = 0;
+  $('#quests').innerHTML = ks.map(k => {
+    const q = QUESTS[k], [a, b] = q.p(t0), ok = a >= b, got = db.ledger.some(l => l.ref === `quest:${t0}:${k}`);
+    if (got) claimed++;
+    return `<div class="quest ${got?'claimed':''}"><span class="qi">${q.i}</span>
+      <div class="grow"><div class="qt">${q.t}</div><div class="qbar"><i style="width:${Math.min(1,a/b)*100}%"></i></div></div>
+      ${got ? '<span class="sub">✓ получено</span>' : ok ? `<button class="btn sm claim" data-act="claim" data-q="${k}">+${q.c} ₵</button>` : `<span class="chip gold">${a}/${b} · ${q.c} ₵</span>`}</div>`;
+  }).join('');
+  $('#questCount').textContent = `${claimed}/3`;
+}
+
+// ================= ПРИВЫЧКИ / БИРЖА =================
+function makeTicker(name){
+  const w = name.toUpperCase().replace(/[^A-ZА-ЯЁ0-9 ]/g,'').split(/\s+/).filter(Boolean);
+  let t = w.length > 1 ? w.map(x => x[0]).join('') : (w[0] || 'HBT');
+  if (t.length < 3 && w[0]) t = w[0].slice(0,4);
+  return t.slice(0,4);
+}
+const hsCache = new Map();
+function habitStats(h){
+  const key = h.id + '|' + todayIso() + '|' + JSON.stringify(h.log) + h.days.join('') + (h.start||'');
+  if (hsCache.has(key)) return hsCache.get(key);
+  const t0 = todayIso(), logs = Object.keys(h.log).sort();
+  let d = h.start || iso(new Date(h.createdAt));
+  if (logs[0] && logs[0] < d) d = logs[0];
+  let price = 100, streak = 0, best = 0, guard = 0, sch30 = 0, done30 = 0;
+  const series = [], from30 = addDays(t0, -29);
+  while (d <= t0 && guard++ < 3000){
+    const sch = h.days.includes(fromIso(d).getDay()), done = !!h.log[d];
+    if (done){ streak++; best = Math.max(best, streak); price *= 1 + .02 + .004*Math.min(streak, 10); }
+    else if (sch && d < t0){ streak = 0; price *= .93; }
+    if (d >= from30 && (done || (sch && d < t0))){ sch30++; if (done) done30++; }
+    series.push(price); d = addDays(d, 1);
+  }
+  const prev = series.length > 1 ? series[series.length-2] : 100;
+  const res = {price, series, streak, best, change: price/prev - 1, total: price/100 - 1, rate: sch30 ? done30/sch30 : 0};
+  hsCache.set(key, res); if (hsCache.size > 300) hsCache.clear();
+  return res;
+}
+function habitRow(h, date, withSpark){
+  const s = habitStats(h), done = !!h.log[date], up = s.change >= 0;
+  const sl = s.series.slice(-30);
+  return `<div class="hb ${done?'done':''}" data-id="${h.id}">
+    <span class="hb-emo">${esc(h.emoji)}</span>
+    <div class="main" data-act="hd"><div class="hb-name">${esc(h.name)}</div>
+      <div class="meta num"><span class="tick">${esc(h.ticker)}</span><span>${s.price.toFixed(2)}</span><span class="${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(s.change*100).toFixed(1)}%</span>${s.streak?`<span>🔥 ${s.streak}</span>`:''}${h.shares?`<span>💼 ${h.shares}</span>`:''}</div></div>
+    ${withSpark ? `<div class="hb-spark" data-act="hd">${spark(sl, 72, 30, {area:false})}</div>` : ''}
+    <input type="checkbox" class="chk big" data-act="hc" data-date="${date}" ${done?'checked':''} aria-label="Отметить">
+  </div>`;
+}
+function toggleHabit(h, date, el){
+  const ref = `habit:${h.id}:${date}`;
+  if (h.log[date]){ delete h.log[date]; unreward(ref); }
+  else {
+    h.log[date] = true;
+    const s = habitStats(h);
+    reward(ref, 5 + Math.min(s.streak, 10), 10, `Привычка «${h.name}»`, el);
+    burst(el);
+    if (s.streak > 1 && s.streak % 7 === 0) setTimeout(() => toast(`🔥 ${s.streak} дней подряд! ${h.ticker} летит вверх`), 400);
+  }
+  save();
+}
+function portfolio(){
+  let value = 0, cost = 0;
+  for (const h of db.habits) if (h.shares){ value += h.shares * habitStats(h).price; cost += h.cost; }
+  return {value, cost, pnl: value - cost};
+}
+function renderHabits(){
+  const hs = db.habits.filter(h => !h.archived), t0 = todayIso();
+  const stats = hs.map(h => [h, habitStats(h)]);
+  const items = stats.length ? stats.map(([h,s]) => `<span class="${s.change>=0?'up':'down'}">${esc(h.ticker)} ${s.price.toFixed(2)} ${s.change>=0?'▲':'▼'}${Math.abs(s.change*100).toFixed(1)}%</span>`).join('')
+    : '<span>ОРБИТА · БИРЖА ПРИВЫЧЕК · ВЫПУСТИ ПЕРВУЮ АКЦИЮ</span><span class="up">DISC 1000.00 ▲0.0%</span>';
+  const rep = stats.length < 4 ? 4 : 2;
+  $('#tape').innerHTML = `<div class="in">${items.repeat(rep)}${items.repeat(rep)}</div>`;
+  if (stats.length){
+    const L = Math.max(...stats.map(([,s]) => s.series.length)), N = Math.min(L, 60), idx = [];
+    for (let i = N; i >= 1; i--){
+      let sum = 0;
+      for (const [,s] of stats){ const k = s.series.length - i; sum += k >= 0 ? s.series[k] : 100; }
+      idx.push(sum / stats.length * 10);
+    }
+    const cur = idx[idx.length-1], prev = idx.length > 1 ? idx[idx.length-2] : cur, ch = cur/prev - 1;
+    $('#idxVal').textContent = fmtN(cur, 2);
+    $('#idxChange').innerHTML = `<span class="${ch>=0?'up':'down'}">${ch>=0?'▲':'▼'} ${Math.abs(ch*100).toFixed(2)}% сегодня</span>`;
+    $('#idxChart').innerHTML = spark(idx, 300, 70, {dot:true});
+  } else { $('#idxVal').textContent = '1 000'; $('#idxChange').textContent = 'рынок ждёт IPO'; $('#idxChart').innerHTML = ''; }
+  const pf = portfolio();
+  $('#pfVal').textContent = `₵ ${fmtN(pf.value, 0)}`;
+  $('#pfPnl').innerHTML = pf.cost ? `<span class="${pf.pnl>=0?'up':'down'}">${sgn(Math.round(pf.pnl))}${fmtN(Math.abs(pf.pnl),0)} ₵</span>` : '—';
+  $('#pfCash').textContent = `₵ ${fmtN(coins(), 0)}`;
+  $('#habitList').innerHTML = hs.length ? hs.map(h => habitRow(h, t0, true)).join('') : '<div class="empty">Пока нет ни одной акции. Нажми «+ Привычка» — и выпусти первую: спорт, чтение, вода, сон…</div>';
+}
+function editHabit(id){
+  const h = id ? db.habits.find(x => x.id === id) : {name:'', emoji:'💪', ticker:'', days:[0,1,2,3,4,5,6]};
+  if (!h) return;
+  let emo = h.emoji, days = h.days.slice(), tickerTouched = !!id;
+  openModal(`<h3>${id ? 'Привычка' : 'Выпуск новой акции'}</h3>
+    <div class="field"><label>Привычка</label><input type="text" id="mName" placeholder="Например: тренировка, 20 страниц, 2 л воды" value="${esc(h.name)}" maxlength="60"></div>
+    <div class="field"><label>Иконка</label><div class="emojis" id="mEmo">${HABIT_EMOJI.map(e => `<button type="button" class="${e===emo?'on':''}">${e}</button>`).join('')}</div></div>
+    <div class="row field">
+      <div style="width:120px"><label class="sub">Тикер</label><input type="text" id="mTicker" maxlength="5" value="${esc(h.ticker)}" style="font-family:var(--fh);text-transform:uppercase"></div>
+      <div class="grow sub" style="padding-top:18px">Короткий код акции, как на бирже</div>
+    </div>
+    <div class="field"><label>Дни</label><div class="wd" id="mDays">${[1,2,3,4,5,6,0].map(d => `<button type="button" data-d="${d}" class="${days.includes(d)?'on':''}">${WDN[d]}</button>`).join('')}</div></div>
+    ${id ? '' : '<div class="sub">Стартовая цена акции — 100. Отмечай каждый день, и она пойдёт вверх 📈</div>'}
+    <div class="actions">${id ? '<button class="btn danger" id="mDel">Удалить</button>' : ''}<span class="grow"></span><button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mSave">${id ? 'Сохранить' : 'Выпустить 🚀'}</button></div>`);
+  $('#mName').oninput = () => { if (!tickerTouched) $('#mTicker').value = makeTicker($('#mName').value); };
+  $('#mTicker').oninput = () => { tickerTouched = true; };
+  $('#mEmo').onclick = e => { const b = e.target.closest('button'); if (!b) return; emo = b.textContent; $$('#mEmo button').forEach(x => x.classList.toggle('on', x === b)); };
+  $('#mDays').onclick = e => { const b = e.target.closest('button'); if (!b) return; const d = +b.dataset.d; days = days.includes(d) ? days.filter(x => x !== d) : [...days, d]; b.classList.toggle('on'); };
+  $('#mSave').onclick = () => {
+    const name = $('#mName').value.trim(); if (!name) return $('#mName').focus();
+    if (!days.length) return toast('Выбери хотя бы один день');
+    const ticker = ($('#mTicker').value.trim() || makeTicker(name)).toUpperCase().slice(0,5);
+    if (id) Object.assign(h, {name, emoji:emo, ticker, days});
+    else { db.habits.push({id:uid(), name, emoji:emo, ticker, days, log:{}, shares:0, cost:0, createdAt:Date.now(), start:todayIso()}); toast(`IPO! ${ticker} торгуется по 100.00`); }
+    save(); closeModal(); render();
+  };
+  if (id) $('#mDel').onclick = () => {
+    if (!confirm('Удалить привычку и её историю?' + (h.shares ? ' Акции будут проданы по текущей цене.' : ''))) return;
+    if (h.shares){ const p = Math.round(h.shares * habitStats(h).price); db.ledger.push({ref:'sell:'+uid(), c:p, xp:0, r:`Продажа ${h.ticker} при делистинге`, at:Date.now()}); }
+    db.habits = db.habits.filter(x => x.id !== id); save(); closeModal(); render();
+  };
+}
+function habitDetail(id){
+  const h = db.habits.find(x => x.id === id); if (!h) return;
+  const s = habitStats(h), t0 = todayIso(), up = s.change >= 0, price = s.price;
+  const value = h.shares * price, pnl = value - h.cost, avg = h.shares ? h.cost / h.shares : 0;
+  const mon = d => (fromIso(d).getDay() + 6) % 7;
+  const start = addDays(addDays(t0, -21), -mon(addDays(t0, -21))), end = addDays(t0, 6 - mon(t0));
+  let cells = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(w => `<div class="wdh">${w}</div>`).join('');
+  for (let d = start; d <= end; d = addDays(d, 1)){
+    const sch = h.days.includes(fromIso(d).getDay()), done = !!h.log[d], fut = d > t0;
+    const cls = [done ? 'on' : (sch && d < t0 ? 'miss' : ''), sch ? '' : 'off', fut ? 'fut' : '', d === t0 ? 'today' : ''].join(' ');
+    cells += `<button type="button" class="${cls}" data-d="${d}" title="${esc(fmt(d))}">${fromIso(d).getDate()}</button>`;
+  }
+  const maxBuy = Math.floor(coins() / price);
+  const daysTxt = h.days.length === 7 ? 'каждый день' : h.days.slice().sort((a,b) => ((a+6)%7) - ((b+6)%7)).map(d => WDN[d]).join(', ');
+  openModal(`<div class="row" style="margin-bottom:6px"><span class="hb-emo">${esc(h.emoji)}</span><div class="grow"><h3 style="margin:0">${esc(h.name)}</h3><div class="sub"><span class="tick">${esc(h.ticker)}</span> · ${daysTxt}</div></div><button class="btn soft sm" id="mEdit">Изм.</button></div>
+    <div class="row" style="align-items:baseline;margin-top:10px"><div class="bigstat num">${price.toFixed(2)}</div><span class="${up?'up':'down'}" style="font-weight:800">${up?'▲':'▼'} ${Math.abs(s.change*100).toFixed(2)}%</span><span class="grow"></span><span class="sub num">с IPO ${s.total>=0?'+':''}${(s.total*100).toFixed(1)}%</span></div>
+    <div style="margin:10px 0 4px">${spark(s.series.slice(-90), 300, 110, {dot:true, height:110})}</div>
+    <div class="kpis"><div class="kpi"><b>🔥 ${s.streak}</b><span>серия</span></div><div class="kpi"><b>🏆 ${s.best}</b><span>рекорд</span></div><div class="kpi"><b>${Math.round(s.rate*100)}%</b><span>за 30 дней</span></div></div>
+    <div class="field" style="margin-top:14px"><label>Последние 4 недели · нажми на день, чтобы отметить</label><div class="heat" id="mHeat">${cells}</div></div>
+    <div class="card" style="margin:14px 0 0;box-shadow:none">
+      <div class="ch"><span>💼 Позиция</span><span class="num">свободно ₵ ${fmtN(coins(),0)}</span></div>
+      ${h.shares ? `<div class="kpis" style="margin-top:4px"><div class="kpi"><b class="num">${h.shares} шт</b><span>ср. ${avg.toFixed(2)}</span></div><div class="kpi"><b class="num">₵ ${fmtN(value,0)}</b><span>стоимость</span></div><div class="kpi"><b class="num ${pnl>=0?'up':'down'}">${sgn(Math.round(pnl))}${fmtN(Math.abs(pnl),0)}</b><span>прибыль ₵</span></div></div>` : '<div class="sub">У тебя нет акций. Купи — и зарабатывай, пока соблюдаешь привычку. Пропуски бьют по твоему же карману 😉</div>'}
+      <div class="tradebar">
+        <button class="btn buy" id="mBuy1" ${maxBuy < 1 ? 'disabled' : ''}>Купить 1 · ₵${Math.round(price)}</button>
+        <button class="btn buy" id="mBuyMax" ${maxBuy < 2 ? 'disabled' : ''}>Купить ${Math.max(maxBuy, 0)} (макс)</button>
+        <button class="btn sell" id="mSell1" ${h.shares < 1 ? 'disabled' : ''}>Продать 1</button>
+        <button class="btn sell" id="mSellAll" ${h.shares < 1 ? 'disabled' : ''}>Продать всё</button>
+      </div>
+    </div>
+    <div class="actions"><button class="btn" id="mCancel">Закрыть</button></div>`);
+  const trade = n => {
+    if (n > 0){
+      const cost = Math.round(price * n);
+      if (!spend(cost, `Покупка ${n} ${h.ticker} по ${price.toFixed(2)}`, 'buy')) return;
+      h.shares += n; h.cost += cost; toast(`Куплено ${n} ${h.ticker} за ₵${cost}`);
+    } else {
+      n = -n; const got = Math.round(price * n), basis = h.cost * (n / h.shares);
+      db.ledger.push({ref:'sell:'+uid(), c:got, xp:0, r:`Продажа ${n} ${h.ticker} по ${price.toFixed(2)}`, at:Date.now()});
+      h.cost -= basis; h.shares -= n; if (!h.shares) h.cost = 0;
+      const pr = got - basis; toast(`Продано ${n} ${h.ticker}: ${pr >= 0 ? 'прибыль' : 'убыток'} ${sgn(Math.round(pr))}${fmtN(Math.abs(pr),0)} ₵`);
+    }
+    save(); render(); habitDetail(id);
+  };
+  $('#mBuy1').onclick = () => trade(1);
+  $('#mBuyMax').onclick = () => trade(maxBuy);
+  $('#mSell1').onclick = () => trade(-1);
+  $('#mSellAll').onclick = () => trade(-h.shares);
+  $('#mEdit').onclick = () => editHabit(id);
+  $('#mHeat').onclick = e => { const b = e.target.closest('button[data-d]'); if (!b) return; toggleHabit(h, b.dataset.d, b); render(); habitDetail(id); };
+}
+$('#newHabit').onclick = () => editHabit(null);
 
 // ================= ЗАДАЧИ =================
 function renderTasks(){
@@ -705,7 +1247,6 @@ $('#taskForm').onsubmit = e => {
   toast(p.date ? `Добавлено: ${relDay(p.date).toLowerCase()}` : 'Добавлено в «Без даты»');
 };
 $('#taskFilter').onclick = e => { const b = e.target.closest('button'); if (b){ taskFilter = b.dataset.f; renderTasks(); } };
-
 function editTask(id){
   const t = db.tasks.find(x => x.id === id); if (!t) return;
   const fm = db.focus.filter(f => f.taskId === id).reduce((a,f) => a + f.min, 0);
@@ -713,7 +1254,7 @@ function editTask(id){
     <div class="field"><input type="text" id="mTitle" value="${esc(t.title)}"></div>
     <div class="row field">
       <div class="grow"><label class="sub">Дата</label><input type="date" id="mDate" value="${t.date||''}"></div>
-      <div class="grow"><label class="sub">Приоритет</label><select id="mPrio">${['Обычная','⚡ Важно','🔥 Срочно'].map((p,i)=>`<option value="${i}" ${(t.prio||0)===i?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="grow"><label class="sub">Приоритет</label><select id="mPrio" ${t.done?'disabled':''}>${['Обычная · 10 ₵','⚡ Важно · 15 ₵','🔥 Срочно · 20 ₵'].map((p,i)=>`<option value="${i}" ${(t.prio||0)===i?'selected':''}>${p}</option>`).join('')}</select></div>
     </div>
     <div class="row field" style="flex-wrap:wrap;gap:6px">
       <button class="btn soft sm" data-q="0">Сегодня</button><button class="btn soft sm" data-q="1">Завтра</button>
@@ -724,7 +1265,7 @@ function editTask(id){
     <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span>
       ${t.done?'':'<button class="btn soft" id="mFocus">▶ Полёт</button>'}<button class="btn" id="mSave">Сохранить</button></div>`);
   $$('#modal [data-q]').forEach(b => b.onclick = () => { $('#mDate').value = b.dataset.q === 'x' ? '' : addDays(todayIso(), +b.dataset.q); });
-  $('#mSave').onclick = () => { t.title = $('#mTitle').value.trim() || t.title; t.date = $('#mDate').value || null; t.prio = +$('#mPrio').value; t.note = $('#mNote').value; save(); closeModal(); render(); };
+  $('#mSave').onclick = () => { t.title = $('#mTitle').value.trim() || t.title; t.date = $('#mDate').value || null; if (!t.done) t.prio = +$('#mPrio').value; t.note = $('#mNote').value; save(); closeModal(); render(); };
   $('#mDel').onclick = () => { db.tasks = db.tasks.filter(x => x.id !== id); save(); closeModal(); render(); toast('Удалено'); };
   if ($('#mFocus')) $('#mFocus').onclick = () => { closeModal(); openFocus(id); };
 }
@@ -783,12 +1324,14 @@ function openCapsule(id){
       <p class="sub">Подглядывать нельзя — в этом весь смысл ✦</p>
       <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span><button class="btn" id="mCancel">Ждём</button></div>`);
   } else {
-    const first = !c.opened; c.opened = true; save();
+    const first = !c.opened; c.opened = true;
+    if (first) reward('capsule:'+c.id, 30, 30, 'Письмо из прошлого');
+    save(); render();
     openModal(`<h3>${first?'📦 Письмо из прошлого':'📖 Капсула времени'}</h3>
       <div class="sub" style="margin-bottom:10px">Ты написал это ${esc(written)}</div>
       <div class="capsule-open">${esc(c.text)}</div>
       <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span><button class="btn" id="mCancel">Закрыть</button></div>`);
-    if (first) setTimeout(() => burst($('#modal h3')), 250);
+    if (first) setTimeout(() => { burst($('#modal h3')); floatText($('#modal h3'), '+30 ₵'); }, 250);
   }
   $('#mDel').onclick = () => { if (confirm('Удалить капсулу?')){ db.capsules = db.capsules.filter(x => x.id !== id); save(); closeModal(); render(); } };
 }
@@ -805,7 +1348,7 @@ function renderMissions(){
     if (p.deadline && !p.archived){ const left = diffDays(t0, p.deadline); dl = left < 0 ? ` · <span style="color:var(--danger)">срок прошёл</span>` : left === 0 ? ' · срок сегодня' : ` · осталось ${left} ${plural(left,'день','дня','дней')}`; }
     return `<div class="card mission ${p.archived?'won':''}" data-id="${p.id}">
       <div class="row" style="align-items:flex-start">
-        <div class="grow"><div class="horizon">${HORIZONS[p.horizon]||''}${p.archived?' · достигнуто 🏆':''}</div>
+        <div class="grow"><div class="horizon">${HORIZONS[p.horizon]||''}${p.archived?' · выполнено 🏆':' · награда 150 ₵'}</div>
           <h3>${esc(p.title)}</h3>
           <div class="sub">${p.why?esc(p.why):''}${p.deadline?`${p.why?' · ':''}до ${esc(fmt(p.deadline,{day:'numeric',month:'long',year:'numeric'}))}`:''}${dl}</div></div>
         <button class="btn soft sm" data-act="ep">Изм.</button>
@@ -814,7 +1357,7 @@ function renderMissions(){
         ${p.steps.map((s,i) => `<span class="node ${s.done?'on':''}" style="left:${(i+1)/n*100}%"></span>`).join('')}
         <span class="rocket" style="left:${pct}%">🚀</span>
       </div>
-      <div class="sub" style="text-align:right">${n?`${done} из ${n} ${plural(n,'этапа','этапов','этапов')} · ${Math.round(pct)}%`:'Разбей миссию на этапы'}</div>
+      <div class="sub" style="text-align:right">${n?`${done} из ${n} ${plural(n,'этапа','этапов','этапов')} · ${Math.round(pct)}% · этап = 15 ₵`:'Разбей миссию на этапы — каждый принесёт 15 ₵'}</div>
       <div>${p.steps.map(s => `<div class="step ${s.done?'done':''}" data-sid="${s.id}">
         <input type="checkbox" class="chk" data-act="ts" ${s.done?'checked':''} aria-label="Готово"><span class="txt">${esc(s.text)}</span>
         <button class="mini del" data-act="ds" aria-label="Удалить">×</button></div>`).join('')}</div>
@@ -828,31 +1371,216 @@ function editPlan(id){
   const p = id ? db.plans.find(x => x.id === id) : {title:'', why:'', horizon: planFilter === 'all' ? 'month' : planFilter, deadline:'', archived:false};
   if (!p) return;
   openModal(`<h3>${id?'Миссия':'Новая миссия'}</h3>
-    <div class="field"><label>Цель</label><input type="text" id="mTitle" placeholder="Например: пробежать 10 км" value="${esc(p.title)}"></div>
+    <div class="field"><label>Цель</label><input type="text" id="mTitle" placeholder="Например: накопить на ноутбук" value="${esc(p.title)}"></div>
     <div class="field"><label>Зачем это мне</label><input type="text" id="mWhy" placeholder="Мотивация — перечитывай, когда трудно" value="${esc(p.why)}"></div>
     <div class="row field">
       <div class="grow"><label class="sub">Горизонт</label><select id="mHor">${Object.entries(HORIZONS).map(([k,v]) => `<option value="${k}" ${p.horizon===k?'selected':''}>${v}</option>`).join('')}</select></div>
       <div class="grow"><label class="sub">Срок</label><input type="date" id="mDl" value="${p.deadline||''}"></div>
     </div>
-    ${id?`<label class="row field" style="cursor:pointer"><input type="checkbox" class="chk" id="mArch" ${p.archived?'checked':''}> Миссия выполнена 🏆</label>`:''}
+    ${id?`<label class="row field" style="cursor:pointer"><input type="checkbox" class="chk" id="mArch" ${p.archived?'checked':''}> Миссия выполнена 🏆 (+150 ₵)</label>`:''}
     <div class="actions">${id?'<button class="btn danger" id="mDel">Удалить</button>':''}<span class="grow"></span>
       <button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
   $('#mSave').onclick = () => {
     const title = $('#mTitle').value.trim(); if (!title){ $('#mTitle').focus(); return; }
     const data = {title, why:$('#mWhy').value.trim(), horizon:$('#mHor').value, deadline:$('#mDl').value || null};
-    if (id){ const won = $('#mArch').checked; if (won && !p.archived) p.doneAt = Date.now(); Object.assign(p, data, {archived:won}); if (won) toast('Миссия выполнена! В небе вспыхнула сверхновая 🌟'); }
-    else db.plans.push({id:uid(), ...data, steps:[], archived:false, createdAt:Date.now()});
+    if (id){
+      const won = $('#mArch').checked;
+      if (won && !p.archived){ p.doneAt = Date.now(); reward('mission:'+id, 150, 150, `Миссия «${title}»`); toast('Миссия выполнена! +150 ₵ и сверхновая в небе 🌟'); }
+      if (!won && p.archived) unreward('mission:'+id);
+      Object.assign(p, data, {archived:won});
+    } else db.plans.push({id:uid(), ...data, steps:[], archived:false, createdAt:Date.now()});
     save(); closeModal(); render();
   };
   if (id) $('#mDel').onclick = () => { if (confirm('Удалить миссию со всеми этапами?')){ db.plans = db.plans.filter(x => x.id !== id); save(); closeModal(); render(); } };
 }
 
+// ================= КОШЕЛЁК =================
+let txType = 'out', txCat = 'food';
+const money = n => `${fmtN(n)} ${db.settings.cur}`;
+function balance(){ return db.money.tx.reduce((a,t) => a + (t.type === 'in' ? t.amount : -t.amount), 0); }
+const catColor = c => { const i = CAT_OUT.findIndex(x => x[0] === c); return i >= 0 ? CAT_COLORS[i] : '#94a3b8'; };
+function renderTxCats(){
+  const cats = txType === 'out' ? CAT_OUT : CAT_IN;
+  if (!cats.some(c => c[0] === txCat)) txCat = cats[0][0];
+  $('#txCats').innerHTML = cats.map(c => `<button type="button" data-c="${c[0]}" class="${c[0]===txCat?'on':''}">${c[1]} ${c[2]}</button>`).join('');
+  $$('#txType button').forEach(b => b.classList.toggle('on', b.dataset.t === txType));
+}
+function renderWallet(){
+  const now = new Date(), ym = `${now.getFullYear()}-${pad(now.getMonth()+1)}`;
+  const mtx = db.money.tx.filter(t => t.date.startsWith(ym) && t.cat !== 'jar');
+  const mIn = mtx.filter(t => t.type === 'in').reduce((a,t) => a + t.amount, 0);
+  const outs = mtx.filter(t => t.type === 'out'), mOut = outs.reduce((a,t) => a + t.amount, 0);
+  const bal = balance();
+  $('#balVal').textContent = `${bal < 0 ? '−' : ''}${money(Math.abs(bal))}`;
+  $('#monthName').textContent = `Доходы · ${now.toLocaleDateString('ru-RU',{month:'long'})}`;
+  $('#wIn').textContent = '+' + money(mIn);
+  $('#wOut').textContent = '−' + money(mOut);
+  renderTxCats();
+  const byCat = {};
+  for (const t of outs) byCat[t.cat] = (byCat[t.cat] || 0) + t.amount;
+  const cats = Object.entries(byCat).sort((a,b) => b[1] - a[1]);
+  $('#mOutTotal').textContent = mOut ? money(mOut) : '';
+  $('#catBar').innerHTML = cats.map(([c,v]) => `<i style="width:${v/mOut*100}%;background:${catColor(c)}"></i>`).join('');
+  $('#catLegend').innerHTML = cats.length ? cats.map(([c,v]) => { const ci = catInfo(c); return `<span style="--c:${catColor(c)}">${ci[1]} ${ci[2]} · ${Math.round(v/mOut*100)}%</span>`; }).join('') : '<span style="--c:transparent">В этом месяце расходов пока нет</span>';
+  $('#jars').innerHTML = db.money.jars.length ? db.money.jars.map(j => {
+    const pct = j.target ? Math.min(1, j.saved / j.target) : 0;
+    return `<div class="jar" data-id="${j.id}"><span class="hb-emo">${esc(j.emoji || '🐷')}</span>
+      <div class="grow"><div class="row"><b class="grow">${esc(j.name)}</b><span class="sub num">${fmtN(j.saved)} / ${fmtN(j.target)} ${esc(db.settings.cur)}</span></div>
+      <div class="pbar"><i style="width:${pct*100}%"></i></div></div>
+      <button class="btn soft sm" data-act="jar">${pct >= 1 ? '🎉' : '+ / −'}</button></div>`;
+  }).join('') : '<div class="empty">Копилка — цель накопления: ноутбук, поездка, подушка безопасности.</div>';
+  const txs = db.money.tx.slice().sort((a,b) => b.date.localeCompare(a.date) || b.at - a.at).slice(0, 60);
+  let last = '';
+  $('#txList').innerHTML = txs.length ? txs.map(t => {
+    const ci = catInfo(t.cat), head = t.date !== last ? `<div class="group-title">${esc(relDay(t.date))} · ${esc(fmt(t.date))}</div>` : '';
+    last = t.date;
+    return `${head}<div class="tx" data-id="${t.id}"><span class="ico">${ci[1]}</span><div class="grow"><b>${esc(t.note || ci[2])}</b><div class="sub">${esc(ci[2])}</div></div>
+      <span class="amt num ${t.type==='in'?'up':''}">${t.type==='in'?'+':'−'}${money(t.amount)}</span><button class="mini del" data-act="dtx" aria-label="Удалить">×</button></div>`;
+  }).join('') : '<div class="empty">Записывай доходы и расходы — увидишь, куда уходят деньги. Можно и через «+»: «кофе 250» или «+5000 зарплата».</div>';
+}
+$('#txType').onclick = e => { const b = e.target.closest('button'); if (!b) return; txType = b.dataset.t; renderTxCats(); };
+$('#txCats').onclick = e => { const b = e.target.closest('button'); if (!b) return; txCat = b.dataset.c; renderTxCats(); };
+$('#txNote').oninput = () => {
+  const g = (txType === 'in' ? CAT_GUESS_IN : CAT_GUESS).find(([re]) => re.test($('#txNote').value));
+  if (g){ txCat = g[1]; renderTxCats(); }
+};
+$('#txForm').onsubmit = e => {
+  e.preventDefault();
+  const a = num($('#txAmount').value);
+  if (!(a > 0)) return $('#txAmount').focus();
+  db.money.tx.push({id:uid(), type:txType, amount:a, cat:txCat, note:$('#txNote').value.trim(), date:todayIso(), at:Date.now()});
+  save(); $('#txAmount').value = ''; $('#txNote').value = ''; render();
+  toast(`${txType === 'in' ? 'Доход' : 'Расход'} ${money(a)} записан`);
+};
+$('#newJar').onclick = () => {
+  openModal(`<h3>Новая копилка</h3>
+    <div class="field"><label>На что копим</label><input type="text" id="mName" placeholder="Например: новый телефон" maxlength="60"></div>
+    <div class="row field"><div style="width:90px"><label class="sub">Иконка</label><input type="text" id="mEmo" value="🐷" maxlength="4" style="text-align:center;font-size:20px"></div>
+      <div class="grow"><label class="sub">Цель, ${esc(db.settings.cur)}</label><input type="text" id="mTarget" inputmode="decimal" placeholder="50000"></div></div>
+    <div class="actions"><button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mSave">Создать</button></div>`);
+  $('#mSave').onclick = () => {
+    const name = $('#mName').value.trim(), target = num($('#mTarget').value);
+    if (!name) return $('#mName').focus(); if (!(target > 0)) return $('#mTarget').focus();
+    db.money.jars.push({id:uid(), name, emoji:$('#mEmo').value.trim() || '🐷', target, saved:0}); save(); closeModal(); render();
+  };
+};
+function jarModal(id){
+  const j = db.money.jars.find(x => x.id === id); if (!j) return;
+  openModal(`<h3>${esc(j.emoji)} ${esc(j.name)}</h3>
+    <div class="bigstat num">${money(j.saved)}</div><div class="sub">из ${money(j.target)} · ${Math.round(j.saved/j.target*100)}%</div>
+    <div class="pbar" style="margin:10px 0 16px"><i style="width:${Math.min(1, j.saved/j.target)*100}%"></i></div>
+    <div class="field"><label>Сумма</label><input type="text" id="mAmt" inputmode="decimal" placeholder="1000"></div>
+    <div class="sub" style="margin-bottom:6px">Пополнение переводит деньги с баланса в копилку.</div>
+    <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span><button class="btn sell" id="mOut">Снять</button><button class="btn buy" id="mIn">Пополнить</button></div>`);
+  const move = dir => {
+    const a = num($('#mAmt').value); if (!(a > 0)) return $('#mAmt').focus();
+    if (dir < 0 && a > j.saved) return toast('В копилке столько нет');
+    j.saved += dir * a;
+    db.money.tx.push({id:uid(), type: dir > 0 ? 'out' : 'in', amount:a, cat:'jar', note:`${dir > 0 ? 'В копилку' : 'Из копилки'}: ${j.name}`, date:todayIso(), at:Date.now()});
+    if (dir > 0 && j.saved >= j.target) toast(`🎉 Копилка «${j.name}» заполнена!`);
+    save(); closeModal(); render();
+  };
+  $('#mIn').onclick = () => move(1); $('#mOut').onclick = () => move(-1);
+  $('#mDel').onclick = () => { if (confirm(`Удалить копилку?${j.saved ? ' Деньги вернутся на баланс.' : ''}`)){ if (j.saved) db.money.tx.push({id:uid(), type:'in', amount:j.saved, cat:'jar', note:`Из копилки: ${j.name}`, date:todayIso(), at:Date.now()}); db.money.jars = db.money.jars.filter(x => x.id !== id); save(); closeModal(); render(); } };
+}
+
+// ================= ЖУРНАЛ СДЕЛОК =================
+const tmoney = n => `${fmtN(n)} ${db.settings.tcur}`;
+const pnlOf = t => (t.exit - t.entry) * t.qty * (t.side === 'short' ? -1 : 1) - (t.fee || 0);
+const pctOf = t => (t.exit / t.entry - 1) * 100 * (t.side === 'short' ? -1 : 1);
+function renderTrades(){
+  const tr = db.money.trades, closed = tr.filter(t => t.exit != null).sort((a,b) => (a.closeDate || a.date).localeCompare(b.closeDate || b.date) || a.at - b.at), open = tr.filter(t => t.exit == null);
+  const pnls = closed.map(pnlOf), total = pnls.reduce((a,b) => a + b, 0), wins = pnls.filter(p => p > 0), losses = pnls.filter(p => p <= 0);
+  $('#trPnl').innerHTML = `<span class="${total>=0?'up':'down'}">${sgn(total)}${tmoney(Math.abs(total))}</span>`;
+  $('#trCount').textContent = `${closed.length} закр. · ${open.length} откр.`;
+  $('#trWin').textContent = closed.length ? Math.round(wins.length / closed.length * 100) + '%' : '—';
+  $('#trAvgW').innerHTML = wins.length ? `<span class="up">+${fmtN(wins.reduce((a,b)=>a+b,0)/wins.length)}</span>` : '—';
+  $('#trAvgL').innerHTML = losses.length ? `<span class="down">${sgn(-1)}${fmtN(Math.abs(losses.reduce((a,b)=>a+b,0)/losses.length))}</span>` : '—';
+  let eq = 0; const curve = [0, ...pnls.map(p => eq += p)];
+  $('#eqChart').innerHTML = closed.length ? spark(curve, 300, 90, {zero:true, dot:true, up: total >= 0}) + '<div class="sub" style="margin-top:4px">Кривая доходности</div>' : '';
+  const row = (t, isOpen) => {
+    const p = isOpen ? null : pnlOf(t);
+    return `<div class="tx" data-id="${t.id}"><span class="ico">${t.side === 'short' ? '📉' : '📈'}</span>
+      <div class="grow"><div class="row"><b>${esc(t.asset)}</b><span class="side ${t.side}">${t.side.toUpperCase()}</span></div>
+      <div class="sub num">${fmtN(t.qty, 6)} × ${fmtN(t.entry, 6)}${isOpen ? '' : ` → ${fmtN(t.exit, 6)}`} · ${esc(fmt(isOpen ? t.date : (t.closeDate || t.date)))}</div>${t.note ? `<div class="sub">${esc(t.note)}</div>` : ''}</div>
+      ${isOpen ? `<button class="btn soft sm" data-act="trclose">Закрыть</button>` : `<div style="text-align:right"><div class="amt num ${p>=0?'up':'down'}">${sgn(p)}${tmoney(Math.abs(p))}</div><div class="sub num">${pctOf(t)>=0?'+':''}${pctOf(t).toFixed(2)}%</div></div>`}
+      <button class="mini del" data-act="trdel" aria-label="Удалить">×</button></div>`;
+  };
+  $('#openBox').innerHTML = `<div class="ch"><span>Открытые позиции</span></div>` + (open.length ? open.map(t => row(t, true)).join('') : '<div class="empty">Нет открытых сделок.</div>');
+  $('#closedBox').innerHTML = `<div class="ch"><span>Закрытые сделки</span></div>` + (closed.length ? closed.slice().reverse().map(t => row(t, false)).join('') : '<div class="empty">Записывай каждую сделку: вход, выход, объём и почему ты в неё зашёл. Через месяц увидишь свой реальный винрейт и ошибки.</div>');
+}
+function tradeModal(){
+  let side = 'long';
+  openModal(`<h3>Новая сделка</h3>
+    <div class="row field"><input type="text" id="mAsset" class="grow" placeholder="Актив: BTC, AAPL, SBER…" maxlength="20" style="text-transform:uppercase">
+      <div class="subtabs" id="mSide" style="margin:0;width:150px"><button type="button" data-s="long" class="on">Long</button><button type="button" data-s="short">Short</button></div></div>
+    <div class="row field"><div class="grow"><label class="sub">Цена входа</label><input type="text" id="mEntry" inputmode="decimal"></div><div class="grow"><label class="sub">Количество</label><input type="text" id="mQty" inputmode="decimal"></div></div>
+    <div class="row field"><div class="grow"><label class="sub">Цена выхода (если закрыта)</label><input type="text" id="mExit" inputmode="decimal" placeholder="пусто = открыта"></div><div style="width:110px"><label class="sub">Комиссия</label><input type="text" id="mFee" inputmode="decimal" placeholder="0"></div></div>
+    <div class="row field"><div class="grow"><label class="sub">Дата</label><input type="date" id="mDate" value="${todayIso()}"></div></div>
+    <div class="field"><label>Почему зашёл / выводы</label><input type="text" id="mNote" placeholder="Сетап, эмоции, ошибки…" maxlength="200"></div>
+    <div class="sub">Это журнал для анализа своих сделок, а не торговая платформа: реальные деньги здесь не двигаются.</div>
+    <div class="actions"><button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
+  $('#mSide').onclick = e => { const b = e.target.closest('button'); if (!b) return; side = b.dataset.s; $$('#mSide button').forEach(x => x.classList.toggle('on', x === b)); };
+  $('#mSave').onclick = () => {
+    const asset = $('#mAsset').value.trim().toUpperCase(), entry = num($('#mEntry').value), qty = num($('#mQty').value), exit = $('#mExit').value.trim() ? num($('#mExit').value) : null, fee = $('#mFee').value.trim() ? num($('#mFee').value) : 0;
+    if (!asset) return $('#mAsset').focus(); if (!(entry > 0)) return $('#mEntry').focus(); if (!(qty > 0)) return $('#mQty').focus();
+    if (exit !== null && !(exit > 0)) return $('#mExit').focus();
+    const d = $('#mDate').value || todayIso();
+    db.money.trades.push({id:uid(), asset, side, entry, qty, exit, fee: fee || 0, date:d, closeDate: exit !== null ? d : null, note:$('#mNote').value.trim(), at:Date.now()});
+    save(); closeModal(); render(); toast('Сделка записана в журнал');
+  };
+  setTimeout(() => $('#mAsset') && $('#mAsset').focus(), 60);
+}
+function closeTradeModal(id){
+  const t = db.money.trades.find(x => x.id === id); if (!t) return;
+  openModal(`<h3>Закрыть ${esc(t.asset)} <span class="side ${t.side}">${t.side.toUpperCase()}</span></h3>
+    <div class="sub" style="margin-bottom:10px">Вход ${fmtN(t.entry,6)} × ${fmtN(t.qty,6)}</div>
+    <div class="row field"><div class="grow"><label class="sub">Цена выхода</label><input type="text" id="mExit" inputmode="decimal"></div><div class="grow"><label class="sub">Дата</label><input type="date" id="mDate" value="${todayIso()}"></div></div>
+    <div class="field"><label>Вывод по сделке</label><input type="text" id="mNote" value="${esc(t.note)}" maxlength="200"></div>
+    <div class="actions"><button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mSave">Закрыть сделку</button></div>`);
+  $('#mSave').onclick = () => {
+    const x = num($('#mExit').value); if (!(x > 0)) return $('#mExit').focus();
+    t.exit = x; t.closeDate = $('#mDate').value || todayIso(); t.note = $('#mNote').value.trim();
+    const p = pnlOf(t); save(); closeModal(); render(); toast(`${p >= 0 ? '✅ Прибыль' : '🔻 Убыток'} ${sgn(p)}${tmoney(Math.abs(p))}`);
+  };
+  setTimeout(() => $('#mExit') && $('#mExit').focus(), 60);
+}
+$('#newTrade').onclick = tradeModal;
+
+// ================= МАГАЗИН =================
+function renderShop(){
+  const c = coins();
+  $('#shopCoins').textContent = `₵ ${fmtN(c, 0)}`;
+  $('#shopList').innerHTML = db.shop.length ? db.shop.map(s => `<div class="shop-it" data-id="${s.id}"><span class="ico">${esc(s.emoji)}</span>
+    <div class="grow"><b>${esc(s.name)}</b><div class="sub">${c >= s.price ? 'Можно взять!' : `ещё ${s.price - c} ₵`}</div></div>
+    <button class="btn sm" data-act="buyrw" ${c < s.price ? 'disabled' : ''}>₵ ${s.price}</button><button class="mini del" data-act="delrw" aria-label="Удалить">×</button></div>`).join('')
+    : '<div class="empty">Добавь награды, которые хочешь «покупать» за свою продуктивность.</div>';
+  const led = db.ledger.slice().sort((a,b) => b.at - a.at).slice(0, 25);
+  $('#ledgerList').innerHTML = led.map(l => `<div class="tx"><span class="ico">${l.c >= 0 ? (l.ref.startsWith('sell') ? '💹' : '✦') : (l.ref.startsWith('buy') ? '📈' : '🎁')}</span>
+    <div class="grow"><b style="font-size:14px">${esc(l.r)}</b><div class="sub">${new Date(l.at).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}${l.xp ? ` · +${l.xp} XP` : ''}</div></div>
+    <span class="amt num ${l.c>=0?'up':'down'}">${l.c >= 0 ? '+' : '−'}${Math.abs(l.c)} ₵</span></div>`).join('') || '<div class="empty">Пусто</div>';
+}
+$('#newReward').onclick = () => {
+  openModal(`<h3>Новая награда</h3>
+    <div class="row field"><div style="width:80px"><label class="sub">Иконка</label><input type="text" id="mEmo" value="🎁" maxlength="4" style="text-align:center;font-size:20px"></div>
+      <div class="grow"><label class="sub">Что это</label><input type="text" id="mName" placeholder="Например: поход в кино" maxlength="60"></div></div>
+    <div class="field"><label>Цена, ₵</label><input type="text" id="mPrice" inputmode="numeric" placeholder="300"></div>
+    <div class="sub">Ориентир: обычная задача — 10 ₵, цель дня — 25 ₵, контракт — до 40 ₵.</div>
+    <div class="actions"><button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mSave">Добавить</button></div>`);
+  $('#mSave').onclick = () => {
+    const name = $('#mName').value.trim(), price = Math.round(num($('#mPrice').value));
+    if (!name) return $('#mName').focus(); if (!(price > 0)) return $('#mPrice').focus();
+    db.shop.push({id:uid(), emoji:$('#mEmo').value.trim() || '🎁', name, price}); save(); closeModal(); render();
+  };
+};
+
 // ================= быстрый ввод =================
-const CAP_TYPES = [['task','✓ Задача'],['goal','◎ Цель дня'],['note','✎ Заметка'],['capsule','⧗ Капсула']];
-const CAP_PH = {task:'завтра позвонить врачу !!', goal:'Главное на сегодня…', note:'Первая строка — заголовок\nДальше — текст. #идеи', capsule:'Привет из прошлого! Сейчас я…'};
+const CAP_TYPES = [['task','✓ Задача'],['goal','◎ Цель дня'],['money','💳 Деньги'],['note','✎ Заметка'],['capsule','⧗ Капсула']];
+const CAP_PH = {task:'завтра позвонить врачу !!', goal:'Главное на сегодня…', money:'кофе 250   или   +5000 зарплата', note:'Первая строка — заголовок\nДальше — текст. #идеи', capsule:'Привет из прошлого! Сейчас я…'};
 const CAP_HINT = {
   task:'Распознаю даты: «завтра», «в пятницу», «через 3 дня», «25.12» · «!» — важно, «!!» — срочно',
   goal:'Цель попадёт в «Три планеты дня» (можно указать «завтра»)',
+  money:'Число — сумма. «+» в начале — доход. Категорию угадаю по словам',
   note:'Первая строка станет заголовком, #тег — цветом карточки',
   capsule:'Письмо запечатается до выбранной даты. Прочитать раньше не получится 🔒'};
 function openCapture(type){
@@ -875,12 +1603,19 @@ function openCapture(type){
     ta.placeholder = CAP_PH[t]; $('#capHint').textContent = CAP_HINT[t];
     $('#capDateBox').classList.toggle('hidden', t !== 'capsule');
     const v = ta.value.trim(), p = parseText(ta.value);
-    $('#capPrev').innerHTML = !v ? '' : t === 'task' ? previewChips(p,{inbox:true}) : t === 'goal' ? previewChips({date:p.date || curDay, prio:0}) : t === 'note' ? previewChips({date:null, prio:0, tags:p.tags},{tags:true}) : '';
+    let chips = '';
+    if (v){
+      if (t === 'task') chips = previewChips(p,{inbox:true});
+      else if (t === 'goal') chips = previewChips({date:p.date || curDay, prio:0});
+      else if (t === 'note') chips = previewChips({date:null, prio:0, tags:p.tags},{tags:true});
+      else if (t === 'money'){ const m = parseMoney(v); chips = m ? `<span class="chip ${m.type==='in'?'up':''}">${m.type==='in'?'+':'−'}${esc(money(m.amount))}</span><span class="chip">${catInfo(m.cat)[1]} ${catInfo(m.cat)[2]}</span>` : '<span class="chip late">укажи сумму числом</span>'; }
+    }
+    $('#capPrev').innerHTML = chips;
   };
   $('#capType').onclick = e => { const b = e.target.closest('button'); if (b){ t = b.dataset.t; upd(); ta.focus(); } };
   $$('#capDateBox [data-cd]').forEach(b => b.onclick = () => { $('#capDate').value = addDays(todayIso(), +b.dataset.cd); });
   ta.oninput = upd;
-  ta.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && (t === 'task' || t === 'goal')){ e.preventDefault(); $('#capSave').click(); } };
+  ta.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && t !== 'note' && t !== 'capsule'){ e.preventDefault(); $('#capSave').click(); } };
   $('#capSave').onclick = () => {
     const raw = ta.value; if (!raw.trim()) return ta.focus();
     if (t === 'task'){
@@ -892,6 +1627,10 @@ function openCapture(type){
       if (db.goals.filter(g => g.date === date).length >= 3) return toast('На этот день уже три планеты');
       db.goals.push({id:uid(), date, text:p.title || raw.trim(), done:false});
       toast(`Новая планета: ${relDay(date).toLowerCase()}`);
+    } else if (t === 'money'){
+      const m = parseMoney(raw); if (!m) return toast('Не вижу сумму — напиши число');
+      db.money.tx.push({id:uid(), type:m.type, amount:m.amount, cat:m.cat, note:cap1(m.note), date:todayIso(), at:Date.now()});
+      toast(`${m.type === 'in' ? 'Доход' : 'Расход'} ${money(m.amount)} записан`);
     } else if (t === 'note'){
       const tags = [...raw.matchAll(/#([\p{L}\d_-]+)/gu)].map(m => m[1].toLowerCase());
       const clean = raw.replace(/(^|\s)#[\p{L}\d_-]+/gu, '$1').trim();
@@ -908,7 +1647,7 @@ function openCapture(type){
   };
   upd(); setTimeout(() => ta.focus(), 60);
 }
-$('#captureBtn').onclick = () => openCapture(view === 'notes' ? 'note' : 'task');
+$('#captureBtn').onclick = () => openCapture(view === 'notes' ? 'note' : GROUP[view] === 'money' ? 'money' : 'task');
 
 // ================= делегирование =================
 document.addEventListener('click', e => {
@@ -917,7 +1656,8 @@ document.addEventListener('click', e => {
   if (act === 'tt'){
     const t = db.tasks.find(x => x.id === id); if (!t) return;
     t.done = !t.done; t.doneAt = t.done ? Date.now() : null;
-    if (t.done) burst(a);
+    if (t.done){ burst(a); const r = TASK_REWARD[t.prio||0]; reward('task:'+t.id, r, r, `Задача «${t.title}»`, a); }
+    else unreward('task:'+t.id);
     save(); render(); if (t.done && view === 'day') checkDayComplete();
   }
   else if (act === 'et') editTask(id);
@@ -925,22 +1665,43 @@ document.addEventListener('click', e => {
   else if (act === 'focus') openFocus(id);
   else if (act === 'tg'){
     const g = db.goals.find(x => x.id === id); if (!g) return;
-    g.done = !g.done; if (g.done) burst(host.querySelector('.planet'));
+    g.done = !g.done;
+    if (g.done){ const pl = host.querySelector('.planet'); burst(pl); reward('goal:'+g.id, 25, 25, `Цель дня «${g.text}»`, pl); }
+    else unreward('goal:'+g.id);
     save(); render(); if (g.done) checkDayComplete();
   }
   else if (act === 'dg'){ db.goals = db.goals.filter(x => x.id !== id); save(); render(); }
+  else if (act === 'hc'){ const h = db.habits.find(x => x.id === id); if (!h) return; toggleHabit(h, a.dataset.date, a); render(); if (view === 'day') checkDayComplete(); }
+  else if (act === 'hd') habitDetail(id);
+  else if (act === 'newhabit') editHabit(null);
+  else if (act === 'claim'){
+    const k = a.dataset.q, q = QUESTS[k], t0 = todayIso(), [x, y] = q.p(t0);
+    if (x < y) return;
+    reward(`quest:${t0}:${k}`, q.c, q.xp, `Контракт «${q.t}»`, a); burst(a); save(); render();
+  }
   else if (act === 'ep') editPlan(id);
   else if (act === 'ts' || act === 'ds'){
     const p = db.plans.find(x => x.id === id); const sid = a.closest('[data-sid]').dataset.sid;
     if (act === 'ts'){
       const s = p.steps.find(x => x.id === sid); s.done = !s.done;
-      if (s.done){ burst(a); if (p.steps.every(x => x.done)) toast('Все этапы пройдены! Отметь миссию выполненной 🏆'); }
+      if (s.done){ burst(a); reward(`step:${p.id}:${sid}`, 15, 15, `Этап «${s.text}»`, a); if (p.steps.every(x => x.done)) toast('Все этапы пройдены! Отметь миссию выполненной 🏆'); }
+      else unreward(`step:${p.id}:${sid}`);
     } else p.steps = p.steps.filter(x => x.id !== sid);
-    save(); renderMissions();
+    save(); render();
   }
   else if (act === 'en') editNote(id);
   else if (act === 'cap') openCapsule(id);
   else if (act === 'newcap') openCapture('capsule');
+  else if (act === 'dtx'){ const t = db.money.tx.find(x => x.id === id); if (t && t.cat === 'jar') return toast('Переводы в копилку меняются в самой копилке'); db.money.tx = db.money.tx.filter(x => x.id !== id); save(); render(); }
+  else if (act === 'jar') jarModal(id);
+  else if (act === 'trclose') closeTradeModal(id);
+  else if (act === 'trdel'){ if (confirm('Удалить сделку из журнала?')){ db.money.trades = db.money.trades.filter(x => x.id !== id); save(); render(); } }
+  else if (act === 'buyrw'){
+    const s = db.shop.find(x => x.id === id); if (!s) return;
+    if (!confirm(`Потратить ${s.price} ₵ на «${s.name}»?`)) return;
+    if (spend(s.price, `Награда: ${s.name}`, 'shop')){ burst(a); toast(`${s.emoji} Заслужил! Наслаждайся`); save(); render(); }
+  }
+  else if (act === 'delrw'){ db.shop = db.shop.filter(x => x.id !== id); save(); render(); }
 });
 document.addEventListener('submit', e => {
   const f = e.target; if (f.dataset.act !== 'addstep') return;
@@ -951,10 +1712,13 @@ document.addEventListener('submit', e => {
   const again = document.querySelector(`.mission[data-id="${pid}"] form input`); if (again) again.focus();
 });
 function checkDayComplete(){
-  const d = dayData(), all = [...d.goals, ...d.tasks, ...d.late];
+  const d = dayData(), all = [...d.goals, ...d.tasks, ...d.late, ...d.habits];
   if (all.length && all.every(x => x.done)) toast('День выполнен на 100%! Загляни в небо ✦');
   else if (d.goals.length && d.goals.every(g => g.done)) toast('Все планеты дня на орбите! 🪐');
 }
+$('#dealTabs').onclick = e => { const b = e.target.closest('[data-v]'); if (b) setView(b.dataset.v); };
+$('#moneyTabs').onclick = e => { const b = e.target.closest('[data-v]'); if (b) setView(b.dataset.v); };
+$$('.dock [data-g]').forEach(b => b.onclick = () => { const g = b.dataset.g; setView(g === 'deals' ? lastDeals : g === 'money' ? lastMoney : g); });
 
 // ================= модалка =================
 function openModal(html){ $('#modal').innerHTML = html; $('#modalBg').classList.add('open'); const c = $('#mCancel'); if (c) c.onclick = closeModal; }
@@ -965,6 +1729,23 @@ document.addEventListener('keydown', e => {
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
   if (!typing && !e.metaKey && !e.ctrlKey && (e.key === 'n' || e.key === 'т') && !$('#modalBg').classList.contains('open')){ e.preventDefault(); openCapture(); }
 });
+
+// ================= профиль игрока =================
+$('#hud').onclick = () => {
+  const li = levelInfo(), c = coins(), earned = db.ledger.filter(l => l.c > 0).reduce((a,l) => a + l.c, 0);
+  const next = RANKS.find(r => r[0] > li.L), ri = RANKS.findIndex(r => r[1] === rankOf(li.L));
+  openModal(`<div style="text-align:center">
+      <div style="font-size:44px">${['🧑‍🚀','👨‍✈️','🧭','🛸','⚔️','🎖','👑'][ri]}</div>
+      <h3 style="margin:4px 0 2px">${rankOf(li.L)} · уровень ${li.L}</h3>
+      <div class="sub">${li.cur} / ${li.need} XP до уровня ${li.L+1}${next ? ` · ранг «${next[1]}» с ${next[0]} уровня` : ''}</div>
+      <div class="xpbar" style="margin:10px 0 0;height:8px"><i style="width:${li.cur/li.need*100}%"></i></div></div>
+    <div class="kpis"><div class="kpi"><b class="num" style="color:var(--a3)">₵ ${fmtN(c,0)}</b><span>на счету</span></div><div class="kpi"><b class="num">₵ ${fmtN(earned,0)}</b><span>заработано</span></div><div class="kpi"><b class="num">${fmtN(xpTotal(),0)}</b><span>всего XP</span></div></div>
+    <div class="field" style="margin-top:16px"><label>Как заработать</label><div class="sub" style="line-height:1.7">
+      ✓ Задача — 10&nbsp;₵ (⚡&nbsp;15, 🔥&nbsp;20)<br>◎ Цель дня — 25&nbsp;₵ · 📈 Привычка — 5–15&nbsp;₵<br>🚀 Полёт — 1&nbsp;₵ за минуту · 📜 Контракт — до 40&nbsp;₵<br>🏆 Миссия — 150&nbsp;₵ · этап — 15&nbsp;₵<br>⭐ Новый уровень и 🏅 достижение — по 50&nbsp;₵</div></div>
+    <div class="field"><label>Достижения · ${(db.game.ach || []).length}/${ACH.length}</label><div class="ach">${ACH.map(a => { const got = (db.game.ach || []).includes(a[0]); return `<div class="${got?'got':'lock'}"><i>${a[1]}</i><b>${a[2]}</b><small>${a[3]}</small></div>`; }).join('')}</div></div>
+    <div class="actions"><button class="btn soft" id="mShop">🎁 Магазин наград</button><button class="btn" id="mCancel">Закрыть</button></div>`);
+  $('#mShop').onclick = () => { closeModal(); setView('shop'); };
+};
 
 // ================= НЕБО =================
 let sky = null, skyRaf = 0;
@@ -987,14 +1768,13 @@ function layoutSky(){
     const r = n === 1 ? 0 : maxR * Math.sqrt((k + .6) / n), ang = k * 2.39996 + 1.2;
     const dx = cx + r*Math.cos(ang), dy = cy + r*Math.sin(ang)*.82;
     const list = byDay.get(d), spread = Math.min(54, 16 + list.length*7), group = [];
-    list.forEach((it, j) => {
+    list.forEach(it => {
       const rr = rng(hash(it.id)), a = rr()*Math.PI*2, dist = list.length === 1 ? 0 : (.35 + rr()*.65) * spread;
       const st = {...it, x: dx + Math.cos(a)*dist, y: dy + Math.sin(a)*dist, ph: rr()*6.28,
         r: it.kind === 'mission' ? 4.2 : it.kind === 'goal' ? 2.8 : 1.5 + it.prio*.5,
         col: it.kind === 'mission' ? '#f472b6' : it.kind === 'goal' ? '#fbbf24' : (it.prio === 2 ? '#fda4af' : it.prio === 1 ? '#fde68a' : '#e0e7ff')};
       stars.push(st); group.push(st);
     });
-    // созвездие: соединяем ближайших соседей по цепочке
     if (group.length > 1){
       const left = group.slice(1), chain = [group[0]];
       while (left.length){ const last = chain[chain.length-1]; left.sort((p,q) => Math.hypot(p.x-last.x,p.y-last.y) - Math.hypot(q.x-last.x,q.y-last.y)); chain.push(left.shift()); }
@@ -1003,7 +1783,7 @@ function layoutSky(){
   });
   const dr = rng(99), dust = [];
   for (let i=0;i<Math.round(w*h/2600);i++) dust.push({x:dr()*w, y:dr()*h, r:Math.pow(dr(),4)*1.2+.2, a:.08+dr()*.35, ph:dr()*6.28});
-  sky = {w, h, dpr, stars, cons, dust, sel: sky && sky.sel, cx, cy, maxR, days: n};
+  sky = {w, h, dpr, stars, cons, dust, sel: sky && sky.sel, cx, cy, maxR};
   $('#skyStats').textContent = `${stars.length} ${plural(stars.length,'звезда','звезды','звёзд')} · ${n} ${plural(n,'созвездие','созвездия','созвездий')}`;
   if (!sky.sel) $('#skyTip').innerHTML = stars.length ? 'Каждое сделанное дело зажигает звезду, а один день — это созвездие. <span class="sub">Нажми на звезду.</span>' : '<b>Небо пока пустое</b>Выполни первую задачу — и здесь зажжётся первая звезда ✦';
 }
@@ -1031,10 +1811,7 @@ function drawSky(time){
   x.globalAlpha = 1;
   skyRaf = requestAnimationFrame(drawSky);
 }
-function openSky(){
-  $('#sky').classList.add('open'); sky = null; layoutSky();
-  cancelAnimationFrame(skyRaf); skyRaf = requestAnimationFrame(drawSky);
-}
+function openSky(){ $('#sky').classList.add('open'); sky = null; layoutSky(); cancelAnimationFrame(skyRaf); skyRaf = requestAnimationFrame(drawSky); }
 function closeSky(){ $('#sky').classList.remove('open'); cancelAnimationFrame(skyRaf); }
 $('#skyBtn').onclick = openSky;
 $('#skyClose').onclick = closeSky;
@@ -1050,11 +1827,11 @@ $('#skyCanvas').addEventListener('pointerdown', e => {
   } else layoutSky();
 });
 
-// ================= ФОКУС (режим полёта) =================
+// ================= ФОКУС =================
 const F = {taskId:null, dur:25, left:25*60, endsAt:0, running:false, timer:0, finished:false};
 function fmtSec(s){ s = Math.max(0, Math.ceil(s)); return `${pad(Math.floor(s/60))}:${pad(s%60)}`; }
 function openFocus(taskId){
-  if (F.running && F.taskId !== taskId && taskId !== undefined){
+  if (F.running && F.taskId !== taskId){
     if (!confirm('Уже идёт полёт. Начать новый с этой задачей?')) { showFocus(); return; }
     stopFocus();
   }
@@ -1076,10 +1853,10 @@ function renderFocus(){
   const today = db.focus.filter(f => f.date === todayIso()).reduce((a,f) => a + f.min, 0);
   if (F.finished){
     const tt = F.taskId && db.tasks.find(x => x.id === F.taskId);
-    $('#fInfo').innerHTML = `<div class="done-msg">Полёт завершён! 🚀</div><div style="margin:6px 0 12px">Сегодня в фокусе: ${today} мин</div>${tt && !tt.done ? '<button class="btn" id="fDone">✓ Задача выполнена</button>' : ''}`;
-    const b = $('#fDone'); if (b) b.onclick = () => { tt.done = true; tt.doneAt = Date.now(); save(); burst(b); F.finished = false; render(); setTimeout(closeFocus, 500); toast('Готово! Новая звезда на небе ✦'); };
-  } else $('#fInfo').textContent = today ? `Сегодня в фокусе: ${today} мин` : 'Убери телефон экраном вниз. Одна задача — один полёт.';
-  if (F.running) document.title = `${fmtSec(left)} · Орбита`; else document.title = 'Орбита';
+    $('#fInfo').innerHTML = `<div class="done-msg">Полёт завершён! 🚀 +${F.dur} ₵</div><div style="margin:6px 0 12px">Сегодня в фокусе: ${today} мин</div>${tt && !tt.done ? '<button class="btn" id="fDone">✓ Задача выполнена</button>' : ''}`;
+    const b = $('#fDone'); if (b) b.onclick = () => { tt.done = true; tt.doneAt = Date.now(); const r = TASK_REWARD[tt.prio||0]; reward('task:'+tt.id, r, r, `Задача «${tt.title}»`, b); save(); burst(b); F.finished = false; render(); setTimeout(closeFocus, 600); toast('Готово! Новая звезда на небе ✦'); };
+  } else $('#fInfo').textContent = today ? `Сегодня в фокусе: ${today} мин · 1 минута = 1 ₵` : 'Убери телефон экраном вниз. Одна задача — один полёт. 1 минута = 1 ₵';
+  document.title = F.running ? `${fmtSec(left)} · Орбита` : 'Орбита';
   renderFocusPill();
 }
 function renderFocusPill(){
@@ -1096,7 +1873,10 @@ function pauseFocus(){ F.left = Math.max(0, (F.endsAt - Date.now())/1000); F.run
 function stopFocus(){ clearInterval(F.timer); F.running = false; F.endsAt = 0; F.left = F.dur*60; F.finished = false; }
 function finishFocus(){
   clearInterval(F.timer); F.running = false; F.endsAt = 0; F.left = F.dur*60; F.finished = true;
-  db.focus.push({id:uid(), taskId:F.taskId, min:F.dur, at:Date.now(), date:todayIso()}); save();
+  const fid = uid();
+  db.focus.push({id:fid, taskId:F.taskId, min:F.dur, at:Date.now(), date:todayIso()});
+  reward('focus:'+fid, F.dur, F.dur, `Полёт ${F.dur} мин`);
+  save();
   if (navigator.vibrate) navigator.vibrate([200,100,200]);
   try { const ac = new (window.AudioContext || window.webkitAudioContext)(); [0,.18,.36].forEach((d,i) => { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = [660,880,1320][i]; g.gain.setValueAtTime(.0001, ac.currentTime+d); g.gain.exponentialRampToValueAtTime(.2, ac.currentTime+d+.02); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime+d+.5); o.connect(g).connect(ac.destination); o.start(ac.currentTime+d); o.stop(ac.currentTime+d+.55); }); } catch {}
   showFocus(); render(); burst($('#fTime'));
@@ -1107,27 +1887,57 @@ $('#fClose').onclick = closeFocus;
 $('#fpill').onclick = showFocus;
 $('#fDur').onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; F.dur = +b.dataset.m; F.left = F.dur*60; renderFocus(); };
 
+// ================= установка на телефон =================
+let installEvt = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+function installGuide(){
+  const ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const inApp = /Telegram|Instagram|FBAN|FBAV|VKClient/.test(ua);
+  const local = !/^https?:$/.test(location.protocol) || /localhost|127\.0\.0\.1/.test(location.hostname);
+  openModal(`<h3>📲 Установить на телефон</h3>
+    ${isStandalone() ? '<div class="card" style="box-shadow:none;border-color:var(--up)">✅ Приложение уже установлено и открыто с главного экрана.</div>' : ''}
+    ${local ? `<div class="card" style="box-shadow:none;border-color:var(--a3)">Сейчас приложение открыто с компьютера. Чтобы поставить его на телефон, его нужно выложить в интернет (GitHub Pages) — инструкция в README репозитория. Потом открой ссылку на телефоне.</div>` : ''}
+    ${inApp ? `<div class="card" style="box-shadow:none;border-color:var(--a3)">Ссылка открыта внутри другого приложения (Telegram/Instagram/VK). Нажми ⋯ и выбери «Открыть в браузере» — ${ios ? 'Safari' : 'Chrome'}.</div>` : ''}
+    ${installEvt ? '<button class="btn full" id="mInstall" style="margin-bottom:14px">⬇ Установить сейчас</button>' : ''}
+    <div class="field"><label>iPhone / iPad (Safari)</label><ol class="steps-ol">
+      <li>Открой ссылку на приложение именно в <b>Safari</b>.</li>
+      <li>Нажми <b>«Поделиться»</b> — квадрат со стрелкой вверх внизу экрана.</li>
+      <li>Пролистай вниз и выбери <b>«На экран „Домой“»</b>.</li>
+      <li>Нажми <b>«Добавить»</b>. Иконка «Орбита» появится рядом с другими приложениями.</li></ol></div>
+    <div class="field"><label>Android (Chrome)</label><ol class="steps-ol">
+      <li>Открой ссылку в <b>Chrome</b>.</li>
+      <li>Нажми меню <b>⋮</b> в правом верхнем углу.</li>
+      <li>Выбери <b>«Установить приложение»</b> (или «Добавить на главный экран»).</li>
+      <li>Подтверди — приложение появится в списке приложений.</li></ol></div>
+    <div class="sub">После установки «Орбита» открывается на весь экран и работает без интернета. Данные хранятся только на этом телефоне — периодически делай резервную копию в настройках.</div>
+    <div class="actions"><button class="btn" id="mCancel">Понятно</button></div>`);
+  if ($('#mInstall')) $('#mInstall').onclick = async () => { installEvt.prompt(); const r = await installEvt.userChoice.catch(() => ({})); installEvt = null; closeModal(); if (r.outcome === 'accepted') toast('Установлено! Ищи «Орбиту» на главном экране'); };
+}
+
 // ================= настройки =================
 $('#setBtn').onclick = () => {
-  const th = db.settings.theme;
-  const fm = db.focus.reduce((a,f) => a + f.min, 0);
+  const th = db.settings.theme, curs = ['₽','$','€','₸','₴','Br','₼','£','сум'], tcurs = ['$','USDT','€','₽','BTC'];
   openModal(`<h3>Настройки</h3>
+    <button class="btn full" id="mInstallGuide" style="margin-bottom:14px">📲 Как установить на телефон</button>
     <div class="field"><label>Тема</label><div class="themes" id="mTheme">
       <button data-t="dark" class="${th==='dark'?'on':''}"><i style="background:radial-gradient(circle at 70% 30%,#8b5cf6,transparent 60%),#06061a"></i>Космос</button>
       <button data-t="light" class="${th==='light'?'on':''}"><i style="background:radial-gradient(circle at 70% 30%,#f59e0b,transparent 60%),#fbf5ee"></i>Рассвет</button>
       <button data-t="auto" class="${th==='auto'?'on':''}"><i style="background:linear-gradient(90deg,#06061a 50%,#fbf5ee 50%)"></i>Авто</button></div></div>
-    <div class="field"><label>Твоя вселенная</label><div class="stats">
-      <div class="stat"><b>${skyItems().length}</b><span>звёзд</span></div>
-      <div class="stat"><b>${Math.round(fm/60*10)/10}</b><span>часов фокуса</span></div>
-      <div class="stat"><b>${db.notes.length}</b><span>заметок</span></div>
-      <div class="stat"><b>${db.plans.filter(p=>p.archived).length}</b><span>миссий</span></div></div></div>
+    <div class="row field">
+      <div class="grow"><label class="sub">Валюта кошелька</label><select id="mCur">${curs.map(c => `<option ${c===db.settings.cur?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="grow"><label class="sub">Валюта сделок</label><select id="mTcur">${tcurs.map(c => `<option ${c===db.settings.tcur?'selected':''}>${c}</option>`).join('')}</select></div>
+    </div>
     <div class="field"><label>Резервная копия</label>
-      <div class="sub" style="margin-bottom:8px">Всё хранится только на этом устройстве. Время от времени сохраняй копию в файл.</div>
+      <div class="sub" style="margin-bottom:8px">Всё хранится только на этом устройстве. Время от времени сохраняй копию в файл — так можно и перенести данные на другой телефон.</div>
       <div class="row"><button class="btn soft grow" id="mExport">⬇ Скачать копию</button>
       <label class="btn soft grow" style="text-align:center;cursor:pointer">⬆ Загрузить<input type="file" id="mImport" accept="application/json,.json" hidden></label></div></div>
     <div class="sub">Подсказка: клавиша <b>N</b> — быстро записать (на компьютере).</div>
     <div class="actions"><button class="btn danger" id="mWipe">Стереть всё</button><span class="grow"></span><button class="btn" id="mCancel">Готово</button></div>`);
+  $('#mInstallGuide').onclick = installGuide;
   $('#mTheme').onclick = e => { const b = e.target.closest('button'); if (!b) return; db.settings.theme = b.dataset.t; save(); applyTheme(); $$('#mTheme button').forEach(x => x.classList.toggle('on', x === b)); render(); };
+  $('#mCur').onchange = () => { db.settings.cur = $('#mCur').value; save(); render(); };
+  $('#mTcur').onchange = () => { db.settings.tcur = $('#mTcur').value; save(); render(); };
   $('#mExport').onclick = () => {
     const blob = new Blob([JSON.stringify(db, null, 2)], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `orbita-${todayIso()}.json`; a.click();
@@ -1141,12 +1951,12 @@ $('#setBtn').onclick = () => {
       db = normalize(data); save(); applyTheme(); closeModal(); render(); toast('Данные загружены');
     } catch { toast('Не получилось прочитать файл'); }
   };
-  $('#mWipe').onclick = () => { if (confirm('Точно удалить ВСЕ данные? Это нельзя отменить.')){ db = empty(); save(); applyTheme(); closeModal(); render(); } };
+  $('#mWipe').onclick = () => { if (confirm('Точно удалить ВСЕ данные? Это нельзя отменить.')){ db = normalize(null); save(); applyTheme(); closeModal(); render(); } };
 };
 
 // ================= старт =================
-$$('.dock [data-view]').forEach(b => b.onclick = () => setView(b.dataset.view));
 applyTheme();
+levelCheck();
 setView('day');
 let lastSeen = todayIso();
 function dayTick(){
