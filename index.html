@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Мой день</title>
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{
+  --bg:#f6f6fb;--card:#fff;--text:#1c1c28;--muted:#77778a;--line:#e6e6ef;
+  --accent:#4f46e5;--accent-soft:#eceafe;--danger:#e5484d;--ok:#22a06b;--warn:#f59e0b;
+  --radius:14px;--shadow:0 1px 3px rgba(20,20,40,.06),0 4px 14px rgba(20,20,40,.05);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111118;--card:#1b1b25;--text:#ececf3;--muted:#9393a8;--line:#2b2b3a;--accent:#8b85ff;--accent-soft:#272550;--shadow:none}}
+:root[data-theme="dark"]{--bg:#111118;--card:#1b1b25;--text:#ececf3;--muted:#9393a8;--line:#2b2b3a;--accent:#8b85ff;--accent-soft:#272550;--shadow:none}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{max-width:720px;margin:0 auto;padding:16px 16px calc(96px + env(safe-area-inset-bottom))}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 16px}
+header.top h1{font-size:24px;margin:0;letter-spacing:-.02em}
+.sub{color:var(--muted);font-size:14px}
+.icon-btn{border:0;background:var(--card);box-shadow:var(--shadow);border:1px solid var(--line);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:14px}
+.card h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center}
+.grow{flex:1;min-width:0}
+input[type=text],input[type=date],textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+.btn{border:0;background:var(--accent);color:#fff;border-radius:10px;padding:10px 14px;font-weight:600;white-space:nowrap}
+.btn.ghost{background:var(--accent-soft);color:var(--accent)}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid var(--line)}
+.btn.small{padding:6px 10px;font-size:14px}
+ul.list{list-style:none;margin:0;padding:0}
+.item{display:flex;align-items:flex-start;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.check{appearance:none;flex:none;width:22px;height:22px;margin:1px 0 0;border:2px solid var(--muted);border-radius:7px;display:grid;place-items:center;cursor:pointer;background:transparent}
+.check:checked{background:var(--accent);border-color:var(--accent)}
+.check:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.item .txt{flex:1;min-width:0;word-wrap:break-word;cursor:pointer}
+.item.done .txt{color:var(--muted);text-decoration:line-through}
+.meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.tag{font-size:12px;padding:1px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.tag.p2{background:#fde8e8;color:#c22}
+.tag.p1{background:#fff3d6;color:#a86400}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.p2{background:#3d1d1f;color:#ff8a8d}:root:not([data-theme="light"]) .tag.p1{background:#3b2d10;color:#ffc35c}}
+:root[data-theme="dark"] .tag.p2{background:#3d1d1f;color:#ff8a8d}:root[data-theme="dark"] .tag.p1{background:#3b2d10;color:#ffc35c}
+.tag.late{background:transparent;color:var(--danger);padding:0}
+.del{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;padding:2px 4px;opacity:.6}
+.del:hover{opacity:1;color:var(--danger)}
+.empty{color:var(--muted);font-size:14px;padding:6px 2px}
+.daynav{display:flex;align-items:center;gap:8px}
+.daynav .label{flex:1;text-align:center}
+.daynav .label b{display:block;font-size:18px}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress > i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.stats{display:flex;gap:10px}
+.stat{flex:1;background:var(--accent-soft);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:22px;color:var(--accent)}
+.stat span{font-size:12px;color:var(--muted)}
+.goal-num{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:700;display:grid;place-items:center;margin-top:1px}
+.moods{display:flex;gap:6px;justify-content:space-between}
+.moods button{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:6px 0;font-size:22px;opacity:.5}
+.moods button.on{opacity:1;border-color:var(--accent);background:var(--accent-soft)}
+.segs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.segs button{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:6px 14px;font-size:14px;white-space:nowrap}
+.segs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.note{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);cursor:pointer;min-height:90px;display:flex;flex-direction:column;gap:6px}
+.note h3{margin:0;font-size:16px}
+.note p{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.note .meta{margin-top:auto}
+.group-title{font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 2px}
+.group-title.late{color:var(--danger)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:10}
+nav.tabs .in{display:flex;width:100%;max-width:720px}
+nav.tabs button{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);padding:6px 0;border-radius:10px}
+nav.tabs button .ic{font-size:21px;line-height:1;filter:grayscale(1);opacity:.7}
+nav.tabs button.on{color:var(--accent);font-weight:600}
+nav.tabs button.on .ic{filter:none;opacity:1}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+@media (min-width:760px){.modal-bg{align-items:center}.modal{border-radius:18px}}
+.modal h3{margin:0 0 12px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.plan-step{display:flex;gap:10px;align-items:center;padding:6px 0}
+.plan-step .txt{flex:1}
+.plan-step.done .txt{color:var(--muted);text-decoration:line-through}
+.horizon{font-size:12px;font-weight:600;color:var(--accent)}
+.fab-add{display:flex;gap:8px;margin-bottom:10px}
+.hidden{display:none!important}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 16px;border-radius:99px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <h1 id="title">Сегодня</h1>
+      <div class="sub" id="subtitle"></div>
+    </div>
+    <button class="icon-btn" id="settingsBtn" title="Настройки" aria-label="Настройки">⚙️</button>
+  </header>
+
+  <!-- СЕГОДНЯ -->
+  <section id="view-today">
+    <div class="card">
+      <div class="daynav">
+        <button class="icon-btn" id="prevDay" aria-label="Предыдущий день">‹</button>
+        <div class="label"><b id="dayLabel"></b><span class="sub" id="dayDate"></span></div>
+        <button class="icon-btn" id="nextDay" aria-label="Следующий день">›</button>
+      </div>
+      <div style="margin-top:12px" class="progress"><i id="dayProgress"></i></div>
+      <div class="sub" style="margin-top:6px" id="dayProgressText"></div>
+    </div>
+
+    <div class="card">
+      <h2>🎯 Главные цели дня <span class="sub" id="goalsCount"></span></h2>
+      <ul class="list" id="goalsList"></ul>
+      <form class="row" id="goalForm" style="margin-top:8px">
+        <input type="text" id="goalInput" class="grow" placeholder="Что важнее всего сделать сегодня?" maxlength="200">
+        <button class="btn">+</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>✅ Задачи на день</h2>
+      <ul class="list" id="dayTasks"></ul>
+      <form class="row" id="dayTaskForm" style="margin-top:8px">
+        <input type="text" id="dayTaskInput" class="grow" placeholder="Добавить задачу на этот день" maxlength="300">
+        <button class="btn">+</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>📝 Итог дня</h2>
+      <div class="moods" id="moods"></div>
+      <textarea id="dayNote" style="margin-top:10px" placeholder="Как прошёл день? Что получилось, чему научился, за что благодарен…"></textarea>
+    </div>
+  </section>
+
+  <!-- ЗАДАЧИ -->
+  <section id="view-tasks" class="hidden">
+    <form class="card" id="taskForm">
+      <div class="field"><input type="text" id="taskTitle" placeholder="Новая задача…" maxlength="300"></div>
+      <div class="row">
+        <input type="date" id="taskDate" class="grow">
+        <select id="taskPrio" class="grow">
+          <option value="0">Обычная</option>
+          <option value="1">Важная</option>
+          <option value="2">Срочная</option>
+        </select>
+        <button class="btn">Добавить</button>
+      </div>
+    </form>
+    <div class="segs" id="taskFilter">
+      <button data-f="active" class="on">Активные</button>
+      <button data-f="inbox">Без даты</button>
+      <button data-f="done">Выполненные</button>
+      <button data-f="all">Все</button>
+    </div>
+    <div class="card" id="tasksBox"></div>
+  </section>
+
+  <!-- ЗАМЕТКИ -->
+  <section id="view-notes" class="hidden">
+    <div class="fab-add">
+      <input type="text" id="noteSearch" class="grow" placeholder="🔍 Поиск по заметкам">
+      <button class="btn" id="newNote">+ Заметка</button>
+    </div>
+    <div class="notes-grid" id="notesGrid"></div>
+  </section>
+
+  <!-- ПЛАНЫ -->
+  <section id="view-plans" class="hidden">
+    <div class="segs" id="planFilter">
+      <button data-h="all" class="on">Все</button>
+      <button data-h="week">Неделя</button>
+      <button data-h="month">Месяц</button>
+      <button data-h="year">Год</button>
+      <button data-h="life">Мечты</button>
+    </div>
+    <button class="btn" id="newPlan" style="width:100%;margin-bottom:14px">+ Новый план / цель</button>
+    <div id="plansBox"></div>
+  </section>
+</div>
+
+<nav class="tabs"><div class="in">
+  <button data-view="today" class="on"><span class="ic">☀️</span>Сегодня</button>
+  <button data-view="tasks"><span class="ic">✅</span>Задачи</button>
+  <button data-view="notes"><span class="ic">📒</span>Заметки</button>
+  <button data-view="plans"><span class="ic">🗺️</span>Планы</button>
+</div></nav>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const KEY = 'myday-data-v1';
+const $ = s => document.querySelector(s);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fromIso = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const todayIso = () => iso(new Date());
+const addDays = (s, n) => { const d = fromIso(s); d.setDate(d.getDate()+n); return iso(d); };
+const fmtDate = (s, opts={day:'numeric',month:'long'}) => fromIso(s).toLocaleDateString('ru-RU', opts);
+function relDay(s){
+  const t = todayIso();
+  if (s === t) return 'Сегодня';
+  if (s === addDays(t,1)) return 'Завтра';
+  if (s === addDays(t,-1)) return 'Вчера';
+  const w = fromIso(s).toLocaleDateString('ru-RU',{weekday:'long'});
+  return w[0].toUpperCase()+w.slice(1);
+}
+
+// ---------- Хранилище ----------
+const empty = () => ({ tasks:[], goals:[], notes:[], plans:[], days:{}, settings:{theme:'auto'} });
+let db;
+try { db = Object.assign(empty(), JSON.parse(localStorage.getItem(KEY)) || {}); }
+catch { db = empty(); }
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify(db)); }
+  catch { toast('Не удалось сохранить данные'); }
+}
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+
+// ---------- Общие ----------
+let view = 'today';
+let curDay = todayIso();
+let taskFilter = 'active';
+let planFilter = 'all';
+const TITLES = {today:'Сегодня', tasks:'Задачи', notes:'Заметки', plans:'Планы и цели'};
+const PRIO = ['', 'Важная', 'Срочная'];
+const HORIZONS = {week:'Неделя', month:'Месяц', year:'Год', life:'Мечта'};
+const MOODS = ['😞','😕','😐','🙂','😄'];
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+function applyTheme(){
+  const th = db.settings.theme;
+  if (th === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', th);
+}
+function setView(v){
+  view = v;
+  for (const k of Object.keys(TITLES)) $('#view-'+k).classList.toggle('hidden', k !== v);
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.view === v));
+  $('#title').textContent = TITLES[v];
+  render();
+  window.scrollTo(0,0);
+}
+function render(){
+  const now = new Date();
+  $('#subtitle').textContent = now.toLocaleDateString('ru-RU',{weekday:'long', day:'numeric', month:'long'});
+  if (view === 'today') renderToday();
+  if (view === 'tasks') renderTasks();
+  if (view === 'notes') renderNotes();
+  if (view === 'plans') renderPlans();
+}
+
+// ---------- Задачи (общий рендер строки) ----------
+function taskLi(t, opts={}){
+  const late = t.date && !t.done && t.date < todayIso();
+  const meta = [];
+  if (t.prio) meta.push(`<span class="tag p${t.prio}">${PRIO[t.prio]}</span>`);
+  if (opts.showDate && t.date) meta.push(`<span class="${late?'tag late':''}">📅 ${esc(relDay(t.date))}, ${esc(fmtDate(t.date))}</span>`);
+  if (opts.showLate && late) meta.push(`<span class="tag late">просрочено с ${esc(fmtDate(t.date))}</span>`);
+  if (t.note) meta.push('<span>📎 есть описание</span>');
+  return `<li class="item ${t.done?'done':''}" data-id="${t.id}">
+    <input type="checkbox" class="check" data-act="toggle-task" ${t.done?'checked':''} aria-label="Готово">
+    <div class="txt" data-act="edit-task">${esc(t.title)}${meta.length?`<div class="meta">${meta.join('')}</div>`:''}</div>
+    <button class="del" data-act="del-task" aria-label="Удалить">×</button></li>`;
+}
+function sortTasks(a,b){
+  return (a.done - b.done) || (b.prio - a.prio) || (a.createdAt - b.createdAt);
+}
+
+// ---------- СЕГОДНЯ ----------
+function renderToday(){
+  $('#dayLabel').textContent = relDay(curDay);
+  $('#dayDate').textContent = fmtDate(curDay, {day:'numeric', month:'long', year:'numeric'});
+
+  const goals = db.goals.filter(g => g.date === curDay);
+  $('#goalsList').innerHTML = goals.length ? goals.map((g,i) => `
+    <li class="item ${g.done?'done':''}" data-id="${g.id}">
+      <span class="goal-num">${i+1}</span>
+      <input type="checkbox" class="check" data-act="toggle-goal" ${g.done?'checked':''} aria-label="Готово">
+      <div class="txt">${esc(g.text)}</div>
+      <button class="del" data-act="del-goal" aria-label="Удалить">×</button></li>`).join('')
+    : '<li class="empty">Запиши 1–3 главные цели — то, что сделает день успешным.</li>';
+  $('#goalsCount').textContent = goals.length ? `${goals.filter(g=>g.done).length}/${goals.length}` : '';
+
+  const isToday = curDay === todayIso();
+  const dayT = db.tasks.filter(t => t.date === curDay).sort(sortTasks);
+  const late = isToday ? db.tasks.filter(t => t.date && t.date < curDay && !t.done).sort(sortTasks) : [];
+  let html = '';
+  if (late.length) html += late.map(t => taskLi(t,{showLate:true})).join('');
+  html += dayT.map(t => taskLi(t)).join('');
+  $('#dayTasks').innerHTML = html || '<li class="empty">На этот день задач нет.</li>';
+
+  const all = [...goals, ...dayT, ...late];
+  const done = all.filter(x => x.done).length;
+  const pct = all.length ? Math.round(done/all.length*100) : 0;
+  $('#dayProgress').style.width = pct + '%';
+  $('#dayProgressText').textContent = all.length ? `Выполнено ${done} из ${all.length} · ${pct}%` : 'Пока ничего не запланировано';
+
+  const day = db.days[curDay] || {};
+  $('#moods').innerHTML = MOODS.map((m,i) => `<button type="button" data-mood="${i}" class="${day.mood===i?'on':''}" aria-label="Настроение ${i+1}">${m}</button>`).join('');
+  if (document.activeElement !== $('#dayNote')) $('#dayNote').value = day.note || '';
+}
+$('#prevDay').onclick = () => { curDay = addDays(curDay,-1); renderToday(); };
+$('#nextDay').onclick = () => { curDay = addDays(curDay,1); renderToday(); };
+$('#dayLabel').onclick = () => { curDay = todayIso(); renderToday(); };
+$('#goalForm').onsubmit = e => {
+  e.preventDefault();
+  const v = $('#goalInput').value.trim(); if (!v) return;
+  db.goals.push({id:uid(), date:curDay, text:v, done:false}); save();
+  $('#goalInput').value = ''; renderToday();
+};
+$('#dayTaskForm').onsubmit = e => {
+  e.preventDefault();
+  const v = $('#dayTaskInput').value.trim(); if (!v) return;
+  db.tasks.push({id:uid(), title:v, date:curDay, prio:0, done:false, note:'', createdAt:Date.now()}); save();
+  $('#dayTaskInput').value = ''; renderToday();
+};
+$('#moods').onclick = e => {
+  const b = e.target.closest('[data-mood]'); if (!b) return;
+  const d = db.days[curDay] ||= {};
+  const m = +b.dataset.mood; d.mood = d.mood === m ? undefined : m; save(); renderToday();
+};
+let noteTimer;
+$('#dayNote').oninput = () => {
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => { (db.days[curDay] ||= {}).note = $('#dayNote').value; save(); }, 300);
+};
+
+// ---------- ЗАДАЧИ ----------
+function renderTasks(){
+  document.querySelectorAll('#taskFilter button').forEach(b => b.classList.toggle('on', b.dataset.f === taskFilter));
+  const t0 = todayIso();
+  let list = db.tasks.slice();
+  if (taskFilter === 'active') list = list.filter(t => !t.done);
+  if (taskFilter === 'inbox') list = list.filter(t => !t.date && !t.done);
+  if (taskFilter === 'done') list = list.filter(t => t.done).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0));
+  if (!list.length){ $('#tasksBox').innerHTML = '<div class="empty">Здесь пусто. Добавь задачу выше 👆</div>'; return; }
+  if (taskFilter === 'done'){ $('#tasksBox').innerHTML = `<ul class="list">${list.map(t=>taskLi(t,{showDate:true})).join('')}</ul>`; return; }
+
+  const groups = new Map();
+  const key = t => !t.date ? '~inbox' : (t.date < t0 && !t.done ? '!late' : t.date);
+  for (const t of list){ const k = key(t); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); }
+  const keys = [...groups.keys()].sort((a,b) => a === '!late' ? -1 : b === '!late' ? 1 : a.localeCompare(b));
+  $('#tasksBox').innerHTML = keys.map(k => {
+    const items = groups.get(k).sort(k === '!late' ? (a,b)=>a.date.localeCompare(b.date) : sortTasks);
+    const title = k === '!late' ? '⚠️ Просрочено' : k === '~inbox' ? '📥 Без даты' : `${relDay(k)}, ${fmtDate(k)}`;
+    return `<div class="group-title ${k==='!late'?'late':''}">${esc(title)}</div>
+      <ul class="list">${items.map(t => taskLi(t,{showDate:k==='!late'})).join('')}</ul>`;
+  }).join('');
+}
+$('#taskForm').onsubmit = e => {
+  e.preventDefault();
+  const v = $('#taskTitle').value.trim(); if (!v) return;
+  db.tasks.push({id:uid(), title:v, date:$('#taskDate').value || null, prio:+$('#taskPrio').value, done:false, note:'', createdAt:Date.now()});
+  save(); $('#taskTitle').value = ''; $('#taskPrio').value = '0'; renderTasks(); toast('Задача добавлена');
+};
+$('#taskFilter').onclick = e => { const b = e.target.closest('button'); if (b){ taskFilter = b.dataset.f; renderTasks(); } };
+
+function editTask(id){
+  const t = db.tasks.find(x => x.id === id); if (!t) return;
+  openModal(`<h3>Задача</h3>
+    <div class="field"><label>Название</label><input type="text" id="mTitle" value="${esc(t.title)}"></div>
+    <div class="row field">
+      <div class="grow"><label class="sub">Дата</label><input type="date" id="mDate" value="${t.date||''}"></div>
+      <div class="grow"><label class="sub">Приоритет</label><select id="mPrio">
+        ${['Обычная','Важная','Срочная'].map((p,i)=>`<option value="${i}" ${t.prio===i?'selected':''}>${p}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Описание</label><textarea id="mNote" placeholder="Подробности, ссылки, шаги…">${esc(t.note)}</textarea></div>
+    <div class="row" style="gap:6px;flex-wrap:wrap">
+      <button class="btn ghost small" data-q="0">Сегодня</button>
+      <button class="btn ghost small" data-q="1">Завтра</button>
+      <button class="btn ghost small" data-q="7">Через неделю</button>
+      <button class="btn ghost small" data-q="x">Без даты</button>
+    </div>
+    <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span>
+      <button class="btn ghost" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
+  $('#modal').querySelectorAll('[data-q]').forEach(b => b.onclick = () => {
+    $('#mDate').value = b.dataset.q === 'x' ? '' : addDays(todayIso(), +b.dataset.q);
+  });
+  $('#mSave').onclick = () => {
+    t.title = $('#mTitle').value.trim() || t.title; t.date = $('#mDate').value || null;
+    t.prio = +$('#mPrio').value; t.note = $('#mNote').value; save(); closeModal(); render();
+  };
+  $('#mDel').onclick = () => { db.tasks = db.tasks.filter(x => x.id !== id); save(); closeModal(); render(); toast('Удалено'); };
+}
+
+// ---------- ЗАМЕТКИ ----------
+function renderNotes(){
+  const q = $('#noteSearch').value.trim().toLowerCase();
+  const list = db.notes
+    .filter(n => !q || (n.title + ' ' + n.body + ' ' + (n.tag||'')).toLowerCase().includes(q))
+    .sort((a,b) => (b.pinned - a.pinned) || (b.updatedAt - a.updatedAt));
+  $('#notesGrid').innerHTML = list.length ? list.map(n => `
+    <div class="note" data-id="${n.id}">
+      <h3>${n.pinned?'📌 ':''}${esc(n.title || 'Без названия')}</h3>
+      <p>${esc(n.body)}</p>
+      <div class="meta">${n.tag?`<span class="tag">#${esc(n.tag)}</span>`:''}<span>${new Date(n.updatedAt).toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</span></div>
+    </div>`).join('') : `<div class="empty">${q?'Ничего не найдено.':'Заметок пока нет. Нажми «+ Заметка».'}</div>`;
+}
+$('#noteSearch').oninput = renderNotes;
+$('#newNote').onclick = () => editNote(null);
+$('#notesGrid').onclick = e => { const n = e.target.closest('.note'); if (n) editNote(n.dataset.id); };
+function editNote(id){
+  const n = id ? db.notes.find(x => x.id === id) : {title:'', body:'', tag:'', pinned:false};
+  openModal(`<h3>${id?'Заметка':'Новая заметка'}</h3>
+    <div class="field"><input type="text" id="mTitle" placeholder="Заголовок" value="${esc(n.title)}"></div>
+    <div class="field"><textarea id="mBody" style="min-height:220px" placeholder="Текст заметки…">${esc(n.body)}</textarea></div>
+    <div class="row field"><input type="text" id="mTag" class="grow" placeholder="Тег (например: идеи, книги)" value="${esc(n.tag)}">
+      <label class="row sub" style="white-space:nowrap"><input type="checkbox" id="mPin" ${n.pinned?'checked':''}> Закрепить</label></div>
+    <div class="actions">${id?'<button class="btn danger" id="mDel">Удалить</button>':''}<span class="grow"></span>
+      <button class="btn ghost" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
+  setTimeout(() => { const el = id ? $('#mBody') : $('#mTitle'); if (el) el.focus(); }, 50);
+  $('#mSave').onclick = () => {
+    const data = {title:$('#mTitle').value.trim(), body:$('#mBody').value, tag:$('#mTag').value.trim().replace(/^#/,''), pinned:$('#mPin').checked, updatedAt:Date.now()};
+    if (!data.title && !data.body.trim()){ closeModal(); return; }
+    if (id) Object.assign(n, data); else db.notes.push({id:uid(), ...data});
+    save(); closeModal(); renderNotes();
+  };
+  if (id) $('#mDel').onclick = () => { if (confirm('Удалить заметку?')){ db.notes = db.notes.filter(x => x.id !== id); save(); closeModal(); renderNotes(); } };
+}
+
+// ---------- ПЛАНЫ ----------
+function renderPlans(){
+  document.querySelectorAll('#planFilter button').forEach(b => b.classList.toggle('on', b.dataset.h === planFilter));
+  const order = {week:0, month:1, year:2, life:3};
+  const list = db.plans.filter(p => planFilter === 'all' || p.horizon === planFilter)
+    .sort((a,b) => (a.archived - b.archived) || (order[a.horizon]-order[b.horizon]) || (a.createdAt-b.createdAt));
+  $('#plansBox').innerHTML = list.length ? list.map(p => {
+    const done = p.steps.filter(s=>s.done).length, pct = p.steps.length ? Math.round(done/p.steps.length*100) : 0;
+    return `<div class="card" data-id="${p.id}" style="${p.archived?'opacity:.6':''}">
+      <div class="row" style="align-items:flex-start">
+        <div class="grow"><div class="horizon">${HORIZONS[p.horizon]}${p.deadline?` · до ${esc(fmtDate(p.deadline,{day:'numeric',month:'long',year:'numeric'}))}`:''}${p.archived?' · достигнуто 🏆':''}</div>
+        <div style="font-weight:700;font-size:17px">${esc(p.title)}</div>
+        ${p.why?`<div class="sub">${esc(p.why)}</div>`:''}</div>
+        <button class="btn ghost small" data-act="edit-plan">Изм.</button>
+      </div>
+      <div class="row" style="margin:10px 0 4px"><div class="progress grow"><i style="width:${pct}%"></i></div><span class="sub">${pct}%</span></div>
+      <div>${p.steps.map(s => `<div class="plan-step ${s.done?'done':''}" data-sid="${s.id}">
+        <input type="checkbox" class="check" data-act="toggle-step" ${s.done?'checked':''}><span class="txt">${esc(s.text)}</span>
+        <button class="del" data-act="del-step" aria-label="Удалить шаг">×</button></div>`).join('')}</div>
+      <form class="row" data-act="add-step" style="margin-top:6px"><input type="text" class="grow" placeholder="Добавить шаг…" maxlength="200"><button class="btn small">+</button></form>
+    </div>`;
+  }).join('') : '<div class="empty card">Поставь цель на неделю, месяц или год и разбей её на шаги.</div>';
+}
+$('#planFilter').onclick = e => { const b = e.target.closest('button'); if (b){ planFilter = b.dataset.h; renderPlans(); } };
+$('#newPlan').onclick = () => editPlan(null);
+function editPlan(id){
+  const p = id ? db.plans.find(x => x.id === id) : {title:'', why:'', horizon: planFilter==='all'?'month':planFilter, deadline:'', archived:false};
+  openModal(`<h3>${id?'План':'Новый план / цель'}</h3>
+    <div class="field"><label>Цель</label><input type="text" id="mTitle" placeholder="Например: прочитать 3 книги" value="${esc(p.title)}"></div>
+    <div class="field"><label>Зачем это мне?</label><input type="text" id="mWhy" placeholder="Мотивация (необязательно)" value="${esc(p.why)}"></div>
+    <div class="row field">
+      <div class="grow"><label class="sub">Горизонт</label><select id="mHor">${Object.entries(HORIZONS).map(([k,v])=>`<option value="${k}" ${p.horizon===k?'selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="grow"><label class="sub">Срок</label><input type="date" id="mDl" value="${p.deadline||''}"></div>
+    </div>
+    ${id?`<label class="row sub field"><input type="checkbox" id="mArch" ${p.archived?'checked':''}> Цель достигнута 🏆</label>`:''}
+    <div class="actions">${id?'<button class="btn danger" id="mDel">Удалить</button>':''}<span class="grow"></span>
+      <button class="btn ghost" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
+  $('#mSave').onclick = () => {
+    const title = $('#mTitle').value.trim(); if (!title){ $('#mTitle').focus(); return; }
+    const data = {title, why:$('#mWhy').value.trim(), horizon:$('#mHor').value, deadline:$('#mDl').value||null};
+    if (id) Object.assign(p, data, {archived: $('#mArch').checked});
+    else db.plans.push({id:uid(), ...data, steps:[], archived:false, createdAt:Date.now()});
+    save(); closeModal(); renderPlans();
+  };
+  if (id) $('#mDel').onclick = () => { if (confirm('Удалить план со всеми шагами?')){ db.plans = db.plans.filter(x => x.id !== id); save(); closeModal(); renderPlans(); } };
+}
+
+// ---------- Делегирование кликов ----------
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act;
+  const li = a.closest('[data-id]'); const id = li && li.dataset.id;
+  if (act === 'toggle-task'){ const t = db.tasks.find(x=>x.id===id); t.done = !t.done; t.doneAt = t.done ? Date.now() : null; save(); render(); }
+  else if (act === 'del-task'){ db.tasks = db.tasks.filter(x=>x.id!==id); save(); render(); toast('Удалено'); }
+  else if (act === 'edit-task'){ editTask(id); }
+  else if (act === 'toggle-goal'){ const g = db.goals.find(x=>x.id===id); g.done = !g.done; save(); render(); if (g.done) cheer(); }
+  else if (act === 'del-goal'){ db.goals = db.goals.filter(x=>x.id!==id); save(); render(); }
+  else if (act === 'edit-plan'){ editPlan(id); }
+  else if (act === 'toggle-step' || act === 'del-step'){
+    const p = db.plans.find(x=>x.id===id); const sid = a.closest('[data-sid]').dataset.sid;
+    if (act === 'toggle-step'){ const s = p.steps.find(x=>x.id===sid); s.done = !s.done; if (p.steps.every(x=>x.done)) toast('Все шаги выполнены! 🏆'); }
+    else p.steps = p.steps.filter(x=>x.id!==sid);
+    save(); renderPlans();
+  }
+});
+document.addEventListener('submit', e => {
+  const f = e.target; if (f.dataset.act !== 'add-step') return;
+  e.preventDefault();
+  const inp = f.querySelector('input'); const v = inp.value.trim(); if (!v) return;
+  const p = db.plans.find(x => x.id === f.closest('[data-id]').dataset.id);
+  p.steps.push({id:uid(), text:v, done:false}); save(); renderPlans();
+  const again = document.querySelector(`[data-id="${p.id}"] form input`); if (again) again.focus();
+});
+function cheer(){
+  const goals = db.goals.filter(g => g.date === curDay);
+  if (goals.length && goals.every(g => g.done)) toast('Все цели дня выполнены! 🎉');
+}
+
+// ---------- Модалка ----------
+function openModal(html){
+  $('#modal').innerHTML = html; $('#modalBg').classList.add('open');
+  const c = $('#mCancel'); if (c) c.onclick = closeModal;
+}
+function closeModal(){ $('#modalBg').classList.remove('open'); $('#modal').innerHTML = ''; }
+$('#modalBg').onclick = e => { if (e.target === $('#modalBg')) closeModal(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ---------- Настройки / резервная копия ----------
+$('#settingsBtn').onclick = () => {
+  const th = db.settings.theme;
+  openModal(`<h3>Настройки</h3>
+    <div class="field"><label>Тема</label><select id="mTheme">
+      <option value="auto" ${th==='auto'?'selected':''}>Как в системе</option>
+      <option value="light" ${th==='light'?'selected':''}>Светлая</option>
+      <option value="dark" ${th==='dark'?'selected':''}>Тёмная</option></select></div>
+    <div class="field"><label>Статистика</label><div class="stats">
+      <div class="stat"><b>${db.tasks.filter(t=>t.done).length}</b><span>задач сделано</span></div>
+      <div class="stat"><b>${db.notes.length}</b><span>заметок</span></div>
+      <div class="stat"><b>${db.plans.filter(p=>p.archived).length}</b><span>целей достигнуто</span></div></div></div>
+    <div class="field"><label>Резервная копия</label>
+      <div class="sub" style="margin-bottom:8px">Данные хранятся только на этом устройстве. Время от времени сохраняй копию в файл.</div>
+      <div class="row"><button class="btn ghost grow" id="mExport">⬇️ Скачать копию</button>
+      <label class="btn ghost grow" style="text-align:center;cursor:pointer">⬆️ Загрузить<input type="file" id="mImport" accept="application/json" hidden></label></div></div>
+    <div class="actions"><button class="btn danger" id="mWipe">Стереть всё</button><span class="grow"></span><button class="btn" id="mCancel">Готово</button></div>`);
+  $('#mTheme').onchange = () => { db.settings.theme = $('#mTheme').value; save(); applyTheme(); };
+  $('#mExport').onclick = () => {
+    const blob = new Blob([JSON.stringify(db, null, 2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `moy-den-${todayIso()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  };
+  $('#mImport').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      if (!data || !Array.isArray(data.tasks)) throw 0;
+      if (!confirm('Заменить текущие данные данными из файла?')) return;
+      db = Object.assign(empty(), data); save(); applyTheme(); closeModal(); render(); toast('Данные загружены');
+    } catch { toast('Не получилось прочитать файл'); }
+  };
+  $('#mWipe').onclick = () => { if (confirm('Точно удалить ВСЕ данные? Это нельзя отменить.')){ db = empty(); save(); applyTheme(); closeModal(); render(); } };
+};
+
+// ---------- Старт ----------
+document.querySelector('nav.tabs').onclick = e => { const b = e.target.closest('button'); if (b) setView(b.dataset.view); };
+applyTheme();
+render();
+// При возвращении в приложение на следующий день — переключиться на сегодня
+let lastSeen = todayIso();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && todayIso() !== lastSeen){ if (curDay === lastSeen) curDay = todayIso(); lastSeen = todayIso(); render(); }
+});
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
