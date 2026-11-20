@@ -1,5 +1,5 @@
 // Офлайн-режим: сначала сеть (чтобы получать обновления), при её отсутствии — кэш.
-const CACHE = 'orbita-v3';
+const CACHE = 'orbita-v4';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

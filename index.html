@@ -202,6 +202,35 @@ ul.list{list-style:none;margin:0;padding:0}
 .wd button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
 .tradebar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 
+/* рынок-симулятор */
+.achips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 14px;padding:2px 16px;scrollbar-width:none}
+.achips::-webkit-scrollbar{display:none}
+.achip{flex:none;min-width:116px;text-align:left;border:1px solid var(--line);background:var(--glass);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:1px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.achip span{font-size:12px;font-weight:800;color:var(--muted)}
+.achip b{font-family:var(--fh);font-size:15px}
+.achip small{font-size:12px;font-weight:700}
+.achip.on{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 16%,var(--glass));box-shadow:0 0 22px -10px var(--a1)}
+#simChart{width:100%;height:240px;display:block;margin-top:12px;touch-action:pan-y}
+.risk{font-size:13px;padding:10px 12px;border-radius:14px;background:var(--input);border:1px solid var(--line);margin-bottom:12px;line-height:1.55}
+.risk.ok{border-color:color-mix(in srgb,var(--up) 55%,transparent)}
+.risk.bad{border-color:color-mix(in srgb,var(--down) 60%,transparent)}
+.chips .chip{cursor:pointer}
+.news{padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;display:flex;gap:10px}
+.news:last-child{border-bottom:0}
+/* академия */
+.lrow{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px dashed var(--line);cursor:pointer}
+.lrow:last-child{border-bottom:0}
+.lnum{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font-family:var(--fh);font-size:13px;font-weight:800;background:var(--glass-2);border:1px solid var(--line)}
+.lrow.done .lnum{background:var(--up);color:#032318;border-color:var(--up)}
+.lrow.open .lnum{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 0 18px -6px var(--a2)}
+.lrow.lock{opacity:.5}
+.lesson p{margin:0 0 12px;line-height:1.6}
+.callout{padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--a3) 12%,var(--input));border:1px solid color-mix(in srgb,var(--a3) 40%,transparent);margin:4px 0 8px;line-height:1.5}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--input);border-radius:14px;padding:13px 14px;font-weight:700}
+.opt.right{border-color:var(--up);background:color-mix(in srgb,var(--up) 18%,transparent)}
+.opt.wrong{border-color:var(--down);background:color-mix(in srgb,var(--down) 18%,transparent)}
+
 /* деньги */
 .balance{border-radius:26px;padding:18px;margin-bottom:14px;color:#fff;background:radial-gradient(400px 200px at 100% 0,rgba(255,255,255,.25),transparent 60%),var(--grad);box-shadow:0 20px 50px -20px var(--a2);position:relative;overflow:hidden}
 .balance::after{content:"";position:absolute;right:-40px;bottom:-60px;width:180px;height:180px;border-radius:50%;border:24px solid rgba(255,255,255,.12)}
@@ -356,6 +385,7 @@ ul.list{list-style:none;margin:0;padding:0}
   </button>
 
   <div class="subtabs hidden" id="dealTabs"><button data-v="tasks">✓ Задачи</button><button data-v="missions">🚀 Миссии</button><button data-v="notes">✎ Заметки</button></div>
+  <div class="subtabs hidden" id="exTabs"><button data-v="habits">📈 Привычки</button><button data-v="market">🕯 Рынок</button><button data-v="academy">🎓 Академия</button></div>
   <div class="subtabs hidden" id="moneyTabs"><button data-v="wallet">💳 Кошелёк</button><button data-v="trades">📊 Сделки</button><button data-v="shop">🎁 Награды</button></div>
 
   <!-- ДЕНЬ -->
@@ -443,6 +473,51 @@ ul.list{list-style:none;margin:0;padding:0}
     </div>
   </section>
 
+  <!-- РЫНОК-СИМУЛЯТОР -->
+  <section id="v-market" class="hidden">
+    <div class="card">
+      <div class="ch"><span>Демо-счёт · виртуальные $</span><button class="btn soft sm" id="simReset">Сбросить</button></div>
+      <div class="bigstat num" id="simEq">$0</div>
+      <div class="sub" id="simEqCh"></div>
+      <div class="kpis">
+        <div class="kpi"><b class="num" id="simCash">—</b><span>свободно</span></div>
+        <div class="kpi"><b class="num" id="simWin">—</b><span>винрейт</span></div>
+        <div class="kpi"><b class="num" id="simTrades">0</b><span>сделок</span></div>
+      </div>
+    </div>
+    <div class="achips" id="simAssets"></div>
+    <div class="card">
+      <div class="row" style="align-items:flex-start"><div class="grow"><b id="simName" style="font-family:var(--fh)"></b><div class="sub" id="simDesc"></div></div>
+        <div style="text-align:right"><div class="bigstat num" id="simPx" style="font-size:22px"></div><div class="num" id="simCh" style="font-size:13px;font-weight:700"></div></div></div>
+      <canvas id="simChart"></canvas>
+      <div class="row" style="justify-content:space-between;margin-top:8px"><label class="row sub" style="cursor:pointer"><input type="checkbox" class="chk" id="simMA" checked> <span style="color:var(--a1);font-weight:800">MA20</span> скользящая средняя</label><span class="sub">1 свеча = 5 сек</span></div>
+    </div>
+    <div class="card">
+      <div class="subtabs" id="simSide" style="margin-bottom:12px"><button type="button" data-s="long" class="on">▲ Long · на рост</button><button type="button" data-s="short">▼ Short · на падение</button></div>
+      <div class="field"><label>Сумма сделки, $</label><input type="text" id="simAmt" inputmode="decimal" value="1000" autocomplete="off" style="font-family:var(--fh);font-weight:700">
+        <div class="chips" id="simQuick"><span class="chip" data-p="10">10%</span><span class="chip" data-p="25">25%</span><span class="chip" data-p="50">50%</span><span class="chip gold" data-p="risk">📐 под риск 1%</span></div></div>
+      <div class="row field"><div class="grow"><label class="sub">Стоп-лосс, %</label><input type="text" id="simSL" inputmode="decimal" placeholder="напр. 2" autocomplete="off"></div>
+        <div class="grow"><label class="sub">Тейк-профит, %</label><input type="text" id="simTP" inputmode="decimal" placeholder="напр. 4" autocomplete="off"></div></div>
+      <div class="risk" id="simRisk"></div>
+      <button class="btn full buy" id="simGo">Открыть сделку</button>
+      <div class="hint">Комиссия 0,1% за вход и выход. Сделки со стоп-лоссом приносят ₵ за дисциплину.</div>
+    </div>
+    <div class="card"><div class="ch"><span>Открытые позиции</span></div><div id="simPos"></div></div>
+    <div class="card"><div class="ch"><span>📰 Новости рынка</span></div><div id="simNews"></div></div>
+    <div class="card"><div class="ch"><span>История сделок</span></div><div id="simHist"></div></div>
+  </section>
+
+  <!-- АКАДЕМИЯ -->
+  <section id="v-academy" class="hidden">
+    <div class="card">
+      <div class="row"><div style="font-size:40px">🎓</div><div class="grow"><b style="font-family:var(--fh)">Академия трейдинга</b><div class="sub">Короткие уроки с тестами → практика в симуляторе → награды ₵</div></div></div>
+      <div class="pbar" style="margin-top:12px"><i id="acBar"></i></div>
+      <div class="sub" id="acText" style="margin-top:6px"></div>
+      <button class="btn full" id="acContinue" style="margin-top:12px">Продолжить обучение</button>
+    </div>
+    <div id="courseList"></div>
+  </section>
+
   <!-- КОШЕЛЁК -->
   <section id="v-wallet" class="hidden">
     <div class="balance">
@@ -510,7 +585,7 @@ ul.list{list-style:none;margin:0;padding:0}
   <button data-g="day" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(-28 12 12)"/></svg>День</button>
   <button data-g="deals"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5l2 2 3.5-4M3.5 15.5l2 2 3.5-4M13 7h8M13 16h8"/></svg>Дела</button>
   <button class="plus" id="captureBtn" aria-label="Быстро записать"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-  <button data-g="habits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5.5-5.5 4 3.5L21 6.5"/><path d="M15 6.5h6v6"/></svg>Биржа</button>
+  <button data-g="exchange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5.5-5.5 4 3.5L21 6.5"/><path d="M15 6.5h6v6"/></svg>Биржа</button>
   <button data-g="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="14" rx="3"/><path d="M3 11h18M16 15.5h2"/><path d="M6 6.5l9.5-3.5 2 3.5"/></svg>Капитал</button>
 </nav>
 <button class="fpill hidden" id="fpill"></button>
@@ -599,6 +674,7 @@ function normalize(raw){
   d.money = Object.assign({tx:[], jars:[], trades:[]}, d.money);
   for (const k of ['tx','jars','trades']) if (!Array.isArray(d.money[k])) d.money[k] = [];
   d.game = Object.assign({}, d.game);
+  d.academy = Object.assign({done:{}}, d.academy);
   d.settings = Object.assign({theme:'dark', cur:'₽', tcur:'$'}, d.settings);
   for (const p of d.plans) if (!Array.isArray(p.steps)) p.steps = [];
   for (const h of d.habits){ h.log = h.log || {}; h.days = Array.isArray(h.days) && h.days.length ? h.days : [0,1,2,3,4,5,6]; h.shares = h.shares || 0; h.cost = h.cost || 0; }
@@ -623,8 +699,8 @@ const HORIZONS = {week:'Неделя', month:'Месяц', year:'Год', life:'
 const MOODS = [['🌑','пусто'],['🌒','так себе'],['🌓','ровно'],['🌔','хорошо'],['🌕','сияю']];
 const PC = ['var(--a4)','var(--a2)','var(--a3)'];
 const QUESTIONS = ['Что сегодня принесло радость?','Чему я научился сегодня?','За что я благодарен сегодня?','Что можно было сделать лучше?','Какой момент дня хочется запомнить?','Что меня вдохновило?','Кому я сегодня помог — или кто помог мне?','Что меня удивило?','Что я сделал для своего здоровья?','Какой маленький шаг к большой цели я сделал?','Что я откладываю и почему?','Что бы я сказал себе утром этого дня?','С кем было приятно пообщаться?','Что дало энергию, а что её забрало?','Чем я горжусь сегодня?','Что я сделаю завтра иначе?'];
-const GROUP = {day:'day', tasks:'deals', missions:'deals', notes:'deals', habits:'habits', wallet:'money', trades:'money', shop:'money'};
-const TITLES = {day:'', tasks:'Дела', missions:'Дела', notes:'Дела', habits:'Биржа привычек', wallet:'Капитал', trades:'Капитал', shop:'Капитал'};
+const GROUP = {day:'day', tasks:'deals', missions:'deals', notes:'deals', habits:'exchange', market:'exchange', academy:'exchange', wallet:'money', trades:'money', shop:'money'};
+const TITLES = {day:'', tasks:'Дела', missions:'Дела', notes:'Дела', habits:'Биржа', market:'Биржа', academy:'Биржа', wallet:'Капитал', trades:'Капитал', shop:'Капитал'};
 const WDN = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
 const HABIT_EMOJI = ['💪','🏃','📚','💧','🧘','🛌','🥗','🦷','🇬🇧','💻','🎸','✍️','🚭','🌅','🧹','💊','🚶','🧠'];
 const CAT_OUT = [['food','🍔','Еда'],['transport','🚌','Транспорт'],['fun','🎮','Развлечения'],['shop','🛍','Покупки'],['home','🏠','Дом'],['phone','📱','Связь'],['study','📚','Учёба'],['health','💊','Здоровье'],['gift','🎁','Подарки'],['other','📦','Другое']];
@@ -645,7 +721,7 @@ const CAT_GUESS = [
 const CAT_GUESS_IN = [[/зарплат|зп|аванс/i,'salary'],[/подработ|фриланс|заказ/i,'side'],[/трейд|профит|сделк|крипт|акци/i,'trade'],[/карманн|родител|мама|папа/i,'pocket'],[/подар/i,'gift_in']];
 
 let view = 'day', curDay = todayIso(), taskFilter = 'active', planFilter = 'all';
-let lastDeals = 'tasks', lastMoney = 'wallet';
+let lastDeals = 'tasks', lastMoney = 'wallet', lastEx = 'habits';
 
 // ================= эффекты =================
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>t.classList.remove('show'), 2400); }
@@ -727,6 +803,10 @@ const ACH = [
   ['mission','🏆','Миссия','Заверши миссию', () => db.plans.some(p => p.archived)],
   ['contracts','📜','Наёмник','10 контрактов', () => db.ledger.filter(l => l.ref.startsWith('quest:')).length >= 10],
   ['lvl10','👑','Командир','Достигни 10 уровня', () => levelInfo().L >= 10],
+  ['paper','🕯','Демо-трейдер','Сделка в симуляторе', () => simAll().length > 0],
+  ['disc','🛡','Железная дисциплина','10 сделок со стопом', () => db.sim.hist.filter(t => t.sl).length >= 10],
+  ['plus10','💹','Плюс 10%','+10% на демо-счёте', () => simEquity() >= db.sim.start * 1.1],
+  ['grad','🎓','Выпускник','Вся Академия пройдена', () => LESSONS.every(l => db.academy.done[l.id])],
 ];
 function checkAch(){
   if (!Array.isArray(db.game.ach)){ db.game.ach = ACH.filter(a => a[4]()).map(a => a[0]); save(); return; }
@@ -760,7 +840,7 @@ function drawBgSky(){
     x.beginPath(); x.arc(r()*w, r()*h, Math.pow(r(),3)*1.3+.25, 0, 7); x.fill();
   }
 }
-let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawBgSky(); if ($('#sky').classList.contains('open')) layoutSky(); }, 150); });
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawBgSky(); if ($('#sky').classList.contains('open')) layoutSky(); if (view === 'market') drawSimChart(); }, 150); });
 
 // ================= графики =================
 let sparkN = 0;
@@ -835,17 +915,19 @@ function setView(v){
   view = v;
   if (GROUP[v] === 'deals') lastDeals = v;
   if (GROUP[v] === 'money') lastMoney = v;
+  if (GROUP[v] === 'exchange') lastEx = v;
   for (const k of Object.keys(GROUP)){ const el = $('#v-'+k); el.classList.toggle('hidden', k !== v); if (k === v){ el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); } }
   $$('.dock [data-g]').forEach(b => b.classList.toggle('on', b.dataset.g === GROUP[v]));
   $('#dealTabs').classList.toggle('hidden', GROUP[v] !== 'deals');
   $('#moneyTabs').classList.toggle('hidden', GROUP[v] !== 'money');
+  $('#exTabs').classList.toggle('hidden', GROUP[v] !== 'exchange');
   $$('.subtabs [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   render(); scrollTo(0,0);
 }
 function render(){
   checkAch();
   renderHeader(); renderHud();
-  ({day:renderDay, tasks:renderTasks, missions:renderMissions, notes:renderNotes, habits:renderHabits, wallet:renderWallet, trades:renderTrades, shop:renderShop})[view]();
+  ({day:renderDay, tasks:renderTasks, missions:renderMissions, notes:renderNotes, habits:renderHabits, market:renderMarket, academy:renderAcademy, wallet:renderWallet, trades:renderTrades, shop:renderShop})[view]();
 }
 function renderHeader(){
   const h = new Date().getHours();
@@ -1031,6 +1113,8 @@ const QUESTS = {
   money:  {i:'💳', t:'Запиши доход или расход', c:10, xp:5, p:d => [db.money.tx.some(t => t.date === d) ? 1 : 0, 1]},
   note:   {i:'✎', t:'Сохрани мысль в заметки', c:10, xp:5, p:d => [db.notes.some(n => iso(new Date(n.updatedAt)) === d) ? 1 : 0, 1]},
   urgent: {i:'🔥', t:'Закрой срочную или важную задачу', c:25, xp:20, p:d => [db.tasks.some(t => doneOn(t,d) && t.prio) ? 1 : 0, 1]},
+  lesson: {i:'🎓', t:'Пройди урок в Академии трейдинга', c:20, xp:15, need:() => LESSONS.some(l => !db.academy.done[l.id]), p:d => [db.ledger.some(l => l.ref.startsWith('lesson:') && iso(new Date(l.at)) === d) ? 1 : 0, 1]},
+  simsl:  {i:'🛡', t:'Закрой сделку со стоп-лоссом в симуляторе', c:15, xp:10, p:d => [db.sim.hist.some(t => t.sl && iso(new Date(t.closedAt)) === d) ? 1 : 0, 1]},
 };
 function questsFor(d){
   const keys = Object.keys(QUESTS).filter(k => !QUESTS[k].need || QUESTS[k].need()).sort();
@@ -1160,9 +1244,9 @@ function editHabit(id){
     save(); closeModal(); render();
   };
   if (id) $('#mDel').onclick = () => {
-    if (!confirm('Удалить привычку и её историю?' + (h.shares ? ' Акции будут проданы по текущей цене.' : ''))) return;
+    ask('Удалить привычку и её историю?' + (h.shares ? ' Акции будут проданы по текущей цене.' : ''), () => {
     if (h.shares){ const p = Math.round(h.shares * habitStats(h).price); db.ledger.push({ref:'sell:'+uid(), c:p, xp:0, r:`Продажа ${h.ticker} при делистинге`, at:Date.now()}); }
-    db.habits = db.habits.filter(x => x.id !== id); save(); closeModal(); render();
+    db.habits = db.habits.filter(x => x.id !== id); save(); closeModal(); render(); }, 'Удалить');
   };
 }
 function habitDetail(id){
@@ -1312,7 +1396,7 @@ function editNote(id){
     if (id) Object.assign(n, data); else db.notes.push({id:uid(), ...data});
     save(); closeModal(); render();
   };
-  if (id) $('#mDel').onclick = () => { if (confirm('Удалить заметку?')){ db.notes = db.notes.filter(x => x.id !== id); save(); closeModal(); render(); } };
+  if (id) $('#mDel').onclick = () => { ask('Удалить заметку?', () => { db.notes = db.notes.filter(x => x.id !== id); save(); closeModal(); render(); }); };
 }
 function openCapsule(id){
   const c = db.capsules.find(x => x.id === id); if (!c) return;
@@ -1333,7 +1417,7 @@ function openCapsule(id){
       <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span><button class="btn" id="mCancel">Закрыть</button></div>`);
     if (first) setTimeout(() => { burst($('#modal h3')); floatText($('#modal h3'), '+30 ₵'); }, 250);
   }
-  $('#mDel').onclick = () => { if (confirm('Удалить капсулу?')){ db.capsules = db.capsules.filter(x => x.id !== id); save(); closeModal(); render(); } };
+  $('#mDel').onclick = () => { ask('Удалить капсулу?', () => { db.capsules = db.capsules.filter(x => x.id !== id); save(); closeModal(); render(); }); };
 }
 
 // ================= МИССИИ =================
@@ -1391,7 +1475,7 @@ function editPlan(id){
     } else db.plans.push({id:uid(), ...data, steps:[], archived:false, createdAt:Date.now()});
     save(); closeModal(); render();
   };
-  if (id) $('#mDel').onclick = () => { if (confirm('Удалить миссию со всеми этапами?')){ db.plans = db.plans.filter(x => x.id !== id); save(); closeModal(); render(); } };
+  if (id) $('#mDel').onclick = () => { ask('Удалить миссию со всеми этапами?', () => { db.plans = db.plans.filter(x => x.id !== id); save(); closeModal(); render(); }); };
 }
 
 // ================= КОШЕЛЁК =================
@@ -1481,7 +1565,7 @@ function jarModal(id){
     save(); closeModal(); render();
   };
   $('#mIn').onclick = () => move(1); $('#mOut').onclick = () => move(-1);
-  $('#mDel').onclick = () => { if (confirm(`Удалить копилку?${j.saved ? ' Деньги вернутся на баланс.' : ''}`)){ if (j.saved) db.money.tx.push({id:uid(), type:'in', amount:j.saved, cat:'jar', note:`Из копилки: ${j.name}`, date:todayIso(), at:Date.now()}); db.money.jars = db.money.jars.filter(x => x.id !== id); save(); closeModal(); render(); } };
+  $('#mDel').onclick = () => { ask(`Удалить копилку?${j.saved ? ' Деньги вернутся на баланс.' : ''}`, () => { if (j.saved) db.money.tx.push({id:uid(), type:'in', amount:j.saved, cat:'jar', note:`Из копилки: ${j.name}`, date:todayIso(), at:Date.now()}); db.money.jars = db.money.jars.filter(x => x.id !== id); save(); closeModal(); render(); }); };
 }
 
 // ================= ЖУРНАЛ СДЕЛОК =================
@@ -1573,6 +1657,483 @@ $('#newReward').onclick = () => {
     db.shop.push({id:uid(), emoji:$('#mEmo').value.trim() || '🎁', name, price}); save(); closeModal(); render();
   };
 };
+
+// ================= подтверждение (своё окно вместо confirm) =================
+function ask(msg, fn, yes){
+  openModal(`<h3 style="line-height:1.35">${esc(msg)}</h3><div class="actions"><button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mYes">${esc(yes || 'Да')}</button></div>`);
+  $('#mYes').onclick = () => { closeModal(); fn(); };
+}
+
+// ================= РЫНОК-СИМУЛЯТОР =================
+const SIM_ASSETS = [
+  {id:'ORB',  name:'Орбита Индастриз', emoji:'🛰', p0:100,  vol:.0035, d:2, desc:'Крупная надёжная компания. Двигается спокойно — лучший старт.'},
+  {id:'GLDX', name:'Звёздное золото',  emoji:'🥇', p0:1850, vol:.0025, d:1, desc:'«Тихая гавань»: медленные плавные тренды.'},
+  {id:'MRS',  name:'Марс Майнинг',     emoji:'⛏', p0:42,   vol:.007,  d:2, desc:'Добыча на Марсе. Сильно реагирует на новости.'},
+  {id:'NOVA', name:'Нова-коин',        emoji:'🪙', p0:3.5,  vol:.016,  d:4, desc:'Криптовалюта: очень волатильная. Держи позицию маленькой!'},
+];
+const SIM_START = 10000, TICK_MS = 1000, TPC = 5, FEE = .001, MAX_CANDLES = 160;
+const NEWS = {
+  ORB:  [['Орбита Индастриз отчиталась о рекордной прибыли', 1], ['Орбита Индастриз отозвала партию спутников', -1], ['Орбита Индастриз получила госзаказ', 1]],
+  GLDX: [['Инвесторы бегут в «тихую гавань» — спрос на золото растёт', 1], ['Найдено огромное месторождение звёздного золота', -1]],
+  MRS:  [['Марс Майнинг нашла лёд на глубине 2 км', 1], ['Пыльная буря остановила шахты Марс Майнинг', -1], ['Марс Майнинг подписала контракт с Землёй', 1], ['У Марс Майнинг сменился директор — инвесторы нервничают', -1]],
+  NOVA: [['Крупная биржа добавила Нова-коин', 1], ['Хакеры атаковали кошельки Нова-коин', -1], ['Знаменитость написала пост про Нова-коин', 1], ['Регулятор пригрозил запретить Нова-коин', -1]],
+};
+const SA = id => SIM_ASSETS.find(a => a.id === id);
+const px = (id, v) => Number(v).toLocaleString('ru-RU', {minimumFractionDigits:SA(id).d, maximumFractionDigits:SA(id).d});
+const usd = v => `${v < 0 ? '−' : ''}$${fmtN(Math.abs(v))}`;
+function gauss(){ let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v); }
+function simStep(st, a, price){
+  if (Math.random() < .02) st.drift = gauss() * a.vol * .12;
+  st.vm += (1 - st.vm) * .05 + (Math.random() < .01 ? Math.random() * 1.5 : 0);
+  let r = st.drift - .002 * Math.log(price / a.p0) + a.vol * st.vm * gauss();
+  if (st.nt > 0){ r += st.nd * a.vol * .8; st.nt--; }
+  return price * Math.exp(r);
+}
+function simGen(a){
+  const st = {candles:[], cur:null, drift:0, vm:1, ticks:0, nt:0, nd:0};
+  let p = a.p0;
+  for (let i = 0; i < 120; i++){
+    const o = p; let h = p, l = p;
+    for (let k = 0; k < TPC; k++){ p = simStep(st, a, p); h = Math.max(h, p); l = Math.min(l, p); }
+    st.candles.push({o, h, l, c:p});
+  }
+  st.cur = {o:p, h:p, l:p, c:p};
+  return st;
+}
+function simInit(){
+  if (db.sim && db.sim.assets) return;
+  db.sim = {cash:SIM_START, start:SIM_START, assets:{}, pos:[], hist:[], news:[], sel:'ORB', ma:true, resets:0};
+  for (const a of SIM_ASSETS) db.sim.assets[a.id] = simGen(a);
+}
+const simPrice = id => db.sim.assets[id].cur.c;
+const simAll = () => [...db.sim.pos, ...db.sim.hist];
+const simPosValue = (p, price = simPrice(p.asset)) => p.side === 'long' ? p.qty * price : p.qty * (2*p.entry - price);
+const simPnl = (p, price = simPrice(p.asset)) => (p.side === 'long' ? price - p.entry : p.entry - price) * p.qty;
+const simEquity = () => db.sim.cash + db.sim.pos.reduce((a, p) => a + Math.max(0, simPosValue(p)), 0);
+function simChange(id){ const st = db.sim.assets[id], base = st.candles[Math.max(0, st.candles.length - 60)].o; return st.cur.c / base - 1; }
+
+function simTick(){
+  const s = db.sim; let closed = false;
+  for (const a of SIM_ASSETS){
+    const st = s.assets[a.id], c = st.cur;
+    const p = simStep(st, a, c.c);
+    c.c = p; c.h = Math.max(c.h, p); c.l = Math.min(c.l, p);
+    st.ticks++;
+    if (st.ticks % TPC === 0){ st.candles.push({...c}); if (st.candles.length > MAX_CANDLES) st.candles.shift(); st.cur = {o:p, h:p, l:p, c:p}; closed = true; }
+    if (!st.nt && Math.random() < .0025){
+      const list = NEWS[a.id], n = list[Math.floor(Math.random() * list.length)];
+      st.nt = 6 + Math.floor(Math.random() * 7); st.nd = n[1];
+      s.news.unshift({id:a.id, t:n[0], d:n[1], at:Date.now()}); s.news = s.news.slice(0, 8);
+      if (view === 'market'){ toast('📰 ' + n[0]); renderSimNews(); }
+    }
+  }
+  for (const pos of s.pos.slice()){
+    const p = simPrice(pos.asset), L = pos.side === 'long';
+    if (pos.sl && (L ? p <= pos.sl : p >= pos.sl)) simClose(pos.id, pos.sl, 'стоп-лосс');
+    else if (pos.tp && (L ? p >= pos.tp : p <= pos.tp)) simClose(pos.id, pos.tp, 'тейк-профит');
+  }
+  if (closed) save();
+  if (view === 'market' && !$('#modalBg').classList.contains('open')) simLive();
+}
+function simOpen(side, amt, slPct, tpPct){
+  const s = db.sim, id = s.sel, p = simPrice(id), L = side === 'long', fee = amt * FEE, eq = simEquity();
+  if (amt + fee > s.cash) return toast(`Не хватает средств: свободно ${usd(s.cash)}`);
+  const sl = slPct ? p * (1 + (L ? -1 : 1) * slPct/100) : null;
+  const tp = tpPct ? p * (1 + (L ? 1 : -1) * tpPct/100) : null;
+  s.cash -= amt + fee;
+  s.pos.push({id:uid(), asset:id, side, qty:amt/p, entry:p, sl, tp, fee, at:Date.now(), riskPct:(sl ? amt*slPct/100 : amt) / eq * 100});
+  reward('simfirst', 10, 20, 'Первая сделка в симуляторе', $('#simGo'));
+  save(); render();
+  toast(`${L ? '▲ Long' : '▼ Short'} ${id} по ${px(id, p)} открыт`);
+}
+function simClose(pid, price, reason){
+  const s = db.sim, pos = s.pos.find(x => x.id === pid); if (!pos) return;
+  price = price ?? simPrice(pos.asset);
+  const val = Math.max(0, simPosValue(pos, price)), fee = val * FEE;
+  s.cash += val - fee;
+  const pnl = simPnl(pos, price) - pos.fee - fee;
+  s.pos = s.pos.filter(x => x.id !== pid);
+  s.hist.unshift({...pos, exit:price, closedAt:Date.now(), pnl, reason: reason || 'вручную'}); s.hist = s.hist.slice(0, 200);
+  if (pos.sl){
+    const t0 = todayIso(), n = db.ledger.filter(l => l.ref.startsWith('simdisc:' + t0)).length;
+    if (n < 5) reward(`simdisc:${t0}:${pid}`, 5, 5, 'Дисциплина: сделка со стоп-лоссом');
+  }
+  save();
+  const head = reason === 'стоп-лосс' ? '🛑 Сработал стоп-лосс · ' : reason === 'тейк-профит' ? '🎯 Тейк-профит! · ' : '';
+  toast(`${head}${pos.asset}: ${pnl >= 0 ? '+' : '−'}$${fmtN(Math.abs(pnl))}`);
+  if (view === 'market') render(); else renderHud();
+}
+
+let simSide = 'long';
+function renderMarket(){
+  const s = db.sim, a = SA(s.sel);
+  $('#simAssets').innerHTML = SIM_ASSETS.map(x => `<button class="achip ${x.id === s.sel ? 'on' : ''}" data-a="${x.id}"><span>${x.emoji} ${x.id}</span><b class="num" id="ap-${x.id}"></b><small class="num" id="ac-${x.id}"></small></button>`).join('');
+  $('#simName').textContent = `${a.emoji} ${a.name}`;
+  $('#simDesc').textContent = a.desc;
+  $$('#simSide button').forEach(b => b.classList.toggle('on', b.dataset.s === simSide));
+  $('#simMA').checked = s.ma !== false;
+  renderSimPos(); renderSimHist(); renderSimNews();
+  simLive(); simRiskUpd();
+}
+function renderSimPos(){
+  const s = db.sim;
+  $('#simPos').innerHTML = s.pos.length ? s.pos.map(p => `<div class="tx" data-id="${p.id}"><span class="ico">${SA(p.asset).emoji}</span>
+    <div class="grow"><div class="row"><b>${p.asset}</b><span class="side ${p.side}">${p.side.toUpperCase()}</span></div>
+      <div class="sub num">${usd(p.qty*p.entry)} · вход ${px(p.asset, p.entry)}${p.sl ? ` · SL ${px(p.asset, p.sl)}` : ' · без стопа ⚠'}${p.tp ? ` · TP ${px(p.asset, p.tp)}` : ''}</div></div>
+    <div style="text-align:right"><div class="amt num" id="pp-${p.id}"></div><div class="sub num" id="pq-${p.id}"></div></div>
+    <button class="btn soft sm" data-act="simclose">Закрыть</button></div>`).join('')
+    : '<div class="empty">Нет открытых сделок. Выбери актив, поставь стоп-лосс и открой первую — деньги виртуальные.</div>';
+  $('#simPos').dataset.n = s.pos.length;
+}
+function renderSimHist(){
+  const h = db.sim.hist.slice(0, 15);
+  $('#simHist').innerHTML = h.length ? h.map(t => `<div class="tx"><span class="ico">${t.pnl >= 0 ? '✅' : '🔻'}</span>
+    <div class="grow"><div class="row"><b>${t.asset}</b><span class="side ${t.side}">${t.side.toUpperCase()}</span>${t.sl ? '<span class="chip" style="padding:1px 6px">🛡 SL</span>' : ''}</div>
+      <div class="sub num">${px(t.asset, t.entry)} → ${px(t.asset, t.exit)} · ${esc(t.reason)}</div></div>
+    <span class="amt num ${t.pnl >= 0 ? 'up' : 'down'}">${t.pnl >= 0 ? '+' : '−'}$${fmtN(Math.abs(t.pnl))}</span></div>`).join('')
+    : '<div class="empty">Здесь появятся закрытые сделки. Анализируй их: что сработало, а что нет.</div>';
+}
+function renderSimNews(){
+  const n = db.sim.news;
+  $('#simNews').innerHTML = n.length ? n.map(x => `<div class="news"><span>${x.d > 0 ? '🟢' : '🔴'}</span><div class="grow"><b>${x.id}</b> · ${esc(x.t)}<div class="sub">${new Date(x.at).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'})}</div></div></div>`).join('')
+    : '<div class="empty">Пока тихо. Новости появляются внезапно и двигают цену — следи за ними.</div>';
+}
+function simLive(){
+  const s = db.sim;
+  for (const x of SIM_ASSETS){
+    const el = $('#ap-' + x.id); if (!el) continue;
+    el.textContent = px(x.id, simPrice(x.id));
+    const ch = simChange(x.id), c = $('#ac-' + x.id);
+    c.textContent = `${ch >= 0 ? '▲' : '▼'} ${Math.abs(ch*100).toFixed(2)}%`; c.className = 'num ' + (ch >= 0 ? 'up' : 'down');
+  }
+  const id = s.sel, ch = simChange(id);
+  $('#simPx').textContent = px(id, simPrice(id));
+  $('#simCh').innerHTML = `<span class="${ch >= 0 ? 'up' : 'down'}">${ch >= 0 ? '▲' : '▼'} ${Math.abs(ch*100).toFixed(2)}%</span>`;
+  const eq = simEquity(), r = eq / s.start - 1;
+  $('#simEq').textContent = usd(eq);
+  $('#simEqCh').innerHTML = `<span class="${r >= 0 ? 'up' : 'down'}">${r >= 0 ? '+' : '−'}${Math.abs(r*100).toFixed(2)}% · ${usd(eq - s.start)}</span> с начала`;
+  $('#simCash').textContent = usd(s.cash);
+  const closed = s.hist.length, wins = s.hist.filter(t => t.pnl > 0).length;
+  $('#simWin').textContent = closed ? Math.round(wins/closed*100) + '%' : '—';
+  $('#simTrades').textContent = closed;
+  if (+$('#simPos').dataset.n !== s.pos.length) renderSimPos();
+  for (const p of s.pos){
+    const e = $('#pp-' + p.id); if (!e) continue;
+    const pl = simPnl(p);
+    e.textContent = `${pl >= 0 ? '+' : '−'}$${fmtN(Math.abs(pl))}`; e.className = 'amt num ' + (pl >= 0 ? 'up' : 'down');
+    $('#pq-' + p.id).textContent = `${pl >= 0 ? '+' : ''}${(pl / (p.qty*p.entry) * 100).toFixed(2)}%`;
+  }
+  drawSimChart();
+}
+function drawSimChart(){
+  const c = $('#simChart'); if (!c || !c.offsetWidth) return;
+  const dpr = Math.min(devicePixelRatio || 1, 2), w = c.offsetWidth, h = c.offsetHeight;
+  if (c.width !== Math.round(w*dpr) || c.height !== Math.round(h*dpr)){ c.width = Math.round(w*dpr); c.height = Math.round(h*dpr); }
+  const x = c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,w,h);
+  const cs = getComputedStyle(document.documentElement), col = n => cs.getPropertyValue(n).trim();
+  const UP = col('--up'), DN = col('--down'), MU = col('--muted'), LN = col('--line'), A1 = col('--a1'), TX = col('--text');
+  const id = db.sim.sel, st = db.sim.assets[id], all = [...st.candles, st.cur];
+  const axis = 58, n = Math.max(24, Math.min(70, Math.floor((w - axis) / 7))), vis = all.slice(-n), off = all.length - vis.length;
+  const ma = [];
+  for (let i = off; i < all.length; i++){ if (i < 19){ ma.push(null); continue; } let sum = 0; for (let k = i-19; k <= i; k++) sum += all[k].c; ma.push(sum / 20); }
+  let lo = Math.min(...vis.map(k => k.l)), hi = Math.max(...vis.map(k => k.h));
+  const pos = db.sim.pos.filter(p => p.asset === id);
+  for (const p of pos) for (const v of [p.entry, p.sl, p.tp]) if (v && v > lo*.9 && v < hi*1.1){ lo = Math.min(lo, v); hi = Math.max(hi, v); }
+  const pd = (hi - lo) * .08 || hi * .01; lo -= pd; hi += pd;
+  const Y = v => 6 + (1 - (v - lo) / (hi - lo)) * (h - 12), cw = (w - axis) / n;
+  x.font = '600 10px Manrope, system-ui, sans-serif'; x.textBaseline = 'middle';
+  for (let i = 0; i <= 4; i++){
+    const v = lo + (hi - lo) * i / 4, y = Y(v);
+    x.strokeStyle = LN; x.lineWidth = 1; x.beginPath(); x.moveTo(0, y); x.lineTo(w - axis, y); x.stroke();
+    x.fillStyle = MU; x.fillText(px(id, v), w - axis + 6, Math.min(h - 6, Math.max(6, y)));
+  }
+  vis.forEach((k, i) => {
+    const cx = i*cw + cw/2, color = k.c >= k.o ? UP : DN;
+    x.strokeStyle = color; x.fillStyle = color; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(cx, Y(k.h)); x.lineTo(cx, Y(k.l)); x.stroke();
+    const y1 = Y(Math.max(k.o, k.c)), y2 = Y(Math.min(k.o, k.c));
+    x.fillRect(cx - cw*.36, y1, Math.max(1, cw*.72), Math.max(1, y2 - y1));
+  });
+  if (db.sim.ma !== false){
+    x.strokeStyle = A1; x.lineWidth = 1.8; x.beginPath(); let started = false;
+    ma.forEach((v, i) => { if (v == null) return; const X = i*cw + cw/2; if (started) x.lineTo(X, Y(v)); else { x.moveTo(X, Y(v)); started = true; } });
+    x.stroke();
+  }
+  const hline = (v, color, label) => {
+    if (v < lo || v > hi) return; const y = Y(v);
+    x.setLineDash([4,4]); x.strokeStyle = color; x.lineWidth = 1; x.beginPath(); x.moveTo(0, y); x.lineTo(w - axis, y); x.stroke(); x.setLineDash([]);
+    x.fillStyle = color; x.fillText(label, 4, y - 8);
+  };
+  for (const p of pos){ hline(p.entry, TX, `${p.side === 'long' ? 'LONG' : 'SHORT'} ${px(id, p.entry)}`); if (p.sl) hline(p.sl, DN, 'SL стоп'); if (p.tp) hline(p.tp, UP, 'TP цель'); }
+  const last = st.cur.c, ly = Y(last), lc = st.cur.c >= st.cur.o ? UP : DN;
+  x.setLineDash([2,3]); x.strokeStyle = lc; x.beginPath(); x.moveTo(0, ly); x.lineTo(w - axis, ly); x.stroke(); x.setLineDash([]);
+  const lbl = px(id, last); x.fillStyle = lc;
+  x.beginPath(); if (x.roundRect) x.roundRect(w - axis + 1, ly - 9, axis - 1, 18, 5); else x.rect(w - axis + 1, ly - 9, axis - 1, 18); x.fill();
+  x.fillStyle = '#fff'; x.fillText(lbl, w - axis + 5, ly);
+}
+function simTicketVals(){
+  const sl = $('#simSL').value.trim(), tp = $('#simTP').value.trim();
+  return {amt:num($('#simAmt').value), sl: sl ? num(sl) : 0, tp: tp ? num(tp) : 0};
+}
+function simRiskUpd(){
+  const {amt, sl, tp} = simTicketVals(), eq = simEquity(), box = $('#simRisk'), go = $('#simGo');
+  go.textContent = `${simSide === 'long' ? '▲ Купить' : '▼ Продать'} ${db.sim.sel}${amt > 0 ? ' на ' + usd(amt) : ''}`;
+  go.className = 'btn full ' + (simSide === 'long' ? 'buy' : 'sell');
+  if (!(amt > 0)){ box.className = 'risk'; box.textContent = 'Введи сумму сделки'; return; }
+  if (!(sl > 0)){ box.className = 'risk bad'; box.innerHTML = `⚠ Без стоп-лосса твой риск — вся сумма: <b>${usd(amt)}</b> (${(amt/eq*100).toFixed(1)}% счёта). Поставь стоп — это главное правило трейдера.`; return; }
+  const risk = amt * sl / 100, rp = risk / eq * 100, good = rp <= 2.05;
+  box.className = 'risk ' + (good ? 'ok' : 'bad');
+  box.innerHTML = `Риск: <b>${usd(risk)}</b> (${rp.toFixed(2)}% счёта) ${good ? '✓ в норме' : '⚠ больше 2% — уменьши сумму или стоп'}` +
+    (tp > 0 ? `<br>Цель: <b class="up">+${usd(amt*tp/100)}</b> · R:R = 1:${(tp/sl).toFixed(1)}${tp/sl < 1.5 ? ' — маловато, лучше от 1:2' : ' ✓'}` : '<br>Добавь тейк-профит — увидишь соотношение риск/прибыль');
+}
+$('#simAssets').onclick = e => { const b = e.target.closest('[data-a]'); if (!b) return; db.sim.sel = b.dataset.a; save(); renderMarket(); };
+$('#simSide').onclick = e => { const b = e.target.closest('[data-s]'); if (!b) return; simSide = b.dataset.s; $$('#simSide button').forEach(x => x.classList.toggle('on', x === b)); simRiskUpd(); };
+$('#simMA').onchange = () => { db.sim.ma = $('#simMA').checked; save(); drawSimChart(); };
+['#simAmt', '#simSL', '#simTP'].forEach(sel => $(sel).oninput = simRiskUpd);
+$('#simQuick').onclick = e => {
+  const b = e.target.closest('[data-p]'); if (!b) return;
+  if (b.dataset.p === 'risk'){
+    const sl = simTicketVals().sl;
+    if (!(sl > 0)){ toast('Сначала укажи стоп-лосс в %'); $('#simSL').focus(); return; }
+    $('#simAmt').value = Math.floor(Math.min(db.sim.cash * .99, simEquity() * .01 / (sl/100)));
+  } else $('#simAmt').value = Math.floor(db.sim.cash * +b.dataset.p / 100);
+  simRiskUpd();
+};
+$('#simGo').onclick = () => {
+  const {amt, sl, tp} = simTicketVals();
+  if (!(amt > 0)) return $('#simAmt').focus();
+  if (sl && !(sl > 0 && sl < 50)) return toast('Стоп-лосс — от 0 до 50%');
+  if (tp && !(tp > 0 && tp < 200)) return toast('Тейк-профит — от 0 до 200%');
+  simOpen(simSide, amt, sl, tp);
+};
+$('#simReset').onclick = () => ask('Сбросить демо-счёт до $10 000? История сделок удалится.', () => {
+  const r = (db.sim.resets || 0) + 1; db.sim = null; simInit(); db.sim.resets = r; save(); renderMarket(); toast('Новый демо-счёт: $10 000');
+}, 'Сбросить');
+
+// ================= АКАДЕМИЯ =================
+const COURSE = [
+{id:'m1', emoji:'🌍', title:'Основы рынка', lessons:[
+  {id:'l1', title:'Что такое рынок', body:[
+    'Рынок — это место, где встречаются **покупатели** и **продавцы**. Цена — просто последняя сделка между ними.',
+    'Если покупателей больше и они готовы платить дороже — цена **растёт**. Если сильнее продавцы — **падает**. Вот и вся «магия» графиков.',
+    '**Инвестор** покупает надолго (годы) и верит в рост компании. **Трейдер** зарабатывает на движениях цены за минуты, дни или недели.',
+    '💡 Трейдинг — это не угадайка, а управление вероятностями и риском. Профи ошибаются часто, но теряют мало, а зарабатывают много.'],
+   quiz:[
+    {q:'Почему цена актива растёт?', a:['Так решила биржа','Покупателей больше, и они готовы платить дороже','Просто прошло время'], ok:1, why:'Цена двигается от баланса спроса и предложения.'},
+    {q:'Чем трейдер отличается от инвестора?', a:['Трейдер зарабатывает на коротких движениях цены','Трейдер никогда не теряет деньги','Ничем'], ok:0, why:'Инвестор держит годами, трейдер ловит движения внутри дней и недель.'}],
+   practice:{t:'Открой свою первую сделку в симуляторе', ok:() => simAll().length > 0}},
+  {id:'l2', title:'Лонг и шорт', body:[
+    '**Лонг (long)** — покупка в расчёте на рост. Купил за 100, продал за 110 — заработал 10.',
+    '**Шорт (short)** — ставка на падение. Ты продаёшь актив, взятый в долг у брокера, а потом откупаешь дешевле. Продал за 100, откупил за 90 — заработал 10.',
+    'В шорте есть ловушка: цена может расти сколько угодно, значит убыток теоретически не ограничен. Поэтому в шорте **стоп-лосс обязателен**.',
+    '💡 Хороший трейдер умеет зарабатывать и на росте, и на падении — главное, по направлению рынка.'],
+   quiz:[
+    {q:'Ты открыл шорт по 50. Цена упала до 45. Что с позицией?', a:['Убыток','Прибыль','Ничего'], ok:1, why:'Шорт зарабатывает на падении: продал по 50, откупаешь по 45.'},
+    {q:'Почему шорт опаснее лонга?', a:['Цена может расти без ограничений','Шорты запрещены','Шорты всегда убыточны'], ok:0, why:'Падение ограничено нулём, а рост — нет.'}],
+   practice:{t:'Открой шорт-сделку в симуляторе', ok:() => simAll().some(t => t.side === 'short')}},
+  {id:'l3', title:'Ордера и комиссии', body:[
+    '**Рыночный ордер** — купить или продать прямо сейчас по текущей цене. Быстро, но цена может немного «проскользнуть».',
+    '**Лимитный ордер** — «купи, только если цена опустится до X». Исполнится не всегда, зато по твоей цене.',
+    '**Стоп-ордер** срабатывает, когда цена доходит до уровня. Самый важный — **стоп-лосс**: он автоматически закрывает убыточную сделку.',
+    'Каждая сделка стоит денег: **комиссия** брокера и **спред**. В симуляторе комиссия 0,1% за вход и выход. Частые сделки «съедают» депозит.'],
+   quiz:[
+    {q:'Какой ордер исполнится сразу по текущей цене?', a:['Лимитный','Рыночный','Стоп-лосс'], ok:1, why:'Рыночный ордер исполняется немедленно.'},
+    {q:'Зачем нужен стоп-лосс?', a:['Чтобы автоматически ограничить убыток','Чтобы удвоить прибыль','Он не нужен'], ok:0, why:'Стоп-лосс закрывает сделку, когда цена ушла против тебя до заданного уровня.'},
+    {q:'100 сделок по $1000, комиссия 0,1% за вход и выход. Сколько ушло на комиссии?', a:['$20','$200','$2000'], ok:1, why:'$1000 × 0,1% × 2 = $2 за сделку, × 100 = $200.'}]},
+]},
+{id:'m2', emoji:'🕯', title:'Читаем график', lessons:[
+  {id:'l4', title:'Японские свечи', body:[
+    'Каждая свеча показывает 4 цены за период: **открытие, максимум, минимум, закрытие**.',
+    '**Зелёная** свеча закрылась выше открытия (цена выросла), **красная** — ниже. Толстая часть — **тело**, тонкие линии — **тени**.',
+    'Длинная **верхняя тень**: покупатели толкали цену вверх, но продавцы сбили её обратно. Длинная **нижняя** — наоборот, покупатели выкупили падение.',
+    '💡 В симуляторе одна свеча = 5 секунд. Понаблюдай минуту, как свеча «рисуется» в реальном времени.'],
+   quiz:[
+    {q:'Свеча открылась на 100, закрылась на 96. Какого она цвета?', a:['Зелёная','Красная'], ok:1, why:'Закрытие ниже открытия — свеча красная.'},
+    {q:'О чём говорит длинная верхняя тень?', a:['Продавцы сбили цену с максимума','Цена росла весь период','Ни о чём'], ok:0, why:'Цену поднимали, но к закрытию продавцы её опустили.'}]},
+  {id:'l5', title:'Тренд', body:[
+    '**Восходящий тренд** — каждый следующий максимум и минимум выше предыдущего (лесенка вверх). **Нисходящий** — лесенка вниз.',
+    '**Боковик (флэт)** — цена ходит в коридоре без явного направления. Здесь многие теряют деньги, пытаясь угадать.',
+    'Главное правило: **«Тренд — твой друг»**. В восходящем тренде ищи лонги, в нисходящем — шорты.',
+    '💡 Открой график в симуляторе: сейчас там тренд вверх, вниз или боковик?'],
+   quiz:[
+    {q:'Максимумы и минимумы становятся всё выше. Это…', a:['Нисходящий тренд','Восходящий тренд','Боковик'], ok:1, why:'Растущая «лесенка» — восходящий тренд.'},
+    {q:'Рынок в нисходящем тренде. Что логичнее искать?', a:['Лонг','Шорт','Купить всё подряд'], ok:1, why:'Торгуем по тренду: в падении — шорты.'}]},
+  {id:'l6', title:'Поддержка и сопротивление', body:[
+    '**Поддержка** — уровень, где цена несколько раз останавливала падение: там много покупателей. **Сопротивление** — уровень, где рост упирался в продавцов.',
+    'Когда сопротивление **пробито**, оно часто становится новой поддержкой — и наоборот.',
+    'Бывают **ложные пробои**: цена выходит за уровень и резко возвращается. Опытные трейдеры ждут подтверждения — закрытия свечи за уровнем.',
+    '💡 Стоп-лосс удобно ставить чуть **за** уровнем: если уровень сломался — идея не сработала.'],
+   quiz:[
+    {q:'Цена трижды отскакивала вверх от 50. Уровень 50 — это…', a:['Сопротивление','Поддержка','Тренд'], ok:1, why:'Уровень, от которого цена отталкивается вверх, — поддержка.'},
+    {q:'Сопротивление на 120 пробито вверх. Чем 120 станет дальше?', a:['Скорее всего поддержкой','Ничем','Обязательно новым максимумом'], ok:0, why:'Пробитое сопротивление часто превращается в поддержку.'}]},
+]},
+{id:'m3', emoji:'🛡', title:'Риск-менеджмент', lessons:[
+  {id:'l7', title:'Правило 1–2%', body:[
+    'Главный секрет выживания: **никогда не рискуй больше 1–2% депозита в одной сделке**.',
+    'Риск — это не сумма сделки, а то, сколько ты потеряешь, если сработает стоп-лосс. Счёт $10 000 → риск на сделку $100–200.',
+    'Даже лучшие стратегии дают серии из 5–10 убытков подряд. С риском 2% после 10 убытков останется ~82% счёта. С риском 20% — около 10%.',
+    '💡 Потерять 50% легко, а чтобы их вернуть, нужно заработать уже **+100%**. Беречь депозит важнее, чем много заработать.'],
+   quiz:[
+    {q:'Депозит $5000. Какой максимальный риск в сделке по правилу 2%?', a:['$50','$100','$1000'], ok:1, why:'$5000 × 2% = $100.'},
+    {q:'Ты потерял 50% счёта. Сколько процентов нужно заработать, чтобы вернуться?', a:['50%','100%','25%'], ok:1, why:'Из $500 обратно в $1000 — это +100%.'}]},
+  {id:'l8', title:'Стоп-лосс и тейк-профит', body:[
+    '**Стоп-лосс (SL)** — где ты признаёшь ошибку и выходишь с маленьким убытком. **Тейк-профит (TP)** — где фиксируешь прибыль.',
+    'Ставь их **до** входа, на холодную голову. Отодвигать стоп «потому что сейчас развернётся» — главная ошибка новичков.',
+    '**Соотношение риск/прибыль (R:R)**: стоп 2%, тейк 4% — это 1:2. При 1:2 можно ошибаться в 6 сделках из 10 и всё равно быть в плюсе.',
+    '💡 В симуляторе за закрытые сделки со стоп-лоссом ты получаешь ₵ — за дисциплину, а не за удачу.'],
+   quiz:[
+    {q:'Стоп 1%, тейк 3%. Какое R:R?', a:['1:1','1:3','3:1'], ok:1, why:'Рискуешь 1, чтобы заработать 3.'},
+    {q:'Цена подходит к твоему стопу. Что правильно?', a:['Отодвинуть стоп подальше','Оставить стоп как есть','Убрать стоп совсем'], ok:1, why:'Стоп — решение, принятое заранее. Его не двигают против себя.'}],
+   practice:{t:'Открой сделку и со стоп-лоссом, и с тейк-профитом', ok:() => simAll().some(t => t.sl && t.tp)}},
+  {id:'l9', title:'Размер позиции', body:[
+    'Как совместить правило 2% и стоп-лосс? Через **размер позиции**.',
+    '**Размер сделки = Риск в $ ÷ Стоп в %**. Счёт $10 000, риск 1% = $100, стоп 2% → размер сделки $100 ÷ 0,02 = **$5000**.',
+    'Если стоп широкий (волатильный актив, стоп 10%), позиция меньше: $100 ÷ 0,10 = $1000.',
+    '💡 В симуляторе есть кнопка «📐 под риск 1%» — она сама посчитает размер по твоему стопу.'],
+   quiz:[
+    {q:'Счёт $2000, риск 1% ($20), стоп 4%. Каким должен быть размер сделки?', a:['$80','$500','$2000'], ok:1, why:'$20 ÷ 0,04 = $500.'},
+    {q:'На этом активе стоп приходится ставить шире. Что делать с размером позиции?', a:['Увеличить','Уменьшить','Не менять'], ok:1, why:'Шире стоп → меньше позиция, чтобы риск в $ остался прежним.'}],
+   practice:{t:'Открой сделку со стоп-лоссом и риском не больше 2% счёта', ok:() => simAll().some(t => t.sl && t.riskPct <= 2.05)}},
+]},
+{id:'m4', emoji:'📐', title:'Инструменты аналитика', lessons:[
+  {id:'l10', title:'Скользящая средняя', body:[
+    '**Скользящая средняя (MA)** — средняя цена за последние N свечей. Она сглаживает «шум» и показывает направление.',
+    'Цена **выше MA**, и MA растёт — рынок бычий (вверх). Цена **ниже**, и MA падает — медвежий.',
+    'MA **запаздывает**: она строится по прошлым ценам и не предсказывает будущее. Это фильтр, а не волшебная кнопка.',
+    '💡 На графике симулятора фиолетовая линия — MA20, средняя за 20 свечей.'],
+   quiz:[
+    {q:'Цена держится выше растущей MA. Что это значит?', a:['Бычий настрой','Медвежий настрой','Скоро обвал'], ok:0, why:'Цена над растущей средней — признак движения вверх.'},
+    {q:'Главный минус скользящей средней?', a:['Она запаздывает','Она всегда врёт','Её нельзя посчитать'], ok:0, why:'MA строится по прошлым данным и реагирует с задержкой.'}]},
+  {id:'l11', title:'Волатильность', body:[
+    '**Волатильность** — насколько сильно и быстро скачет цена. В симуляторе Звёздное золото спокойное, а Нова-коин может пролететь 5% за минуту.',
+    'Высокая волатильность = больше возможностей, но и больше риска. Стоп нужен шире, а значит позиция — **меньше**.',
+    'Новички любят волатильные активы из-за «быстрых денег» — и быстро теряют счёт. Начинай со спокойных.',
+    '💡 Сравни свечи ORB и NOVA в симуляторе: у кого они длиннее?'],
+   quiz:[
+    {q:'Какой актив опаснее для новичка?', a:['Спокойный с плавными трендами','Очень волатильный'], ok:1, why:'Резкие движения быстрее выбивают стопы и депозит.'},
+    {q:'Актив стал скакать в 2 раза сильнее. Что с размером позиции?', a:['Уменьшить','Увеличить'], ok:0, why:'Больше волатильность → меньше позиция при том же риске.'}]},
+  {id:'l12', title:'Новости и события', body:[
+    'Цены резко двигаются на **новостях**: отчёты компаний, решения центробанков, аварии, слухи.',
+    'Поговорка трейдеров: **«Покупай на слухах, продавай на фактах»** — к моменту новости движение часто уже случилось.',
+    'Торговать прямо в момент новости опасно: цена прыгает, стопы срабатывают с проскальзыванием.',
+    '💡 В симуляторе тоже бывают новости 📰. Понаблюдай, как цена реагирует, прежде чем торговать.'],
+   quiz:[
+    {q:'Почему опасно входить в сделку прямо в момент новости?', a:['Цена резко скачет в обе стороны','Новости всегда врут','Биржа закрывается'], ok:0, why:'В момент новостей высокая волатильность и проскальзывания.'},
+    {q:'«Покупай на слухах, продавай на фактах» означает…', a:['Движение часто случается до официальной новости','Нужно верить всем слухам','Факты не важны'], ok:0, why:'Рынок закладывает ожидания в цену заранее.'}]},
+]},
+{id:'m5', emoji:'🧠', title:'Психология и система', lessons:[
+  {id:'l13', title:'Эмоции трейдера', body:[
+    '**FOMO** (страх упустить) — заскочить в уже улетевшую цену. Обычно это покупка на самом верху.',
+    '**Тильт** — после убытка хочется «отыграться» и открыть сделку побольше. Так сливаются депозиты.',
+    '**Жадность** — не закрывать прибыль, пока она не превратится в убыток. **Страх** — закрываться раньше времени.',
+    '💡 Правило: после 2–3 убытков подряд — стоп на сегодня. Закрой симулятор и сходи прогуляться.'],
+   quiz:[
+    {q:'После убытка хочется открыть сделку в 3 раза больше, чтобы отыграться. Это…', a:['Хорошая стратегия','Тильт — опасное состояние','Риск-менеджмент'], ok:1, why:'Попытка отыграться — классическая ловушка тильта.'},
+    {q:'Цена выросла на 30% за час, в чате все кричат «покупай». Что это?', a:['FOMO','Поддержка','Надо срочно входить'], ok:0, why:'Страх упустить заставляет покупать на вершине.'}]},
+  {id:'l14', title:'Торговый план', body:[
+    'Профессионал торгует **по плану**, а не по настроению. План отвечает на вопросы:',
+    '**Что** торгую? **Когда** вхожу (какой сигнал)? **Где** стоп и тейк? **Сколько** рискую? **Когда не** торгую?',
+    'Если сигнала по плану нет — **сделки нет**. Скучно? Да. Зато это работает.',
+    '💡 Запиши свой план в «Заметки» с тегом #трейдинг и перечитывай перед каждой сделкой.'],
+   quiz:[
+    {q:'Сигнала по плану нет, но очень хочется поторговать. Что делать?', a:['Открыть сделку наугад','Не торговать','Удвоить размер'], ok:1, why:'Нет сигнала — нет сделки.'},
+    {q:'Что обязательно есть в торговом плане?', a:['Правила входа, выхода и размер риска','Любимые цвета графика','Прогноз на 10 лет'], ok:0, why:'План — это конкретные правила.'}]},
+  {id:'l15', title:'Журнал и честный путь', body:[
+    'Записывай каждую сделку: почему вошёл, где стоп, чем закончилось, что чувствовал. Для реальных сделок есть **Капитал → Сделки**.',
+    'Раз в неделю разбирай журнал: какие сделки по плану дали плюс, где ты нарушил правила.',
+    'Честная правда: **большинство людей теряют деньги в трейдинге**. Сначала месяцы практики на демо и стабильный плюс по журналу — и только потом реальные деньги, маленькими суммами. Брокерский счёт можно открыть с 18 лет.',
+    '💡 Ты уже на правильном пути: учишься без риска. Именно это отличает трейдера от игрока в казино.'],
+   quiz:[
+    {q:'Когда разумно переходить на реальные деньги?', a:['Сразу после первого урока','После долгой практики и стабильного плюса на демо','Когда очень хочется'], ok:1, why:'Сначала навык и статистика, потом реальные деньги — маленькими суммами.'},
+    {q:'Зачем вести журнал сделок?', a:['Чтобы находить свои ошибки и улучшаться','Для красоты','Он не нужен'], ok:0, why:'Без журнала ты повторяешь одни и те же ошибки.'}]},
+]},
+];
+const LESSONS = COURSE.flatMap(m => m.lessons.map(l => Object.assign(l, {m})));
+const qWord = n => `${n} ${plural(n, 'вопрос', 'вопроса', 'вопросов')}`;
+function lessonState(i){
+  const l = LESSONS[i];
+  if (db.academy.done[l.id]) return 'done';
+  return i === 0 || db.academy.done[LESSONS[i-1].id] ? 'open' : 'lock';
+}
+function renderAcademy(){
+  const done = LESSONS.filter(l => db.academy.done[l.id]).length;
+  $('#acBar').style.width = (done / LESSONS.length * 100) + '%';
+  $('#acText').textContent = done === LESSONS.length ? `Все ${LESSONS.length} уроков пройдены! Ты выпускник 🎓` : `Пройдено ${done} из ${LESSONS.length} уроков · урок = 20 ₵, модуль = +50 ₵`;
+  $('#acContinue').classList.toggle('hidden', done === LESSONS.length);
+  $('#courseList').innerHTML = COURSE.map(m => {
+    const md = m.lessons.filter(l => db.academy.done[l.id]).length;
+    return `<div class="card"><div class="ch"><span>${m.emoji} ${esc(m.title)}</span><b>${md}/${m.lessons.length}</b></div>${m.lessons.map(l => {
+      const i = LESSONS.indexOf(l), st = lessonState(i);
+      return `<div class="lrow ${st}" data-act="lesson" data-l="${l.id}"><span class="lnum">${st === 'done' ? '✓' : st === 'lock' ? '🔒' : i + 1}</span>
+        <div class="grow"><b>${esc(l.title)}</b><div class="sub">${st === 'done' ? 'Пройден' : st === 'lock' ? 'Откроется после предыдущего' : `${qWord(l.quiz.length)} · +20 ₵`}${l.practice ? ' · 🕯 практика' : ''}</div></div><span class="sub">›</span></div>`;
+    }).join('')}</div>`;
+  }).join('');
+}
+$('#acContinue').onclick = () => { const l = LESSONS.find(x => !db.academy.done[x.id]); if (l) openLesson(l.id); };
+const mdTxt = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+function practiceBlock(l){
+  const got = db.ledger.some(x => x.ref === 'prac:' + l.id), ok = l.practice.ok();
+  return `<div class="card" style="box-shadow:none;margin:14px 0 0"><div class="ch"><span>🕯 Практика</span>${got ? '<b>✓ выполнено</b>' : '<span class="chip gold">+10 ₵</span>'}</div>
+    <div>${esc(l.practice.t)}</div>${got ? '' : ok ? '<button class="btn sm buy" id="pClaim" style="margin-top:10px">Забрать +10 ₵</button>' : '<button class="btn soft sm" id="pGo" style="margin-top:10px">Открыть симулятор →</button>'}</div>`;
+}
+function bindPractice(l){
+  if ($('#pClaim')) $('#pClaim').onclick = e => { reward('prac:' + l.id, 10, 10, `Практика: ${l.title}`, e.target); burst(e.target); save(); render(); setTimeout(() => openLesson(l.id), 300); };
+  if ($('#pGo')) $('#pGo').onclick = () => { closeModal(); setView('market'); };
+}
+function openLesson(lid){
+  const i = LESSONS.findIndex(x => x.id === lid), l = LESSONS[i]; if (!l) return;
+  if (lessonState(i) === 'lock') return toast('Сначала пройди предыдущий урок');
+  const done = db.academy.done[lid];
+  openModal(`<div class="sub">${l.m.emoji} ${esc(l.m.title)} · урок ${i + 1} из ${LESSONS.length}</div><h3 style="margin-top:4px">${esc(l.title)}</h3>
+    <div class="lesson">${l.body.map(p => p.startsWith('💡') ? `<div class="callout">${mdTxt(p)}</div>` : `<p>${mdTxt(p)}</p>`).join('')}</div>
+    ${l.practice ? practiceBlock(l) : ''}
+    <div class="actions">${done ? '<span class="sub grow" style="align-self:center">✓ Урок пройден</span>' : ''}<button class="btn soft" id="mCancel">Закрыть</button><button class="btn" id="qStart">${done ? 'Тест ещё раз' : `Тест · ${qWord(l.quiz.length)}`}</button></div>`);
+  $('#qStart').onclick = () => startQuiz(lid);
+  if (l.practice) bindPractice(l);
+}
+function startQuiz(lid){
+  const l = LESSONS.find(x => x.id === lid); let qi = 0, wrong = 0;
+  const step = () => {
+    const q = l.quiz[qi];
+    openModal(`<div class="sub">${esc(l.title)} · вопрос ${qi + 1} из ${l.quiz.length}</div><div class="qbar" style="margin:8px 0 14px"><i style="width:${qi / l.quiz.length * 100}%"></i></div>
+      <h3>${esc(q.q)}</h3><div class="opts" id="qOpts">${q.a.map((a, k) => `<button type="button" class="opt" data-k="${k}">${esc(a)}</button>`).join('')}</div>
+      <div id="qWhy" style="margin-top:12px;line-height:1.5"></div><div class="actions"><button class="btn hidden" id="qNext">${qi + 1 < l.quiz.length ? 'Дальше →' : 'Результат'}</button></div>`);
+    let answered = false;
+    $('#qOpts').onclick = e => {
+      const b = e.target.closest('.opt'); if (!b || answered) return; answered = true;
+      const k = +b.dataset.k, ok = k === q.ok; if (!ok) wrong++;
+      $$('#qOpts .opt').forEach(x => { const kk = +x.dataset.k; if (kk === q.ok) x.classList.add('right'); else if (kk === k) x.classList.add('wrong'); });
+      $('#qWhy').innerHTML = (ok ? '✅ <b>Верно!</b> ' : '❌ <b>Не совсем.</b> ') + esc(q.why);
+      if (ok) burst(b);
+      $('#qNext').classList.remove('hidden');
+    };
+    $('#qNext').onclick = () => { qi++; if (qi < l.quiz.length) step(); else finish(); };
+  };
+  const finish = () => {
+    if (wrong){
+      openModal(`<div style="text-align:center"><div style="font-size:44px">📖</div><h3>Ошибок: ${wrong} из ${l.quiz.length}</h3><p class="sub">Чтобы пройти урок, нужно ответить верно на все вопросы. Перечитай урок и попробуй снова — это нормально.</p></div>
+        <div class="actions"><button class="btn soft" id="qRead">Перечитать</button><button class="btn" id="qRetry">Ещё раз</button></div>`);
+      $('#qRead').onclick = () => openLesson(lid); $('#qRetry').onclick = () => startQuiz(lid);
+      return;
+    }
+    const first = !db.academy.done[lid];
+    db.academy.done[lid] = true;
+    if (first){
+      reward('lesson:' + lid, 20, 30, `Урок «${l.title}»`);
+      if (l.m.lessons.every(x => db.academy.done[x.id])){ reward('module:' + l.m.id, 50, 50, `Модуль «${l.m.title}» пройден`); setTimeout(() => toast(`🎓 Модуль «${l.m.title}» завершён! +50 ₵`), 700); }
+    }
+    save(); render();
+    const i = LESSONS.indexOf(l), next = LESSONS[i + 1];
+    openModal(`<div style="text-align:center"><div style="font-size:48px">🎓</div><h3>Урок пройден!</h3><p class="sub">${first ? '+20 ₵ · +30 XP' : 'Повторение — мать учения 😉'}</p></div>
+      ${l.practice ? practiceBlock(l) : ''}
+      <div class="actions"><button class="btn soft" id="mCancel">Закрыть</button>${next ? '<button class="btn" id="qNextL">Следующий урок →</button>' : '<button class="btn" id="qMarket">В симулятор →</button>'}</div>`);
+    if (l.practice) bindPractice(l);
+    burst($('#modal h3'));
+    if ($('#qNextL')) $('#qNextL').onclick = () => openLesson(next.id);
+    if ($('#qMarket')) $('#qMarket').onclick = () => { closeModal(); setView('market'); };
+  };
+  step();
+}
 
 // ================= быстрый ввод =================
 const CAP_TYPES = [['task','✓ Задача'],['goal','◎ Цель дня'],['money','💳 Деньги'],['note','✎ Заметка'],['capsule','⧗ Капсула']];
@@ -1695,12 +2256,13 @@ document.addEventListener('click', e => {
   else if (act === 'dtx'){ const t = db.money.tx.find(x => x.id === id); if (t && t.cat === 'jar') return toast('Переводы в копилку меняются в самой копилке'); db.money.tx = db.money.tx.filter(x => x.id !== id); save(); render(); }
   else if (act === 'jar') jarModal(id);
   else if (act === 'trclose') closeTradeModal(id);
-  else if (act === 'trdel'){ if (confirm('Удалить сделку из журнала?')){ db.money.trades = db.money.trades.filter(x => x.id !== id); save(); render(); } }
+  else if (act === 'trdel'){ ask('Удалить сделку из журнала?', () => { db.money.trades = db.money.trades.filter(x => x.id !== id); save(); render(); }); }
   else if (act === 'buyrw'){
     const s = db.shop.find(x => x.id === id); if (!s) return;
-    if (!confirm(`Потратить ${s.price} ₵ на «${s.name}»?`)) return;
-    if (spend(s.price, `Награда: ${s.name}`, 'shop')){ burst(a); toast(`${s.emoji} Заслужил! Наслаждайся`); save(); render(); }
+    ask(`Потратить ${s.price} ₵ на «${s.name}»?`, () => { if (spend(s.price, `Награда: ${s.name}`, 'shop')){ toast(`${s.emoji} Заслужил! Наслаждайся`); save(); render(); } }, 'Потратить');
   }
+  else if (act === 'simclose') simClose(id);
+  else if (act === 'lesson') openLesson(a.dataset.l);
   else if (act === 'delrw'){ db.shop = db.shop.filter(x => x.id !== id); save(); render(); }
 });
 document.addEventListener('submit', e => {
@@ -1718,7 +2280,8 @@ function checkDayComplete(){
 }
 $('#dealTabs').onclick = e => { const b = e.target.closest('[data-v]'); if (b) setView(b.dataset.v); };
 $('#moneyTabs').onclick = e => { const b = e.target.closest('[data-v]'); if (b) setView(b.dataset.v); };
-$$('.dock [data-g]').forEach(b => b.onclick = () => { const g = b.dataset.g; setView(g === 'deals' ? lastDeals : g === 'money' ? lastMoney : g); });
+$('#exTabs').onclick = e => { const b = e.target.closest('[data-v]'); if (b) setView(b.dataset.v); };
+$$('.dock [data-g]').forEach(b => b.onclick = () => { const g = b.dataset.g; setView(g === 'deals' ? lastDeals : g === 'money' ? lastMoney : g === 'exchange' ? lastEx : g); });
 
 // ================= модалка =================
 function openModal(html){ $('#modal').innerHTML = html; $('#modalBg').classList.add('open'); const c = $('#mCancel'); if (c) c.onclick = closeModal; }
@@ -1832,8 +2395,7 @@ const F = {taskId:null, dur:25, left:25*60, endsAt:0, running:false, timer:0, fi
 function fmtSec(s){ s = Math.max(0, Math.ceil(s)); return `${pad(Math.floor(s/60))}:${pad(s%60)}`; }
 function openFocus(taskId){
   if (F.running && F.taskId !== taskId){
-    if (!confirm('Уже идёт полёт. Начать новый с этой задачей?')) { showFocus(); return; }
-    stopFocus();
+    ask('Уже идёт полёт. Начать новый с этой задачей?', () => { stopFocus(); openFocus(taskId); }, 'Начать новый'); return;
   }
   if (!F.running){ F.taskId = taskId; F.finished = false; if (!F.endsAt) F.left = F.dur*60; }
   showFocus();
@@ -1947,17 +2509,18 @@ $('#setBtn').onclick = () => {
     const f = e.target.files[0]; if (!f) return;
     try {
       const data = JSON.parse(await f.text()); if (!data || !Array.isArray(data.tasks)) throw 0;
-      if (!confirm('Заменить текущие данные данными из файла?')) return;
-      db = normalize(data); save(); applyTheme(); closeModal(); render(); toast('Данные загружены');
+      ask('Заменить текущие данные данными из файла?', () => { db = normalize(data); simInit(); save(); applyTheme(); render(); toast('Данные загружены'); }, 'Заменить');
     } catch { toast('Не получилось прочитать файл'); }
   };
-  $('#mWipe').onclick = () => { if (confirm('Точно удалить ВСЕ данные? Это нельзя отменить.')){ db = normalize(null); save(); applyTheme(); closeModal(); render(); } };
+  $('#mWipe').onclick = () => { ask('Точно удалить ВСЕ данные? Это нельзя отменить.', () => { db = normalize(null); simInit(); save(); applyTheme(); closeModal(); render(); }); };
 };
 
 // ================= старт =================
+simInit();
 applyTheme();
 levelCheck();
 setView('day');
+setInterval(() => { if (document.visibilityState === 'visible') simTick(); }, TICK_MS);
 let lastSeen = todayIso();
 function dayTick(){
   const t = todayIso();
