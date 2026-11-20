@@ -1,11 +1,11 @@
 {
-  "name": "Мой день — заметки, цели, задачи",
-  "short_name": "Мой день",
+  "name": "Орбита — день, задачи, заметки, миссии",
+  "short_name": "Орбита",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f6fb",
-  "theme_color": "#4f46e5",
+  "background_color": "#06061a",
+  "theme_color": "#06061a",
   "lang": "ru",
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }

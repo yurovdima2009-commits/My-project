@@ -1,168 +1,288 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Мой день</title>
-<meta name="theme-color" content="#4f46e5">
+<title>Орбита</title>
+<meta name="theme-color" content="#06061a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f6f6fb;--card:#fff;--text:#1c1c28;--muted:#77778a;--line:#e6e6ef;
-  --accent:#4f46e5;--accent-soft:#eceafe;--danger:#e5484d;--ok:#22a06b;--warn:#f59e0b;
-  --radius:14px;--shadow:0 1px 3px rgba(20,20,40,.06),0 4px 14px rgba(20,20,40,.05);
+  --fh:'Unbounded',system-ui,sans-serif; --fb:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --bg:#06061a;
+  --bg-grad:radial-gradient(1100px 600px at 90% -10%,rgba(139,92,246,.32),transparent 60%),radial-gradient(800px 500px at -15% 35%,rgba(236,72,153,.16),transparent 60%),radial-gradient(900px 600px at 50% 120%,rgba(34,211,238,.10),transparent 60%);
+  --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.09); --solid:#11113a; --dock:rgba(16,16,52,.72);
+  --line:rgba(255,255,255,.1); --text:#f2f1ff; --muted:#9e9dc8; --input:rgba(255,255,255,.06);
+  --a1:#8b5cf6; --a2:#ec4899; --a3:#f59e0b; --a4:#22d3ee; --ok:#34d399; --danger:#fb7185;
+  --grad:linear-gradient(120deg,#8b5cf6,#ec4899 55%,#f59e0b);
+  --shadow:0 18px 50px -20px rgba(0,0,0,.7);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#111118;--card:#1b1b25;--text:#ececf3;--muted:#9393a8;--line:#2b2b3a;--accent:#8b85ff;--accent-soft:#272550;--shadow:none}}
-:root[data-theme="dark"]{--bg:#111118;--card:#1b1b25;--text:#ececf3;--muted:#9393a8;--line:#2b2b3a;--accent:#8b85ff;--accent-soft:#272550;--shadow:none}
+:root[data-theme="light"]{
+  --bg:#fbf5ee;
+  --bg-grad:radial-gradient(1100px 600px at 95% -15%,rgba(245,158,11,.28),transparent 60%),radial-gradient(800px 500px at -15% 30%,rgba(236,72,153,.14),transparent 60%),radial-gradient(900px 600px at 50% 120%,rgba(139,92,246,.16),transparent 60%);
+  --glass:rgba(255,255,255,.62); --glass-2:#fff; --solid:#fffaf4; --dock:rgba(255,250,244,.82);
+  --line:rgba(70,40,110,.12); --text:#20163a; --muted:#7b7095; --input:rgba(70,40,110,.05);
+  --a1:#7c3aed; --a2:#db2777; --a3:#d97706; --a4:#0891b2; --ok:#059669; --danger:#e11d48;
+  --grad:linear-gradient(120deg,#7c3aed,#db2777 55%,#f59e0b);
+  --shadow:0 18px 40px -22px rgba(90,40,120,.35);
+}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg-grad),var(--bg);background-attachment:fixed;color:var(--text);font:16px/1.45 var(--fb);-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+#bgsky{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
-.app{max-width:720px;margin:0 auto;padding:16px 16px calc(96px + env(safe-area-inset-bottom))}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 16px}
-header.top h1{font-size:24px;margin:0;letter-spacing:-.02em}
-.sub{color:var(--muted);font-size:14px}
-.icon-btn{border:0;background:var(--card);box-shadow:var(--shadow);border:1px solid var(--line);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:14px}
-.card h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.app{max-width:680px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px calc(120px + env(safe-area-inset-bottom))}
+.hidden{display:none!important}
 .row{display:flex;gap:8px;align-items:center}
 .grow{flex:1;min-width:0}
-input[type=text],input[type=date],textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none}
-input:focus,textarea:focus,select:focus{border-color:var(--accent)}
-textarea{resize:vertical;min-height:80px}
-.btn{border:0;background:var(--accent);color:#fff;border-radius:10px;padding:10px 14px;font-weight:600;white-space:nowrap}
-.btn.ghost{background:var(--accent-soft);color:var(--accent)}
-.btn.danger{background:transparent;color:var(--danger);border:1px solid var(--line)}
-.btn.small{padding:6px 10px;font-size:14px}
+.sub{color:var(--muted);font-size:13px}
+
+/* шапка */
+header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:6px 0 14px}
+.hello{color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.02em}
+h1{font-family:var(--fh);font-weight:800;font-size:26px;line-height:1.1;margin:4px 0 0;letter-spacing:-.02em}
+.streak{font-family:var(--fh);font-size:13px;font-weight:700;padding:9px 12px;border-radius:14px;background:var(--glass);border:1px solid var(--line);white-space:nowrap}
+.ib{flex:none;width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:grid;place-items:center;color:var(--text);padding:0}
+.ib svg{width:20px;height:20px}
+.ib:active{transform:scale(.94)}
+
+/* карточки */
+.card{background:var(--glass);border:1px solid var(--line);border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font-family:var(--fh);font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.ch b{color:var(--text);font-weight:700}
+input[type=text],input[type=date],textarea,select{width:100%;background:var(--input);border:1px solid var(--line);border-radius:14px;padding:12px 14px;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus,select:focus{border-color:var(--a1);box-shadow:0 0 0 4px color-mix(in srgb,var(--a1) 22%,transparent)}
+::placeholder{color:var(--muted);opacity:.8}
+textarea{resize:vertical;min-height:90px}
+select option{background:var(--solid)}
+.btn{border:0;background:var(--grad);color:#fff;border-radius:14px;padding:12px 18px;font-weight:800;white-space:nowrap;box-shadow:0 8px 24px -10px var(--a2);transition:transform .15s}
+.btn:active{transform:scale(.96)}
+.btn.sq{width:46px;height:46px;padding:0;font-size:22px;flex:none}
+.btn.soft{background:var(--glass-2);color:var(--text);box-shadow:none;border:1px solid var(--line)}
+.btn.danger{background:transparent;color:var(--danger);box-shadow:none;border:1px solid var(--line)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:11px}
+.addrow{display:flex;gap:8px;margin-top:10px}
+.hint{font-size:12px;color:var(--muted);margin-top:8px}
+.empty{color:var(--muted);font-size:14px;padding:10px 2px}
+
+/* списки */
 ul.list{list-style:none;margin:0;padding:0}
-.item{display:flex;align-items:flex-start;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
-.item:last-child{border-bottom:0}
-.check{appearance:none;flex:none;width:22px;height:22px;margin:1px 0 0;border:2px solid var(--muted);border-radius:7px;display:grid;place-items:center;cursor:pointer;background:transparent}
-.check:checked{background:var(--accent);border-color:var(--accent)}
-.check:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
-.item .txt{flex:1;min-width:0;word-wrap:break-word;cursor:pointer}
-.item.done .txt{color:var(--muted);text-decoration:line-through}
-.meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
-.tag{font-size:12px;padding:1px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
-.tag.p2{background:#fde8e8;color:#c22}
-.tag.p1{background:#fff3d6;color:#a86400}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.p2{background:#3d1d1f;color:#ff8a8d}:root:not([data-theme="light"]) .tag.p1{background:#3b2d10;color:#ffc35c}}
-:root[data-theme="dark"] .tag.p2{background:#3d1d1f;color:#ff8a8d}:root[data-theme="dark"] .tag.p1{background:#3b2d10;color:#ffc35c}
-.tag.late{background:transparent;color:var(--danger);padding:0}
-.del{border:0;background:transparent;color:var(--muted);font-size:18px;line-height:1;padding:2px 4px;opacity:.6}
-.del:hover{opacity:1;color:var(--danger)}
-.empty{color:var(--muted);font-size:14px;padding:6px 2px}
-.daynav{display:flex;align-items:center;gap:8px}
-.daynav .label{flex:1;text-align:center}
-.daynav .label b{display:block;font-size:18px}
-.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
-.progress > i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
-.stats{display:flex;gap:10px}
-.stat{flex:1;background:var(--accent-soft);border-radius:12px;padding:10px;text-align:center}
-.stat b{display:block;font-size:22px;color:var(--accent)}
-.stat span{font-size:12px;color:var(--muted)}
-.goal-num{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:700;display:grid;place-items:center;margin-top:1px}
-.moods{display:flex;gap:6px;justify-content:space-between}
-.moods button{flex:1;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:6px 0;font-size:22px;opacity:.5}
-.moods button.on{opacity:1;border-color:var(--accent);background:var(--accent-soft)}
-.segs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
-.segs button{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:6px 14px;font-size:14px;white-space:nowrap}
-.segs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
-.note{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);cursor:pointer;min-height:90px;display:flex;flex-direction:column;gap:6px}
-.note h3{margin:0;font-size:16px}
-.note p{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
-.note .meta{margin-top:auto}
-.group-title{font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 2px}
+.it{display:flex;align-items:flex-start;gap:12px;padding:12px 2px;border-bottom:1px dashed var(--line);position:relative}
+.it:last-child{border-bottom:0}
+.it .txt{flex:1;min-width:0;overflow-wrap:anywhere;cursor:pointer;padding-top:1px}
+.it.done .txt{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.it.p1::before,.it.p2::before{content:"";position:absolute;left:-12px;top:16px;width:4px;height:16px;border-radius:0 4px 4px 0;background:var(--a3)}
+.it.p2::before{background:var(--danger);box-shadow:0 0 12px var(--danger)}
+.it.done::before{opacity:.25}
+.chk{appearance:none;-webkit-appearance:none;flex:none;width:24px;height:24px;margin:0;border:2px solid color-mix(in srgb,var(--muted) 70%,transparent);border-radius:50%;display:grid;place-items:center;cursor:pointer;background:transparent;transition:transform .15s}
+.chk:active{transform:scale(.85)}
+.chk:checked{border-color:transparent;background:var(--grad);box-shadow:0 0 14px -2px var(--a2)}
+.chk:checked::after{content:"";width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.meta{font-size:12px;color:var(--muted);display:flex;gap:6px 10px;flex-wrap:wrap;margin-top:3px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--glass-2);border:1px solid var(--line);color:var(--text)}
+.chip.p1{color:var(--a3);border-color:color-mix(in srgb,var(--a3) 40%,transparent)}
+.chip.p2{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
+.chip.late{color:var(--danger)}
+.chip.acc{color:var(--a1)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;min-height:0}
+.mini{flex:none;border:0;background:transparent;color:var(--muted);width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:13px;opacity:.75}
+.mini:hover{opacity:1;background:var(--glass-2)}
+.mini.del{font-size:20px;line-height:1}
+.mini.del:hover{color:var(--danger)}
+.mini.play{color:var(--a4);font-size:11px}
+.planet{flex:none;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff8,transparent 45%),var(--c);box-shadow:0 0 14px -2px var(--c);font-family:var(--fh);font-size:11px;font-weight:800;color:#fff;display:grid;place-items:center}
+.goal.done .planet{filter:saturate(1.2)}
+.goal:not(.done) .planet{background:transparent;border:2px solid var(--c);box-shadow:none;color:var(--c)}
+.group-title{font-family:var(--fh);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 0}
+.group-title:first-child{margin-top:2px}
 .group-title.late{color:var(--danger)}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:10}
-nav.tabs .in{display:flex;width:100%;max-width:720px}
-nav.tabs button{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);padding:6px 0;border-radius:10px}
-nav.tabs button .ic{font-size:21px;line-height:1;filter:grayscale(1);opacity:.7}
-nav.tabs button.on{color:var(--accent);font-weight:600}
-nav.tabs button.on .ic{filter:none;opacity:1}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:20}
+
+/* орбита */
+.hero{position:relative;margin:-4px 0 6px;text-align:center}
+.orbit{width:100%;max-width:330px;margin:0 auto;display:block;aspect-ratio:1}
+.orbit svg{width:100%;height:100%;overflow:visible}
+.planets{transform-origin:150px 150px;animation:spin 90s linear infinite}
+.sun{animation:pulse 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.25);opacity:.85}}
+.hero .nav{position:absolute;top:50%;transform:translateY(-70%)}
+.hero .nav.l{left:-4px}.hero .nav.r{right:-4px}
+.dayline{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:2px}
+.dayline b{font-family:var(--fh);font-size:15px}
+.today-link{border:0;background:none;color:var(--a1);font-weight:700;font-size:13px;padding:0}
+.fly{border:1px solid var(--line);background:var(--glass);border-radius:99px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--text)}
+
+/* настроение */
+.moods{display:flex;gap:6px}
+.moods button{flex:1;border:1px solid var(--line);background:var(--input);border-radius:14px;padding:8px 0 6px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .2s}
+.moods button span{font-size:22px;line-height:1;filter:grayscale(.7);opacity:.6;transition:all .2s}
+.moods button small{font-size:10px;color:var(--muted);font-weight:700}
+.moods button.on{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 18%,transparent)}
+.moods button.on span{filter:none;opacity:1;transform:scale(1.15)}
+.question{font-family:var(--fh);font-size:14px;font-weight:500;margin:14px 0 8px;line-height:1.35}
+.question::before{content:"✦ ";color:var(--a3)}
+
+/* сегменты */
+.segs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none;padding:2px}
+.segs::-webkit-scrollbar{display:none}
+.segs button{border:1px solid var(--line);background:var(--glass);border-radius:99px;padding:7px 14px;font-size:13px;font-weight:700;white-space:nowrap;color:var(--muted)}
+.segs button.on{background:var(--text);border-color:var(--text);color:var(--bg)}
+
+/* заметки */
+.search{display:flex;gap:8px;margin-bottom:14px}
+.notes-grid{columns:2 170px;column-gap:12px}
+.note{break-inside:avoid;margin-bottom:12px;border-radius:20px;padding:14px;border:1px solid var(--line);cursor:pointer;
+  background:linear-gradient(160deg,hsla(var(--h),85%,60%,.22),transparent 65%),var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .2s}
+.note:hover{transform:translateY(-2px)}
+.note h3{margin:0 0 6px;font-family:var(--fh);font-size:14px;font-weight:700;line-height:1.3}
+.note p{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:8;-webkit-box-orient:vertical;overflow:hidden}
+.note .meta{margin-top:10px}
+.caps{display:flex;gap:10px;overflow-x:auto;margin:0 -16px 14px;padding:2px 16px;scrollbar-width:none}
+.caps::-webkit-scrollbar{display:none}
+.cap{flex:none;width:170px;border-radius:20px;padding:14px;border:1px dashed color-mix(in srgb,var(--a4) 50%,transparent);background:color-mix(in srgb,var(--a4) 8%,var(--glass));cursor:pointer}
+.cap .ic{font-size:24px}
+.cap b{display:block;font-family:var(--fh);font-size:13px;margin:6px 0 2px}
+.cap.ready{border-style:solid;border-color:var(--a3);background:color-mix(in srgb,var(--a3) 16%,var(--glass));box-shadow:0 0 24px -8px var(--a3);animation:glow 2s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 34px -4px var(--a3)}}
+.banner{display:flex;gap:12px;align-items:center;cursor:pointer;border-color:color-mix(in srgb,var(--a3) 60%,transparent)}
+.banner .ic{font-size:30px}
+
+/* миссии */
+.mission .horizon{font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--a1)}
+.mission h3{margin:4px 0 2px;font-family:var(--fh);font-size:17px;font-weight:700;line-height:1.25}
+.track{position:relative;height:34px;margin:16px 6px 6px}
+.track .line{position:absolute;left:0;right:0;top:15px;height:4px;border-radius:4px;background:var(--line)}
+.track .line i{display:block;height:100%;border-radius:4px;background:var(--grad);transition:width .5s}
+.track .node{position:absolute;top:11px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--solid);border:2px solid var(--line)}
+.track .node.on{background:var(--a2);border-color:var(--a2);box-shadow:0 0 10px var(--a2)}
+.track .rocket{position:absolute;top:0;margin-left:-14px;font-size:22px;transform:rotate(45deg);transition:left .5s;filter:drop-shadow(0 0 8px var(--a3))}
+.track .flag{position:absolute;right:-8px;top:2px;font-size:16px}
+.step{display:flex;gap:12px;align-items:center;padding:7px 0}
+.step .txt{flex:1;overflow-wrap:anywhere}
+.step.done .txt{color:var(--muted);text-decoration:line-through}
+.mission.won{border-color:color-mix(in srgb,var(--a3) 50%,transparent)}
+
+/* док */
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(440px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);align-items:center;
+  background:var(--dock);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);border:1px solid var(--line);border-radius:26px;padding:6px;z-index:15;box-shadow:0 20px 50px -15px rgba(0,0,0,.55)}
+.dock button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:10px;font-weight:700;padding:7px 0;border-radius:18px;transition:color .2s}
+.dock button svg{width:22px;height:22px}
+.dock button.on{color:var(--text)}
+.dock button.on svg{filter:drop-shadow(0 0 8px var(--a1));color:var(--a1)}
+.dock .plus{justify-self:center;width:58px;height:58px;margin-top:-26px;border-radius:50%;background:var(--grad);color:#fff;box-shadow:0 10px 30px -6px var(--a2),0 0 0 6px var(--bg);padding:0;justify-content:center}
+.dock .plus svg{width:26px;height:26px}
+.fpill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));z-index:14;border:1px solid var(--line);background:var(--dock);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:99px;padding:8px 16px;font-family:var(--fh);font-size:13px;font-weight:700;color:var(--text)}
+
+/* модалка */
+.modal-bg{position:fixed;inset:0;background:rgba(3,3,15,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;z-index:30}
 .modal-bg.open{display:flex}
-.modal{background:var(--card);width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
-@media (min-width:760px){.modal-bg{align-items:center}.modal{border-radius:18px}}
-.modal h3{margin:0 0 12px}
-.field{margin-bottom:10px}
-.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
-.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
-.plan-step{display:flex;gap:10px;align-items:center;padding:6px 0}
-.plan-step .txt{flex:1}
-.plan-step.done .txt{color:var(--muted);text-decoration:line-through}
-.horizon{font-size:12px;font-weight:600;color:var(--accent)}
-.fab-add{display:flex;gap:8px;margin-bottom:10px}
-.hidden{display:none!important}
-.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 16px;border-radius:99px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
-.toast.show{opacity:1}
+.modal{background:var(--solid);width:100%;max-width:680px;max-height:92vh;overflow:auto;border-radius:28px 28px 0 0;border:1px solid var(--line);border-bottom:0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));animation:up .28s cubic-bezier(.2,.9,.3,1)}
+.modal::before{content:"";display:block;width:40px;height:5px;border-radius:5px;background:var(--line);margin:0 auto 14px}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media (min-width:760px){.modal-bg{align-items:center}.modal{border-radius:28px;border-bottom:1px solid var(--line)}}
+.modal h3{margin:0 0 14px;font-family:var(--fh);font-size:19px}
+.field{margin-bottom:12px}
+.field>label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.themes button{border:2px solid var(--line);border-radius:16px;padding:12px 6px;background:var(--input);font-weight:700;font-size:13px}
+.themes button i{display:block;height:34px;border-radius:10px;margin-bottom:6px}
+.themes button.on{border-color:var(--a1)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{border-radius:16px;padding:10px 4px;text-align:center;background:var(--input);border:1px solid var(--line)}
+.stat b{display:block;font-family:var(--fh);font-size:18px}
+.stat span{font-size:10px;color:var(--muted);font-weight:700}
+.capsule-open{font-size:17px;line-height:1.55;white-space:pre-wrap;padding:16px;border-radius:18px;background:color-mix(in srgb,var(--a3) 10%,var(--input));border:1px solid color-mix(in srgb,var(--a3) 40%,transparent)}
+
+/* оверлеи: небо и фокус */
+.overlay{position:fixed;inset:0;z-index:40;display:none;background:#04041a;color:#f2f1ff}
+.overlay.open{display:block;animation:fade .35s}
+@keyframes fade{from{opacity:0}}
+#skyCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.sky-ui{position:absolute;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom))}
+.sky-ui>*{pointer-events:auto}
+.sky-top{display:flex;justify-content:space-between;align-items:flex-start}
+.sky-top h2,.focus-in h2{font-family:var(--fh);margin:0;font-size:24px}
+.overlay .sub{color:#a9a8d6}
+.overlay .ib{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14);color:#fff}
+.sky-tip{align-self:center;max-width:460px;text-align:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:18px;padding:12px 16px;font-size:14px}
+.sky-tip b{font-family:var(--fh);display:block;font-size:14px;margin-bottom:2px}
+#focus{background:radial-gradient(600px 500px at 50% 40%,rgba(139,92,246,.35),transparent 70%),radial-gradient(500px 400px at 50% 100%,rgba(236,72,153,.25),transparent 70%),#04041a}
+.focus-in{max-width:440px;margin:0 auto;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px 20px;text-align:center;position:relative}
+.focus-in .ib.x{position:absolute;top:max(18px,env(safe-area-inset-top));right:18px}
+.focus-in h2{font-size:20px;line-height:1.3;overflow-wrap:anywhere}
+.fring{position:relative;width:min(300px,76vw);aspect-ratio:1}
+.fring svg{width:100%;height:100%}
+.ftime{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--fh);font-size:clamp(40px,13vw,58px);font-weight:700;letter-spacing:-.02em}
+.focus-in .segs button{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#c9c8ef}
+.focus-in .segs button.on{background:#fff;color:#04041a}
+.focus-in .btn.soft{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.14)}
+.focus-in .done-msg{font-family:var(--fh);font-size:16px}
+
+.toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translate(-50%,10px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:14px;font-weight:700;opacity:0;transition:all .25s;pointer-events:none;z-index:60;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.spark{position:fixed;width:7px;height:7px;border-radius:50%;pointer-events:none;z-index:70}
+.view-in{animation:vin .35s cubic-bezier(.2,.9,.3,1)}
+@keyframes vin{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<canvas id="bgsky" aria-hidden="true"></canvas>
 <div class="app">
   <header class="top">
-    <div>
-      <h1 id="title">Сегодня</h1>
-      <div class="sub" id="subtitle"></div>
+    <div class="grow">
+      <div class="hello" id="hello"></div>
+      <h1 id="title"></h1>
     </div>
-    <button class="icon-btn" id="settingsBtn" title="Настройки" aria-label="Настройки">⚙️</button>
+    <div class="row">
+      <span class="streak hidden" id="streak" title="Дней подряд с выполненными делами"></span>
+      <button class="ib" id="skyBtn" title="Моё небо" aria-label="Моё небо"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 10l-5.5 4 1.9 7L12 17.3 6.6 21l1.9-7L3 10l6.8-1.4z"/></svg></button>
+      <button class="ib" id="setBtn" title="Настройки" aria-label="Настройки"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></button>
+    </div>
   </header>
 
-  <!-- СЕГОДНЯ -->
-  <section id="view-today">
-    <div class="card">
-      <div class="daynav">
-        <button class="icon-btn" id="prevDay" aria-label="Предыдущий день">‹</button>
-        <div class="label"><b id="dayLabel"></b><span class="sub" id="dayDate"></span></div>
-        <button class="icon-btn" id="nextDay" aria-label="Следующий день">›</button>
-      </div>
-      <div style="margin-top:12px" class="progress"><i id="dayProgress"></i></div>
-      <div class="sub" style="margin-top:6px" id="dayProgressText"></div>
+  <!-- ДЕНЬ -->
+  <section id="v-day">
+    <div class="hero">
+      <button class="ib nav l" id="prevDay" aria-label="Предыдущий день">‹</button>
+      <div class="orbit" id="orbit"></div>
+      <button class="ib nav r" id="nextDay" aria-label="Следующий день">›</button>
+      <div class="dayline"><b id="dayLabel"></b><button class="today-link hidden" id="toToday">→ к сегодня</button><button class="fly" id="freeFly">▶ Полёт</button></div>
     </div>
-
+    <div id="capBanner"></div>
     <div class="card">
-      <h2>🎯 Главные цели дня <span class="sub" id="goalsCount"></span></h2>
-      <ul class="list" id="goalsList"></ul>
-      <form class="row" id="goalForm" style="margin-top:8px">
-        <input type="text" id="goalInput" class="grow" placeholder="Что важнее всего сделать сегодня?" maxlength="200">
-        <button class="btn">+</button>
-      </form>
+      <div class="ch"><span>◎ Три планеты дня</span><b id="goalsCount"></b></div>
+      <ul class="list" id="goals"></ul>
+      <form class="addrow" id="goalForm"><input type="text" id="goalInput" placeholder="Самое важное на сегодня…" maxlength="200" autocomplete="off"><button class="btn sq" aria-label="Добавить">+</button></form>
     </div>
-
     <div class="card">
-      <h2>✅ Задачи на день</h2>
+      <div class="ch"><span>✓ Задачи</span><b id="tasksCount"></b></div>
       <ul class="list" id="dayTasks"></ul>
-      <form class="row" id="dayTaskForm" style="margin-top:8px">
-        <input type="text" id="dayTaskInput" class="grow" placeholder="Добавить задачу на этот день" maxlength="300">
-        <button class="btn">+</button>
-      </form>
+      <form class="addrow" id="dayTaskForm"><input type="text" id="dayTaskInput" placeholder="Задача на этот день…  (! — важно)" maxlength="300" autocomplete="off"><button class="btn sq" aria-label="Добавить">+</button></form>
     </div>
-
     <div class="card">
-      <h2>📝 Итог дня</h2>
+      <div class="ch"><span>☾ Фаза дня</span></div>
       <div class="moods" id="moods"></div>
-      <textarea id="dayNote" style="margin-top:10px" placeholder="Как прошёл день? Что получилось, чему научился, за что благодарен…"></textarea>
+      <div class="question" id="question"></div>
+      <textarea id="dayNote" placeholder="Пара строк о дне…"></textarea>
     </div>
   </section>
 
   <!-- ЗАДАЧИ -->
-  <section id="view-tasks" class="hidden">
+  <section id="v-tasks" class="hidden">
     <form class="card" id="taskForm">
-      <div class="field"><input type="text" id="taskTitle" placeholder="Новая задача…" maxlength="300"></div>
-      <div class="row">
-        <input type="date" id="taskDate" class="grow">
-        <select id="taskPrio" class="grow">
-          <option value="0">Обычная</option>
-          <option value="1">Важная</option>
-          <option value="2">Срочная</option>
-        </select>
-        <button class="btn">Добавить</button>
-      </div>
+      <div class="row"><input type="text" id="taskInput" class="grow" placeholder="завтра позвонить врачу !!" maxlength="300" autocomplete="off"><button class="btn sq" aria-label="Добавить">+</button></div>
+      <div class="chips" id="taskPreview"></div>
+      <div class="hint">Пиши как думаешь: «сегодня», «завтра», «в пятницу», «через 3 дня», «25.12» · «!» — важно, «!!» — срочно</div>
     </form>
     <div class="segs" id="taskFilter">
       <button data-f="active" class="on">Активные</button>
@@ -174,16 +294,18 @@ nav.tabs button.on .ic{filter:none;opacity:1}
   </section>
 
   <!-- ЗАМЕТКИ -->
-  <section id="view-notes" class="hidden">
-    <div class="fab-add">
-      <input type="text" id="noteSearch" class="grow" placeholder="🔍 Поиск по заметкам">
-      <button class="btn" id="newNote">+ Заметка</button>
+  <section id="v-notes" class="hidden">
+    <div class="search">
+      <input type="text" id="noteSearch" class="grow" placeholder="Поиск по заметкам и #тегам" autocomplete="off">
+      <button class="btn sq" id="newNote" aria-label="Новая заметка">+</button>
     </div>
+    <div class="ch" id="capsTitle"><span>⧗ Капсулы времени</span><button class="btn soft sm" id="newCap">+ Капсула</button></div>
+    <div class="caps" id="caps"></div>
     <div class="notes-grid" id="notesGrid"></div>
   </section>
 
-  <!-- ПЛАНЫ -->
-  <section id="view-plans" class="hidden">
+  <!-- МИССИИ -->
+  <section id="v-missions" class="hidden">
     <div class="segs" id="planFilter">
       <button data-h="all" class="on">Все</button>
       <button data-h="week">Неделя</button>
@@ -191,17 +313,52 @@ nav.tabs button.on .ic{filter:none;opacity:1}
       <button data-h="year">Год</button>
       <button data-h="life">Мечты</button>
     </div>
-    <button class="btn" id="newPlan" style="width:100%;margin-bottom:14px">+ Новый план / цель</button>
     <div id="plansBox"></div>
+    <button class="btn" id="newPlan" style="width:100%">+ Новая миссия</button>
   </section>
 </div>
 
-<nav class="tabs"><div class="in">
-  <button data-view="today" class="on"><span class="ic">☀️</span>Сегодня</button>
-  <button data-view="tasks"><span class="ic">✅</span>Задачи</button>
-  <button data-view="notes"><span class="ic">📒</span>Заметки</button>
-  <button data-view="plans"><span class="ic">🗺️</span>Планы</button>
-</div></nav>
+<nav class="dock">
+  <button data-view="day" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(-28 12 12)"/></svg>День</button>
+  <button data-view="tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5l2 2 3.5-4M3.5 15.5l2 2 3.5-4M13 7h8M13 16h8"/></svg>Задачи</button>
+  <button class="plus" id="captureBtn" aria-label="Быстро записать"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button data-view="notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg>Заметки</button>
+  <button data-view="missions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2.5c3.2 2.2 4.9 6.3 3.8 11.2L14 16.5h-4l-1.8-2.8C7.1 8.8 8.8 4.7 12 2.5z"/><circle cx="12" cy="9.5" r="1.7"/><path d="M8.3 13.5L5.5 16l1 3.2 2.8-1.5M15.7 13.5l2.8 2.5-1 3.2-2.8-1.5M12 19v2.5"/></svg>Миссии</button>
+</nav>
+<button class="fpill hidden" id="fpill"></button>
+
+<!-- Небо -->
+<div class="overlay" id="sky" role="dialog" aria-label="Моё небо">
+  <canvas id="skyCanvas"></canvas>
+  <div class="sky-ui">
+    <div class="sky-top">
+      <div><h2>Моё небо</h2><div class="sub" id="skyStats"></div></div>
+      <button class="ib" id="skyClose" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="sky-tip" id="skyTip"></div>
+  </div>
+</div>
+
+<!-- Фокус -->
+<div class="overlay" id="focus" role="dialog" aria-label="Режим полёта">
+  <div class="focus-in">
+    <button class="ib x" id="fClose" aria-label="Свернуть">✕</button>
+    <div class="sub">Режим полёта</div>
+    <h2 id="fTask"></h2>
+    <div class="fring">
+      <svg viewBox="0 0 300 300">
+        <defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset=".55" stop-color="#ec4899"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs>
+        <circle cx="150" cy="150" r="130" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="10"/>
+        <path id="fArc" fill="none" stroke="url(#fg)" stroke-width="10" stroke-linecap="round"/>
+        <circle id="fDot" r="8" fill="#fff"/>
+      </svg>
+      <div class="ftime" id="fTime">25:00</div>
+    </div>
+    <div class="segs" id="fDur"><button data-m="15">15 мин</button><button data-m="25" class="on">25 мин</button><button data-m="45">45 мин</button><button data-m="60">60 мин</button></div>
+    <div class="row"><button class="btn soft" id="fReset">Сброс</button><button class="btn" id="fStart" style="min-width:150px">Старт</button></div>
+    <div id="fInfo" class="sub"></div>
+  </div>
+</div>
 
 <div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
@@ -209,8 +366,10 @@ nav.tabs button.on .ic{filter:none;opacity:1}
 <script>
 (() => {
 'use strict';
+// ================= утилиты =================
 const KEY = 'myday-data-v1';
 const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2, '0');
@@ -218,363 +377,785 @@ const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`
 const fromIso = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
 const todayIso = () => iso(new Date());
 const addDays = (s, n) => { const d = fromIso(s); d.setDate(d.getDate()+n); return iso(d); };
-const fmtDate = (s, opts={day:'numeric',month:'long'}) => fromIso(s).toLocaleDateString('ru-RU', opts);
+const diffDays = (a, b) => Math.round((fromIso(b) - fromIso(a)) / 864e5);
+const fmt = (s, o={day:'numeric', month:'long'}) => fromIso(s).toLocaleDateString('ru-RU', o);
+const cap1 = s => s[0].toUpperCase() + s.slice(1);
 function relDay(s){
   const t = todayIso();
   if (s === t) return 'Сегодня';
   if (s === addDays(t,1)) return 'Завтра';
   if (s === addDays(t,-1)) return 'Вчера';
-  const w = fromIso(s).toLocaleDateString('ru-RU',{weekday:'long'});
-  return w[0].toUpperCase()+w.slice(1);
+  if (s === addDays(t,2)) return 'Послезавтра';
+  return cap1(fromIso(s).toLocaleDateString('ru-RU',{weekday:'long'}));
 }
+function plural(n, a, b, c){ const m10 = n%10, m100 = n%100; return m10===1&&m100!==11 ? a : (m10>=2&&m10<=4&&(m100<12||m100>14)) ? b : c; }
+function hash(s){ let h = 2166136261; for (let i=0;i<s.length;i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h>>>0; }
+function rng(seed){ let a = seed>>>0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a>>>15, 1 | a); t = t + Math.imul(t ^ t>>>7, 61 | t) ^ t; return ((t ^ t>>>14)>>>0) / 4294967296; }; }
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ---------- Хранилище ----------
-const empty = () => ({ tasks:[], goals:[], notes:[], plans:[], days:{}, settings:{theme:'auto'} });
-let db;
-try { db = Object.assign(empty(), JSON.parse(localStorage.getItem(KEY)) || {}); }
-catch { db = empty(); }
-function save(){
-  try { localStorage.setItem(KEY, JSON.stringify(db)); }
-  catch { toast('Не удалось сохранить данные'); }
+// ================= данные =================
+const LISTS = ['tasks','goals','notes','plans','capsules','focus'];
+const empty = () => ({ v:2, tasks:[], goals:[], notes:[], plans:[], capsules:[], focus:[], days:{}, settings:{theme:'dark'} });
+function normalize(d){
+  d = Object.assign(empty(), d || {});
+  for (const k of LISTS) if (!Array.isArray(d[k])) d[k] = [];
+  if (!d.days || typeof d.days !== 'object') d.days = {};
+  d.settings = Object.assign({theme:'dark'}, d.settings);
+  for (const p of d.plans) if (!Array.isArray(p.steps)) p.steps = [];
+  if (d.v !== 2){ d.v = 2; d.settings.theme = 'dark'; } // переход на «Орбиту»: включаем фирменную тему
+  return d;
 }
+let db;
+try { db = normalize(JSON.parse(localStorage.getItem(KEY))); } catch { db = empty(); }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(db)); } catch { toast('Не удалось сохранить'); } }
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 
-// ---------- Общие ----------
-let view = 'today';
-let curDay = todayIso();
-let taskFilter = 'active';
-let planFilter = 'all';
-const TITLES = {today:'Сегодня', tasks:'Задачи', notes:'Заметки', plans:'Планы и цели'};
-const PRIO = ['', 'Важная', 'Срочная'];
+// ================= константы =================
+const PRIO = ['', 'Важно', 'Срочно'];
 const HORIZONS = {week:'Неделя', month:'Месяц', year:'Год', life:'Мечта'};
-const MOODS = ['😞','😕','😐','🙂','😄'];
+const MOODS = [['🌑','пусто'],['🌒','так себе'],['🌓','ровно'],['🌔','хорошо'],['🌕','сияю']];
+const PC = ['var(--a4)','var(--a2)','var(--a3)'];
+const QUESTIONS = ['Что сегодня принесло радость?','Чему я научился сегодня?','За что я благодарен сегодня?','Что можно было сделать лучше?','Какой момент дня хочется запомнить?','Что меня вдохновило?','Кому я сегодня помог — или кто помог мне?','Что меня удивило?','Что я сделал для своего здоровья?','Какой маленький шаг к большой цели я сделал?','Что я откладываю и почему?','Что бы я сказал себе утром этого дня?','С кем было приятно пообщаться?','Что дало энергию, а что её забрало?','Чем я горжусь сегодня?','Что я сделаю завтра иначе?'];
+const TITLES = {day:'', tasks:'Задачи', notes:'Заметки', missions:'Миссии'};
 
-function toast(msg){
-  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 1800);
+let view = 'day', curDay = todayIso(), taskFilter = 'active', planFilter = 'all';
+
+// ================= общее =================
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(()=>t.classList.remove('show'), 2000); }
+function burst(el){
+  if (reduced || !el) return;
+  const r = el.getBoundingClientRect(), x = r.left + r.width/2, y = r.top + r.height/2;
+  const cols = ['#8b5cf6','#ec4899','#f59e0b','#22d3ee','#fff'];
+  for (let i=0;i<16;i++){
+    const s = document.createElement('i'); s.className = 'spark';
+    s.style.left = x+'px'; s.style.top = y+'px'; s.style.background = cols[i%cols.length];
+    document.body.append(s);
+    const a = Math.random()*Math.PI*2, d = 28 + Math.random()*46;
+    s.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d}px)) scale(0)`,opacity:0}],
+      {duration:550+Math.random()*350, easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish = () => s.remove();
+  }
+  if (navigator.vibrate) navigator.vibrate(12);
 }
+
+// тема
+const mqLight = matchMedia('(prefers-color-scheme: light)');
 function applyTheme(){
-  const th = db.settings.theme;
-  if (th === 'auto') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', th);
+  const t = db.settings.theme === 'auto' ? (mqLight.matches ? 'light' : 'dark') : (db.settings.theme === 'light' ? 'light' : 'dark');
+  document.documentElement.dataset.theme = t;
+  $('meta[name=theme-color]').content = t === 'light' ? '#fbf5ee' : '#06061a';
+  drawBgSky();
 }
+mqLight.addEventListener && mqLight.addEventListener('change', applyTheme);
+function drawBgSky(){
+  const c = $('#bgsky');
+  if (document.documentElement.dataset.theme !== 'dark'){ c.style.display = 'none'; return; }
+  c.style.display = 'block';
+  const dpr = Math.min(devicePixelRatio || 1, 2), w = innerWidth, h = innerHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  const x = c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,w,h);
+  const r = rng(7), n = Math.round(w*h/5000);
+  for (let i=0;i<n;i++){
+    x.globalAlpha = .15 + r()*.6; x.fillStyle = r() < .1 ? '#fbbf24' : r() < .2 ? '#a5b4fc' : '#fff';
+    x.beginPath(); x.arc(r()*w, r()*h, Math.pow(r(),3)*1.3+.25, 0, 7); x.fill();
+  }
+}
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { drawBgSky(); if ($('#sky').classList.contains('open')) layoutSky(); }, 150); });
+
+// ================= разбор естественного языка =================
+const WD = [[/^(воскресенье|вс)$/,0],[/^(понедельник|пн)$/,1],[/^(вторник|вт)$/,2],[/^(сред[ау]|ср)$/,3],[/^(четверг|чт)$/,4],[/^(пятниц[ау]|пт)$/,5],[/^(суббот[ау]|сб)$/,6]];
+function parseText(text){
+  let s = ' ' + text + ' ', date = null, prio = 0; const tags = [];
+  const t0 = todayIso();
+  const take = (re, fn) => { s = s.replace(re, (...m) => { const r = fn(m); return r === false ? m[0] : ' '; }); };
+  take(/\s!(!?)!?(?=\s)/, m => { prio = m[1] ? 2 : 1; });
+  take(/\s#([\p{L}\d_-]+)(?=\s)/gu, m => { tags.push(m[1].toLowerCase()); });
+  if (!date) take(/\sпослезавтра(?=\s)/i, () => { date = addDays(t0,2); });
+  if (!date) take(/\sзавтра(?=\s)/i, () => { date = addDays(t0,1); });
+  if (!date) take(/\sсегодня(?=\s)/i, () => { date = t0; });
+  if (!date) take(/\sчерез\s+неделю(?=\s)/i, () => { date = addDays(t0,7); });
+  if (!date) take(/\sчерез\s+(\d{1,3})\s+(?:день|дня|дней)(?=\s)/i, m => { date = addDays(t0, +m[1]); });
+  if (!date) take(/\s(\d{1,2})\.(\d{1,2})(?:\.(\d{2,4}))?(?=\s)/, m => {
+    const d = +m[1], mo = +m[2]; if (d<1||d>31||mo<1||mo>12) return false;
+    let y = m[3] ? +m[3] : new Date().getFullYear(); if (y < 100) y += 2000;
+    let c = iso(new Date(y, mo-1, d)); if (!m[3] && c < t0) c = iso(new Date(y+1, mo-1, d));
+    date = c;
+  });
+  if (!date) take(/\s(?:во?\s+)?([а-яё]+)(?=\s)/gi, m => {
+    if (date) return false;
+    const w = m[1].toLowerCase(), hit = WD.find(([re]) => re.test(w)); if (!hit) return false;
+    const cur = new Date().getDay(); date = addDays(t0, ((hit[1] - cur + 7) % 7) || 7);
+  });
+  return { title: s.replace(/\s+/g,' ').trim(), date, prio, tags };
+}
+function previewChips(p, opt={}){
+  const c = [];
+  if (p.date) c.push(`<span class="chip acc">📅 ${esc(relDay(p.date))}, ${esc(fmt(p.date))}</span>`);
+  else if (opt.inbox) c.push(`<span class="chip">📥 без даты</span>`);
+  if (p.prio) c.push(`<span class="chip p${p.prio}">${p.prio===2?'🔥':'⚡'} ${PRIO[p.prio]}</span>`);
+  if (opt.tags) p.tags.forEach(t => c.push(`<span class="chip">#${esc(t)}</span>`));
+  return c.join('');
+}
+
+// ================= навигация =================
 function setView(v){
   view = v;
-  for (const k of Object.keys(TITLES)) $('#view-'+k).classList.toggle('hidden', k !== v);
-  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.view === v));
-  $('#title').textContent = TITLES[v];
-  render();
-  window.scrollTo(0,0);
+  for (const k of Object.keys(TITLES)){ const el = $('#v-'+k); el.classList.toggle('hidden', k !== v); if (k === v){ el.classList.remove('view-in'); void el.offsetWidth; el.classList.add('view-in'); } }
+  $$('.dock [data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === v));
+  render(); scrollTo(0,0);
 }
 function render(){
-  const now = new Date();
-  $('#subtitle').textContent = now.toLocaleDateString('ru-RU',{weekday:'long', day:'numeric', month:'long'});
-  if (view === 'today') renderToday();
+  renderHeader();
+  if (view === 'day') renderDay();
   if (view === 'tasks') renderTasks();
   if (view === 'notes') renderNotes();
-  if (view === 'plans') renderPlans();
+  if (view === 'missions') renderMissions();
+}
+function renderHeader(){
+  const h = new Date().getHours();
+  const hi = h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
+  const dateStr = cap1(new Date().toLocaleDateString('ru-RU',{weekday:'long', day:'numeric', month:'long'}));
+  $('#hello').textContent = view === 'day' ? hi + ' ✦' : dateStr;
+  $('#title').textContent = view === 'day' ? dateStr : TITLES[view];
+  const st = streak();
+  $('#streak').classList.toggle('hidden', !st);
+  $('#streak').textContent = `🔥 ${st}`;
+  $('#streak').title = `${st} ${plural(st,'день','дня','дней')} подряд с выполненными делами`;
+}
+function activeDays(){
+  const s = new Set();
+  for (const t of db.tasks) if (t.done) s.add(t.doneAt ? iso(new Date(t.doneAt)) : (t.date || iso(new Date(t.createdAt))));
+  for (const g of db.goals) if (g.done) s.add(g.date);
+  return s;
+}
+function streak(){
+  const s = activeDays(); let d = todayIso(); if (!s.has(d)) d = addDays(d,-1);
+  let n = 0; while (s.has(d)){ n++; d = addDays(d,-1); } return n;
 }
 
-// ---------- Задачи (общий рендер строки) ----------
-function taskLi(t, opts={}){
+// ================= задачи (строка) =================
+function sortTasks(a,b){ return (a.done - b.done) || ((b.prio||0) - (a.prio||0)) || (a.createdAt - b.createdAt); }
+function taskLi(t, o={}){
   const late = t.date && !t.done && t.date < todayIso();
   const meta = [];
-  if (t.prio) meta.push(`<span class="tag p${t.prio}">${PRIO[t.prio]}</span>`);
-  if (opts.showDate && t.date) meta.push(`<span class="${late?'tag late':''}">📅 ${esc(relDay(t.date))}, ${esc(fmtDate(t.date))}</span>`);
-  if (opts.showLate && late) meta.push(`<span class="tag late">просрочено с ${esc(fmtDate(t.date))}</span>`);
-  if (t.note) meta.push('<span>📎 есть описание</span>');
-  return `<li class="item ${t.done?'done':''}" data-id="${t.id}">
-    <input type="checkbox" class="check" data-act="toggle-task" ${t.done?'checked':''} aria-label="Готово">
-    <div class="txt" data-act="edit-task">${esc(t.title)}${meta.length?`<div class="meta">${meta.join('')}</div>`:''}</div>
-    <button class="del" data-act="del-task" aria-label="Удалить">×</button></li>`;
-}
-function sortTasks(a,b){
-  return (a.done - b.done) || (b.prio - a.prio) || (a.createdAt - b.createdAt);
+  if (t.prio) meta.push(`<span class="chip p${t.prio}">${t.prio===2?'🔥':'⚡'} ${PRIO[t.prio]}</span>`);
+  if (o.showDate && t.date) meta.push(`<span class="${late?'chip late':''}">📅 ${esc(relDay(t.date))}, ${esc(fmt(t.date))}</span>`);
+  if (o.showLate && late) meta.push(`<span class="chip late">просрочено · ${esc(fmt(t.date))}</span>`);
+  const fm = db.focus.filter(f => f.taskId === t.id).reduce((a,f) => a + f.min, 0);
+  if (fm) meta.push(`<span>⏱ ${fm} мин</span>`);
+  if (t.note) meta.push('<span>✎ описание</span>');
+  return `<li class="it ${t.done?'done':''} p${t.prio||0}" data-id="${t.id}">
+    <input type="checkbox" class="chk" data-act="tt" ${t.done?'checked':''} aria-label="Готово">
+    <div class="txt" data-act="et">${esc(t.title)}${meta.length?`<div class="meta">${meta.join('')}</div>`:''}</div>
+    ${t.done?'':`<button class="mini play" data-act="focus" title="Режим полёта" aria-label="Фокус">▶</button>`}
+    <button class="mini del" data-act="dt" aria-label="Удалить">×</button></li>`;
 }
 
-// ---------- СЕГОДНЯ ----------
-function renderToday(){
-  $('#dayLabel').textContent = relDay(curDay);
-  $('#dayDate').textContent = fmtDate(curDay, {day:'numeric', month:'long', year:'numeric'});
-
+// ================= ДЕНЬ =================
+function polar(r, deg){ const a = (deg-90)*Math.PI/180; return [150 + r*Math.cos(a), 150 + r*Math.sin(a)]; }
+function arcPath(r, d0, d1){
+  if (d1 - d0 >= 359.99) d1 = d0 + 359.99;
+  const [x0,y0] = polar(r,d0), [x1,y1] = polar(r,d1);
+  return `M${x0.toFixed(2)} ${y0.toFixed(2)}A${r} ${r} 0 ${d1-d0>180?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+}
+function dayData(){
   const goals = db.goals.filter(g => g.date === curDay);
-  $('#goalsList').innerHTML = goals.length ? goals.map((g,i) => `
-    <li class="item ${g.done?'done':''}" data-id="${g.id}">
-      <span class="goal-num">${i+1}</span>
-      <input type="checkbox" class="check" data-act="toggle-goal" ${g.done?'checked':''} aria-label="Готово">
-      <div class="txt">${esc(g.text)}</div>
-      <button class="del" data-act="del-goal" aria-label="Удалить">×</button></li>`).join('')
-    : '<li class="empty">Запиши 1–3 главные цели — то, что сделает день успешным.</li>';
-  $('#goalsCount').textContent = goals.length ? `${goals.filter(g=>g.done).length}/${goals.length}` : '';
+  const tasks = db.tasks.filter(t => t.date === curDay).sort(sortTasks);
+  const late = curDay === todayIso() ? db.tasks.filter(t => t.date && t.date < curDay && !t.done).sort((a,b)=>a.date.localeCompare(b.date)) : [];
+  return {goals, tasks, late};
+}
+// Safari не понимает var() в SVG-атрибутах — переносим их в style
+function cssVars(svg){
+  return svg.replace(/<[a-zA-Z][^>]*>/g, tag => {
+    const st = [];
+    tag = tag.replace(/\s(fill|stroke|font-family)="(var\([^"]*\))"/g, (m, a, v) => { st.push(`${a}:${v}`); return ''; });
+    return st.length ? tag.replace(/\/?>$/, e => ` style="${st.join(';')}"${e}`) : tag;
+  });
+}
+function renderOrbit(d){
+  const all = [...d.goals, ...d.tasks, ...d.late], done = all.filter(x => x.done).length;
+  const pct = all.length ? done / all.length : 0;
+  const t0 = todayIso(), now = new Date();
+  const frac = curDay === t0 ? (now.getHours()*60 + now.getMinutes())/1440 : curDay < t0 ? 1 : 0;
+  const focusMin = db.focus.filter(f => f.date === curDay).reduce((a,f) => a + f.min, 0);
+  let ticks = '';
+  for (let i=0;i<48;i++){
+    const deg = i*7.5, major = i%12 === 0, mid = i%2 === 0;
+    const [x1,y1] = polar(major?127:mid?132:135, deg), [x2,y2] = polar(140, deg);
+    const lit = i/48 <= frac;
+    ticks += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${lit?'var(--a3)':'var(--muted)'}" stroke-opacity="${lit?(major?1:.7):(major?.6:.25)}" stroke-width="${major?2:1.2}" stroke-linecap="round"/>`;
+  }
+  const labels = [0,6,12,18].map(hh => { const [x,y] = polar(120, hh*15); return `<text x="${x}" y="${y}" font-size="8" fill="var(--muted)" text-anchor="middle" dominant-baseline="middle" font-family="var(--fh)">${pad(hh)}</text>`; }).join('');
+  const [sx,sy] = polar(146, frac*360);
+  const sun = curDay === t0 ? `<circle cx="${sx}" cy="${sy}" r="11" fill="var(--a3)" opacity=".25" class="sun"/><circle cx="${sx}" cy="${sy}" r="5.5" fill="var(--a3)" filter="url(#glow)"/>` : '';
+  const planets = [0,1,2].map(i => {
+    const g = d.goals[i], [x,y] = polar(74, i*120 + 30);
+    if (!g) return `<circle cx="${x}" cy="${y}" r="3" fill="var(--muted)" opacity=".35"/>`;
+    return g.done
+      ? `<circle cx="${x}" cy="${y}" r="16" fill="${PC[i]}" opacity=".18"/><circle cx="${x}" cy="${y}" r="9" fill="${PC[i]}" filter="url(#glow)"/>`
+      : `<circle cx="${x}" cy="${y}" r="8" fill="var(--bg)" stroke="${PC[i]}" stroke-width="2.5"/>`;
+  }).join('');
+  const center = all.length
+    ? `<text x="150" y="146" text-anchor="middle" font-family="var(--fh)" font-weight="800" font-size="40" fill="var(--text)">${Math.round(pct*100)}<tspan font-size="18" dx="2">%</tspan></text>
+       <text x="150" y="168" text-anchor="middle" font-size="11" font-weight="700" fill="var(--muted)" letter-spacing="1">${done} ИЗ ${all.length}</text>`
+    : `<text x="150" y="150" text-anchor="middle" font-family="var(--fh)" font-weight="700" font-size="14" fill="var(--text)">Чистый лист</text>
+       <text x="150" y="168" text-anchor="middle" font-size="11" font-weight="700" fill="var(--muted)">запусти первую планету</text>`;
+  const fm = focusMin ? `<text x="150" y="188" text-anchor="middle" font-size="11" font-weight="700" fill="var(--a4)">⏱ ${focusMin} мин полёта</text>` : '';
+  $('#orbit').innerHTML = cssVars(`<svg viewBox="0 0 300 300" role="img" aria-label="Прогресс дня ${Math.round(pct*100)}%">
+    <defs>
+      <linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--a1)"/><stop offset=".55" style="stop-color:var(--a2)"/><stop offset="1" style="stop-color:var(--a3)"/></linearGradient>
+      <radialGradient id="core"><stop offset="0" style="stop-color:var(--a1);stop-opacity:.28"/><stop offset="1" style="stop-color:var(--a1);stop-opacity:0"/></radialGradient>
+      <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <circle cx="150" cy="150" r="100" fill="url(#core)"/>
+    ${ticks}${labels}
+    ${frac>0?`<path d="${arcPath(146,0,frac*360)}" fill="none" stroke="var(--a3)" stroke-opacity=".45" stroke-width="1.5" stroke-dasharray="2 4"/>`:''}
+    ${sun}
+    <circle cx="150" cy="150" r="105" fill="none" stroke="var(--line)" stroke-width="9"/>
+    ${pct>0?`<path d="${arcPath(105,0,pct*360)}" fill="none" stroke="url(#og)" stroke-width="9" stroke-linecap="round" filter="url(#glow)"/>`:''}
+    <circle cx="150" cy="150" r="74" fill="none" stroke="var(--muted)" stroke-opacity=".3" stroke-dasharray="1 5" stroke-linecap="round"/>
+    <g class="planets">${planets}</g>
+    ${center}${fm}
+  </svg>`);
+}
+function renderDay(){
+  const d = dayData(), t0 = todayIso();
+  renderOrbit(d);
+  $('#dayLabel').textContent = curDay === t0 ? 'Сегодня' : `${relDay(curDay)}, ${fmt(curDay)}`;
+  $('#toToday').classList.toggle('hidden', curDay === t0);
 
-  const isToday = curDay === todayIso();
-  const dayT = db.tasks.filter(t => t.date === curDay).sort(sortTasks);
-  const late = isToday ? db.tasks.filter(t => t.date && t.date < curDay && !t.done).sort(sortTasks) : [];
-  let html = '';
-  if (late.length) html += late.map(t => taskLi(t,{showLate:true})).join('');
-  html += dayT.map(t => taskLi(t)).join('');
-  $('#dayTasks').innerHTML = html || '<li class="empty">На этот день задач нет.</li>';
+  // капсулы, которые открылись
+  const ready = db.capsules.filter(c => !c.opened && c.openAt <= t0);
+  $('#capBanner').innerHTML = ready.length && curDay === t0 ? `<div class="card banner" data-act="cap" data-id="${ready[0].id}">
+    <span class="ic">📦</span><div class="grow"><b>Письмо из прошлого открылось!</b><div class="sub">Написано ${esc(fmt(iso(new Date(ready[0].createdAt)),{day:'numeric',month:'long',year:'numeric'}))} · нажми, чтобы прочитать</div></div></div>` : '';
 
-  const all = [...goals, ...dayT, ...late];
-  const done = all.filter(x => x.done).length;
-  const pct = all.length ? Math.round(done/all.length*100) : 0;
-  $('#dayProgress').style.width = pct + '%';
-  $('#dayProgressText').textContent = all.length ? `Выполнено ${done} из ${all.length} · ${pct}%` : 'Пока ничего не запланировано';
+  $('#goals').innerHTML = d.goals.length ? d.goals.map((g,i) => `
+    <li class="it goal ${g.done?'done':''}" data-id="${g.id}">
+      <span class="planet" style="--c:${PC[i%3]}">${i+1}</span>
+      <div class="txt" data-act="tg">${esc(g.text)}</div>
+      <input type="checkbox" class="chk" data-act="tg" ${g.done?'checked':''} aria-label="Готово">
+      <button class="mini del" data-act="dg" aria-label="Удалить">×</button></li>`).join('')
+    : '<li class="empty">Выбери до трёх главных целей — они станут планетами твоего дня.</li>';
+  $('#goalsCount').textContent = d.goals.length ? `${d.goals.filter(g=>g.done).length}/${d.goals.length}` : '';
+  $('#goalForm').classList.toggle('hidden', d.goals.length >= 3);
+
+  const list = [...d.late.map(t => taskLi(t,{showLate:true})), ...d.tasks.map(t => taskLi(t))];
+  $('#dayTasks').innerHTML = list.join('') || '<li class="empty">Свободное небо. Добавь задачу ниже или нажми «+».</li>';
+  const tAll = d.tasks.length + d.late.length;
+  $('#tasksCount').textContent = tAll ? `${[...d.tasks, ...d.late].filter(t=>t.done).length}/${tAll}` : '';
 
   const day = db.days[curDay] || {};
-  $('#moods').innerHTML = MOODS.map((m,i) => `<button type="button" data-mood="${i}" class="${day.mood===i?'on':''}" aria-label="Настроение ${i+1}">${m}</button>`).join('');
+  $('#moods').innerHTML = MOODS.map(([e,l],i) => `<button type="button" data-mood="${i}" class="${day.mood===i?'on':''}"><span>${e}</span><small>${l}</small></button>`).join('');
+  $('#question').textContent = QUESTIONS[hash(curDay) % QUESTIONS.length];
   if (document.activeElement !== $('#dayNote')) $('#dayNote').value = day.note || '';
 }
-$('#prevDay').onclick = () => { curDay = addDays(curDay,-1); renderToday(); };
-$('#nextDay').onclick = () => { curDay = addDays(curDay,1); renderToday(); };
-$('#dayLabel').onclick = () => { curDay = todayIso(); renderToday(); };
+$('#prevDay').onclick = () => { curDay = addDays(curDay,-1); renderDay(); };
+$('#nextDay').onclick = () => { curDay = addDays(curDay,1); renderDay(); };
+$('#toToday').onclick = () => { curDay = todayIso(); renderDay(); };
+$('#freeFly').onclick = () => openFocus(null);
 $('#goalForm').onsubmit = e => {
   e.preventDefault();
   const v = $('#goalInput').value.trim(); if (!v) return;
+  if (db.goals.filter(g => g.date === curDay).length >= 3) return toast('Три планеты — идеальная орбита');
   db.goals.push({id:uid(), date:curDay, text:v, done:false}); save();
-  $('#goalInput').value = ''; renderToday();
+  $('#goalInput').value = ''; renderDay();
 };
 $('#dayTaskForm').onsubmit = e => {
   e.preventDefault();
-  const v = $('#dayTaskInput').value.trim(); if (!v) return;
-  db.tasks.push({id:uid(), title:v, date:curDay, prio:0, done:false, note:'', createdAt:Date.now()}); save();
-  $('#dayTaskInput').value = ''; renderToday();
+  const p = parseText($('#dayTaskInput').value); if (!p.title) return;
+  db.tasks.push({id:uid(), title:p.title, date:p.date || curDay, prio:p.prio, done:false, note:'', createdAt:Date.now()}); save();
+  $('#dayTaskInput').value = ''; renderDay();
+  if (p.date && p.date !== curDay) toast(`Добавлено на ${relDay(p.date).toLowerCase()}`);
 };
 $('#moods').onclick = e => {
   const b = e.target.closest('[data-mood]'); if (!b) return;
-  const d = db.days[curDay] ||= {};
-  const m = +b.dataset.mood; d.mood = d.mood === m ? undefined : m; save(); renderToday();
+  const d = db.days[curDay] ||= {}; const m = +b.dataset.mood;
+  if (d.mood === m) delete d.mood; else d.mood = m;
+  save(); renderDay();
 };
-let noteTimer;
-$('#dayNote').oninput = () => {
-  clearTimeout(noteTimer);
-  noteTimer = setTimeout(() => { (db.days[curDay] ||= {}).note = $('#dayNote').value; save(); }, 300);
-};
+let noteT;
+$('#dayNote').oninput = () => { clearTimeout(noteT); noteT = setTimeout(() => { (db.days[curDay] ||= {}).note = $('#dayNote').value; save(); }, 300); };
 
-// ---------- ЗАДАЧИ ----------
+// ================= ЗАДАЧИ =================
 function renderTasks(){
-  document.querySelectorAll('#taskFilter button').forEach(b => b.classList.toggle('on', b.dataset.f === taskFilter));
+  $$('#taskFilter button').forEach(b => b.classList.toggle('on', b.dataset.f === taskFilter));
   const t0 = todayIso();
   let list = db.tasks.slice();
   if (taskFilter === 'active') list = list.filter(t => !t.done);
   if (taskFilter === 'inbox') list = list.filter(t => !t.date && !t.done);
-  if (taskFilter === 'done') list = list.filter(t => t.done).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0));
-  if (!list.length){ $('#tasksBox').innerHTML = '<div class="empty">Здесь пусто. Добавь задачу выше 👆</div>'; return; }
-  if (taskFilter === 'done'){ $('#tasksBox').innerHTML = `<ul class="list">${list.map(t=>taskLi(t,{showDate:true})).join('')}</ul>`; return; }
-
+  if (taskFilter === 'done') list = list.filter(t => t.done).sort((a,b) => (b.doneAt||0) - (a.doneAt||0));
+  const box = $('#tasksBox');
+  if (!list.length){ box.innerHTML = `<div class="empty">${taskFilter==='done'?'Пока ничего не выполнено — первая звезда ждёт ✦':'Здесь пусто. Запиши задачу выше 👆'}</div>`; return; }
+  if (taskFilter === 'done'){ box.innerHTML = `<ul class="list">${list.map(t => taskLi(t,{showDate:true})).join('')}</ul>`; return; }
   const groups = new Map();
-  const key = t => !t.date ? '~inbox' : (t.date < t0 && !t.done ? '!late' : t.date);
+  const key = t => !t.date ? '~' : (t.date < t0 && !t.done ? '!' : t.date);
   for (const t of list){ const k = key(t); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(t); }
-  const keys = [...groups.keys()].sort((a,b) => a === '!late' ? -1 : b === '!late' ? 1 : a.localeCompare(b));
-  $('#tasksBox').innerHTML = keys.map(k => {
-    const items = groups.get(k).sort(k === '!late' ? (a,b)=>a.date.localeCompare(b.date) : sortTasks);
-    const title = k === '!late' ? '⚠️ Просрочено' : k === '~inbox' ? '📥 Без даты' : `${relDay(k)}, ${fmtDate(k)}`;
-    return `<div class="group-title ${k==='!late'?'late':''}">${esc(title)}</div>
-      <ul class="list">${items.map(t => taskLi(t,{showDate:k==='!late'})).join('')}</ul>`;
+  const keys = [...groups.keys()].sort((a,b) => a === '!' ? -1 : b === '!' ? 1 : a.localeCompare(b));
+  box.innerHTML = keys.map(k => {
+    const items = groups.get(k).sort(k === '!' ? (a,b) => a.date.localeCompare(b.date) : sortTasks);
+    const title = k === '!' ? '⚠ Просрочено' : k === '~' ? '📥 Без даты' : `${relDay(k)} · ${fmt(k)}`;
+    return `<div class="group-title ${k==='!'?'late':''}">${esc(title)}</div><ul class="list">${items.map(t => taskLi(t,{showDate:k==='!'})).join('')}</ul>`;
   }).join('');
 }
+$('#taskInput').oninput = () => { const v = $('#taskInput').value; $('#taskPreview').innerHTML = v.trim() ? previewChips(parseText(v), {inbox:true}) : ''; };
 $('#taskForm').onsubmit = e => {
   e.preventDefault();
-  const v = $('#taskTitle').value.trim(); if (!v) return;
-  db.tasks.push({id:uid(), title:v, date:$('#taskDate').value || null, prio:+$('#taskPrio').value, done:false, note:'', createdAt:Date.now()});
-  save(); $('#taskTitle').value = ''; $('#taskPrio').value = '0'; renderTasks(); toast('Задача добавлена');
+  const p = parseText($('#taskInput').value); if (!p.title) return;
+  db.tasks.push({id:uid(), title:p.title, date:p.date, prio:p.prio, done:false, note:'', createdAt:Date.now()}); save();
+  $('#taskInput').value = ''; $('#taskPreview').innerHTML = ''; renderTasks();
+  toast(p.date ? `Добавлено: ${relDay(p.date).toLowerCase()}` : 'Добавлено в «Без даты»');
 };
 $('#taskFilter').onclick = e => { const b = e.target.closest('button'); if (b){ taskFilter = b.dataset.f; renderTasks(); } };
 
 function editTask(id){
   const t = db.tasks.find(x => x.id === id); if (!t) return;
+  const fm = db.focus.filter(f => f.taskId === id).reduce((a,f) => a + f.min, 0);
   openModal(`<h3>Задача</h3>
-    <div class="field"><label>Название</label><input type="text" id="mTitle" value="${esc(t.title)}"></div>
+    <div class="field"><input type="text" id="mTitle" value="${esc(t.title)}"></div>
     <div class="row field">
       <div class="grow"><label class="sub">Дата</label><input type="date" id="mDate" value="${t.date||''}"></div>
-      <div class="grow"><label class="sub">Приоритет</label><select id="mPrio">
-        ${['Обычная','Важная','Срочная'].map((p,i)=>`<option value="${i}" ${t.prio===i?'selected':''}>${p}</option>`).join('')}</select></div>
+      <div class="grow"><label class="sub">Приоритет</label><select id="mPrio">${['Обычная','⚡ Важно','🔥 Срочно'].map((p,i)=>`<option value="${i}" ${(t.prio||0)===i?'selected':''}>${p}</option>`).join('')}</select></div>
+    </div>
+    <div class="row field" style="flex-wrap:wrap;gap:6px">
+      <button class="btn soft sm" data-q="0">Сегодня</button><button class="btn soft sm" data-q="1">Завтра</button>
+      <button class="btn soft sm" data-q="7">Через неделю</button><button class="btn soft sm" data-q="x">Без даты</button>
     </div>
     <div class="field"><label>Описание</label><textarea id="mNote" placeholder="Подробности, ссылки, шаги…">${esc(t.note)}</textarea></div>
-    <div class="row" style="gap:6px;flex-wrap:wrap">
-      <button class="btn ghost small" data-q="0">Сегодня</button>
-      <button class="btn ghost small" data-q="1">Завтра</button>
-      <button class="btn ghost small" data-q="7">Через неделю</button>
-      <button class="btn ghost small" data-q="x">Без даты</button>
-    </div>
+    ${fm?`<div class="sub">⏱ В полёте с этой задачей: ${fm} мин</div>`:''}
     <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span>
-      <button class="btn ghost" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
-  $('#modal').querySelectorAll('[data-q]').forEach(b => b.onclick = () => {
-    $('#mDate').value = b.dataset.q === 'x' ? '' : addDays(todayIso(), +b.dataset.q);
-  });
-  $('#mSave').onclick = () => {
-    t.title = $('#mTitle').value.trim() || t.title; t.date = $('#mDate').value || null;
-    t.prio = +$('#mPrio').value; t.note = $('#mNote').value; save(); closeModal(); render();
-  };
+      ${t.done?'':'<button class="btn soft" id="mFocus">▶ Полёт</button>'}<button class="btn" id="mSave">Сохранить</button></div>`);
+  $$('#modal [data-q]').forEach(b => b.onclick = () => { $('#mDate').value = b.dataset.q === 'x' ? '' : addDays(todayIso(), +b.dataset.q); });
+  $('#mSave').onclick = () => { t.title = $('#mTitle').value.trim() || t.title; t.date = $('#mDate').value || null; t.prio = +$('#mPrio').value; t.note = $('#mNote').value; save(); closeModal(); render(); };
   $('#mDel').onclick = () => { db.tasks = db.tasks.filter(x => x.id !== id); save(); closeModal(); render(); toast('Удалено'); };
+  if ($('#mFocus')) $('#mFocus').onclick = () => { closeModal(); openFocus(id); };
 }
 
-// ---------- ЗАМЕТКИ ----------
+// ================= ЗАМЕТКИ И КАПСУЛЫ =================
 function renderNotes(){
-  const q = $('#noteSearch').value.trim().toLowerCase();
+  const q = $('#noteSearch').value.trim().toLowerCase().replace(/^#/,'');
+  const t0 = todayIso();
+  const caps = db.capsules.slice().sort((a,b) => (a.opened - b.opened) || a.openAt.localeCompare(b.openAt));
+  $('#caps').innerHTML = caps.length ? caps.map(c => {
+    const ready = c.openAt <= t0, left = diffDays(t0, c.openAt);
+    return `<div class="cap ${ready&&!c.opened?'ready':''}" data-act="cap" data-id="${c.id}">
+      <div class="ic">${c.opened?'📖':ready?'📦':'🔒'}</div>
+      <b>${c.opened?'Прочитано':ready?'Можно открыть!':`Через ${left} ${plural(left,'день','дня','дней')}`}</b>
+      <div class="sub">${c.opened||ready?'':'откроется '}${esc(fmt(c.openAt,{day:'numeric',month:'long',year:'numeric'}))}</div></div>`;
+  }).join('') : `<div class="cap" data-act="newcap"><div class="ic">⧗</div><b>Письмо себе</b><div class="sub">Напиши себе в будущее — откроется в выбранный день</div></div>`;
   const list = db.notes
     .filter(n => !q || (n.title + ' ' + n.body + ' ' + (n.tag||'')).toLowerCase().includes(q))
     .sort((a,b) => (b.pinned - a.pinned) || (b.updatedAt - a.updatedAt));
   $('#notesGrid').innerHTML = list.length ? list.map(n => `
-    <div class="note" data-id="${n.id}">
+    <div class="note" data-act="en" data-id="${n.id}" style="--h:${n.tag ? hash(n.tag)%360 : 255}">
       <h3>${n.pinned?'📌 ':''}${esc(n.title || 'Без названия')}</h3>
-      <p>${esc(n.body)}</p>
-      <div class="meta">${n.tag?`<span class="tag">#${esc(n.tag)}</span>`:''}<span>${new Date(n.updatedAt).toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</span></div>
-    </div>`).join('') : `<div class="empty">${q?'Ничего не найдено.':'Заметок пока нет. Нажми «+ Заметка».'}</div>`;
+      ${n.body.trim()?`<p>${esc(n.body)}</p>`:''}
+      <div class="meta">${n.tag?`<span class="chip">#${esc(n.tag)}</span>`:''}<span>${new Date(n.updatedAt).toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</span></div>
+    </div>`).join('') : `<div class="empty">${q?'Ничего не найдено.':'Заметок пока нет — нажми «+».'}</div>`;
 }
 $('#noteSearch').oninput = renderNotes;
 $('#newNote').onclick = () => editNote(null);
-$('#notesGrid').onclick = e => { const n = e.target.closest('.note'); if (n) editNote(n.dataset.id); };
+$('#newCap').onclick = () => openCapture('capsule');
 function editNote(id){
   const n = id ? db.notes.find(x => x.id === id) : {title:'', body:'', tag:'', pinned:false};
+  if (!n) return;
   openModal(`<h3>${id?'Заметка':'Новая заметка'}</h3>
     <div class="field"><input type="text" id="mTitle" placeholder="Заголовок" value="${esc(n.title)}"></div>
-    <div class="field"><textarea id="mBody" style="min-height:220px" placeholder="Текст заметки…">${esc(n.body)}</textarea></div>
-    <div class="row field"><input type="text" id="mTag" class="grow" placeholder="Тег (например: идеи, книги)" value="${esc(n.tag)}">
-      <label class="row sub" style="white-space:nowrap"><input type="checkbox" id="mPin" ${n.pinned?'checked':''}> Закрепить</label></div>
+    <div class="field"><textarea id="mBody" style="min-height:220px" placeholder="Мысли, идеи, списки…">${esc(n.body)}</textarea></div>
+    <div class="row field"><input type="text" id="mTag" class="grow" placeholder="#тег — задаёт цвет карточки" value="${esc(n.tag)}">
+      <label class="row sub" style="white-space:nowrap;cursor:pointer"><input type="checkbox" class="chk" id="mPin" ${n.pinned?'checked':''}> 📌</label></div>
     <div class="actions">${id?'<button class="btn danger" id="mDel">Удалить</button>':''}<span class="grow"></span>
-      <button class="btn ghost" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
-  setTimeout(() => { const el = id ? $('#mBody') : $('#mTitle'); if (el) el.focus(); }, 50);
+      <button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
+  setTimeout(() => { const el = id ? $('#mBody') : $('#mTitle'); if (el) el.focus(); }, 60);
   $('#mSave').onclick = () => {
-    const data = {title:$('#mTitle').value.trim(), body:$('#mBody').value, tag:$('#mTag').value.trim().replace(/^#/,''), pinned:$('#mPin').checked, updatedAt:Date.now()};
+    const data = {title:$('#mTitle').value.trim(), body:$('#mBody').value, tag:$('#mTag').value.trim().replace(/^#/,'').toLowerCase(), pinned:$('#mPin').checked, updatedAt:Date.now()};
     if (!data.title && !data.body.trim()){ closeModal(); return; }
     if (id) Object.assign(n, data); else db.notes.push({id:uid(), ...data});
-    save(); closeModal(); renderNotes();
+    save(); closeModal(); render();
   };
-  if (id) $('#mDel').onclick = () => { if (confirm('Удалить заметку?')){ db.notes = db.notes.filter(x => x.id !== id); save(); closeModal(); renderNotes(); } };
+  if (id) $('#mDel').onclick = () => { if (confirm('Удалить заметку?')){ db.notes = db.notes.filter(x => x.id !== id); save(); closeModal(); render(); } };
+}
+function openCapsule(id){
+  const c = db.capsules.find(x => x.id === id); if (!c) return;
+  const t0 = todayIso(), written = fmt(iso(new Date(c.createdAt)),{day:'numeric',month:'long',year:'numeric'});
+  if (c.openAt > t0){
+    const left = diffDays(t0, c.openAt);
+    openModal(`<h3>🔒 Капсула запечатана</h3>
+      <p>Написано ${esc(written)}. Откроется ${esc(fmt(c.openAt,{day:'numeric',month:'long',year:'numeric'}))} — через ${left} ${plural(left,'день','дня','дней')}.</p>
+      <p class="sub">Подглядывать нельзя — в этом весь смысл ✦</p>
+      <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span><button class="btn" id="mCancel">Ждём</button></div>`);
+  } else {
+    const first = !c.opened; c.opened = true; save();
+    openModal(`<h3>${first?'📦 Письмо из прошлого':'📖 Капсула времени'}</h3>
+      <div class="sub" style="margin-bottom:10px">Ты написал это ${esc(written)}</div>
+      <div class="capsule-open">${esc(c.text)}</div>
+      <div class="actions"><button class="btn danger" id="mDel">Удалить</button><span class="grow"></span><button class="btn" id="mCancel">Закрыть</button></div>`);
+    if (first) setTimeout(() => burst($('#modal h3')), 250);
+  }
+  $('#mDel').onclick = () => { if (confirm('Удалить капсулу?')){ db.capsules = db.capsules.filter(x => x.id !== id); save(); closeModal(); render(); } };
 }
 
-// ---------- ПЛАНЫ ----------
-function renderPlans(){
-  document.querySelectorAll('#planFilter button').forEach(b => b.classList.toggle('on', b.dataset.h === planFilter));
-  const order = {week:0, month:1, year:2, life:3};
+// ================= МИССИИ =================
+function renderMissions(){
+  $$('#planFilter button').forEach(b => b.classList.toggle('on', b.dataset.h === planFilter));
+  const order = {week:0, month:1, year:2, life:3}, t0 = todayIso();
   const list = db.plans.filter(p => planFilter === 'all' || p.horizon === planFilter)
-    .sort((a,b) => (a.archived - b.archived) || (order[a.horizon]-order[b.horizon]) || (a.createdAt-b.createdAt));
+    .sort((a,b) => (!!a.archived - !!b.archived) || (order[a.horizon] - order[b.horizon]) || (a.createdAt - b.createdAt));
   $('#plansBox').innerHTML = list.length ? list.map(p => {
-    const done = p.steps.filter(s=>s.done).length, pct = p.steps.length ? Math.round(done/p.steps.length*100) : 0;
-    return `<div class="card" data-id="${p.id}" style="${p.archived?'opacity:.6':''}">
+    const n = p.steps.length, done = p.steps.filter(s => s.done).length, pct = n ? done/n*100 : 0;
+    let dl = '';
+    if (p.deadline && !p.archived){ const left = diffDays(t0, p.deadline); dl = left < 0 ? ` · <span style="color:var(--danger)">срок прошёл</span>` : left === 0 ? ' · срок сегодня' : ` · осталось ${left} ${plural(left,'день','дня','дней')}`; }
+    return `<div class="card mission ${p.archived?'won':''}" data-id="${p.id}">
       <div class="row" style="align-items:flex-start">
-        <div class="grow"><div class="horizon">${HORIZONS[p.horizon]}${p.deadline?` · до ${esc(fmtDate(p.deadline,{day:'numeric',month:'long',year:'numeric'}))}`:''}${p.archived?' · достигнуто 🏆':''}</div>
-        <div style="font-weight:700;font-size:17px">${esc(p.title)}</div>
-        ${p.why?`<div class="sub">${esc(p.why)}</div>`:''}</div>
-        <button class="btn ghost small" data-act="edit-plan">Изм.</button>
+        <div class="grow"><div class="horizon">${HORIZONS[p.horizon]||''}${p.archived?' · достигнуто 🏆':''}</div>
+          <h3>${esc(p.title)}</h3>
+          <div class="sub">${p.why?esc(p.why):''}${p.deadline?`${p.why?' · ':''}до ${esc(fmt(p.deadline,{day:'numeric',month:'long',year:'numeric'}))}`:''}${dl}</div></div>
+        <button class="btn soft sm" data-act="ep">Изм.</button>
       </div>
-      <div class="row" style="margin:10px 0 4px"><div class="progress grow"><i style="width:${pct}%"></i></div><span class="sub">${pct}%</span></div>
-      <div>${p.steps.map(s => `<div class="plan-step ${s.done?'done':''}" data-sid="${s.id}">
-        <input type="checkbox" class="check" data-act="toggle-step" ${s.done?'checked':''}><span class="txt">${esc(s.text)}</span>
-        <button class="del" data-act="del-step" aria-label="Удалить шаг">×</button></div>`).join('')}</div>
-      <form class="row" data-act="add-step" style="margin-top:6px"><input type="text" class="grow" placeholder="Добавить шаг…" maxlength="200"><button class="btn small">+</button></form>
+      <div class="track"><div class="line"><i style="width:${pct}%"></i></div>
+        ${p.steps.map((s,i) => `<span class="node ${s.done?'on':''}" style="left:${(i+1)/n*100}%"></span>`).join('')}
+        <span class="rocket" style="left:${pct}%">🚀</span>
+      </div>
+      <div class="sub" style="text-align:right">${n?`${done} из ${n} ${plural(n,'этапа','этапов','этапов')} · ${Math.round(pct)}%`:'Разбей миссию на этапы'}</div>
+      <div>${p.steps.map(s => `<div class="step ${s.done?'done':''}" data-sid="${s.id}">
+        <input type="checkbox" class="chk" data-act="ts" ${s.done?'checked':''} aria-label="Готово"><span class="txt">${esc(s.text)}</span>
+        <button class="mini del" data-act="ds" aria-label="Удалить">×</button></div>`).join('')}</div>
+      <form class="addrow" data-act="addstep"><input type="text" class="grow" placeholder="Новый этап…" maxlength="200" autocomplete="off"><button class="btn sq" aria-label="Добавить">+</button></form>
     </div>`;
-  }).join('') : '<div class="empty card">Поставь цель на неделю, месяц или год и разбей её на шаги.</div>';
+  }).join('') : `<div class="card empty" style="text-align:center;padding:28px 16px"><div style="font-size:40px">🚀</div>Миссия — большая цель с этапами.<br>Поставь цель на неделю, месяц, год — или запиши мечту.</div>`;
 }
-$('#planFilter').onclick = e => { const b = e.target.closest('button'); if (b){ planFilter = b.dataset.h; renderPlans(); } };
+$('#planFilter').onclick = e => { const b = e.target.closest('button'); if (b){ planFilter = b.dataset.h; renderMissions(); } };
 $('#newPlan').onclick = () => editPlan(null);
 function editPlan(id){
-  const p = id ? db.plans.find(x => x.id === id) : {title:'', why:'', horizon: planFilter==='all'?'month':planFilter, deadline:'', archived:false};
-  openModal(`<h3>${id?'План':'Новый план / цель'}</h3>
-    <div class="field"><label>Цель</label><input type="text" id="mTitle" placeholder="Например: прочитать 3 книги" value="${esc(p.title)}"></div>
-    <div class="field"><label>Зачем это мне?</label><input type="text" id="mWhy" placeholder="Мотивация (необязательно)" value="${esc(p.why)}"></div>
+  const p = id ? db.plans.find(x => x.id === id) : {title:'', why:'', horizon: planFilter === 'all' ? 'month' : planFilter, deadline:'', archived:false};
+  if (!p) return;
+  openModal(`<h3>${id?'Миссия':'Новая миссия'}</h3>
+    <div class="field"><label>Цель</label><input type="text" id="mTitle" placeholder="Например: пробежать 10 км" value="${esc(p.title)}"></div>
+    <div class="field"><label>Зачем это мне</label><input type="text" id="mWhy" placeholder="Мотивация — перечитывай, когда трудно" value="${esc(p.why)}"></div>
     <div class="row field">
-      <div class="grow"><label class="sub">Горизонт</label><select id="mHor">${Object.entries(HORIZONS).map(([k,v])=>`<option value="${k}" ${p.horizon===k?'selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="grow"><label class="sub">Горизонт</label><select id="mHor">${Object.entries(HORIZONS).map(([k,v]) => `<option value="${k}" ${p.horizon===k?'selected':''}>${v}</option>`).join('')}</select></div>
       <div class="grow"><label class="sub">Срок</label><input type="date" id="mDl" value="${p.deadline||''}"></div>
     </div>
-    ${id?`<label class="row sub field"><input type="checkbox" id="mArch" ${p.archived?'checked':''}> Цель достигнута 🏆</label>`:''}
+    ${id?`<label class="row field" style="cursor:pointer"><input type="checkbox" class="chk" id="mArch" ${p.archived?'checked':''}> Миссия выполнена 🏆</label>`:''}
     <div class="actions">${id?'<button class="btn danger" id="mDel">Удалить</button>':''}<span class="grow"></span>
-      <button class="btn ghost" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
+      <button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="mSave">Сохранить</button></div>`);
   $('#mSave').onclick = () => {
     const title = $('#mTitle').value.trim(); if (!title){ $('#mTitle').focus(); return; }
-    const data = {title, why:$('#mWhy').value.trim(), horizon:$('#mHor').value, deadline:$('#mDl').value||null};
-    if (id) Object.assign(p, data, {archived: $('#mArch').checked});
+    const data = {title, why:$('#mWhy').value.trim(), horizon:$('#mHor').value, deadline:$('#mDl').value || null};
+    if (id){ const won = $('#mArch').checked; if (won && !p.archived) p.doneAt = Date.now(); Object.assign(p, data, {archived:won}); if (won) toast('Миссия выполнена! В небе вспыхнула сверхновая 🌟'); }
     else db.plans.push({id:uid(), ...data, steps:[], archived:false, createdAt:Date.now()});
-    save(); closeModal(); renderPlans();
+    save(); closeModal(); render();
   };
-  if (id) $('#mDel').onclick = () => { if (confirm('Удалить план со всеми шагами?')){ db.plans = db.plans.filter(x => x.id !== id); save(); closeModal(); renderPlans(); } };
+  if (id) $('#mDel').onclick = () => { if (confirm('Удалить миссию со всеми этапами?')){ db.plans = db.plans.filter(x => x.id !== id); save(); closeModal(); render(); } };
 }
 
-// ---------- Делегирование кликов ----------
+// ================= быстрый ввод =================
+const CAP_TYPES = [['task','✓ Задача'],['goal','◎ Цель дня'],['note','✎ Заметка'],['capsule','⧗ Капсула']];
+const CAP_PH = {task:'завтра позвонить врачу !!', goal:'Главное на сегодня…', note:'Первая строка — заголовок\nДальше — текст. #идеи', capsule:'Привет из прошлого! Сейчас я…'};
+const CAP_HINT = {
+  task:'Распознаю даты: «завтра», «в пятницу», «через 3 дня», «25.12» · «!» — важно, «!!» — срочно',
+  goal:'Цель попадёт в «Три планеты дня» (можно указать «завтра»)',
+  note:'Первая строка станет заголовком, #тег — цветом карточки',
+  capsule:'Письмо запечатается до выбранной даты. Прочитать раньше не получится 🔒'};
+function openCapture(type){
+  type = type || 'task';
+  openModal(`<h3>Что на уме?</h3>
+    <div class="segs" id="capType">${CAP_TYPES.map(([k,l]) => `<button type="button" data-t="${k}">${l}</button>`).join('')}</div>
+    <textarea id="capText" rows="3" style="min-height:96px"></textarea>
+    <div class="chips" id="capPrev"></div>
+    <div class="field hidden" id="capDateBox" style="margin-top:12px"><label>Откроется</label>
+      <div class="row" style="flex-wrap:wrap"><input type="date" id="capDate" style="flex:1;min-width:150px">
+      <button class="btn soft sm" data-cd="30">Месяц</button><button class="btn soft sm" data-cd="182">Полгода</button><button class="btn soft sm" data-cd="365">Год</button></div></div>
+    <div class="hint" id="capHint"></div>
+    <div class="actions"><button class="btn soft" id="mCancel">Отмена</button><button class="btn" id="capSave">Сохранить</button></div>`);
+  let t = type;
+  const ta = $('#capText');
+  $('#capDate').min = addDays(todayIso(), 1);
+  $('#capDate').value = addDays(todayIso(), 30);
+  const upd = () => {
+    $$('#capType button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+    ta.placeholder = CAP_PH[t]; $('#capHint').textContent = CAP_HINT[t];
+    $('#capDateBox').classList.toggle('hidden', t !== 'capsule');
+    const v = ta.value.trim(), p = parseText(ta.value);
+    $('#capPrev').innerHTML = !v ? '' : t === 'task' ? previewChips(p,{inbox:true}) : t === 'goal' ? previewChips({date:p.date || curDay, prio:0}) : t === 'note' ? previewChips({date:null, prio:0, tags:p.tags},{tags:true}) : '';
+  };
+  $('#capType').onclick = e => { const b = e.target.closest('button'); if (b){ t = b.dataset.t; upd(); ta.focus(); } };
+  $$('#capDateBox [data-cd]').forEach(b => b.onclick = () => { $('#capDate').value = addDays(todayIso(), +b.dataset.cd); });
+  ta.oninput = upd;
+  ta.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && (t === 'task' || t === 'goal')){ e.preventDefault(); $('#capSave').click(); } };
+  $('#capSave').onclick = () => {
+    const raw = ta.value; if (!raw.trim()) return ta.focus();
+    if (t === 'task'){
+      const p = parseText(raw); if (!p.title) return;
+      db.tasks.push({id:uid(), title:p.title, date:p.date, prio:p.prio, done:false, note:'', createdAt:Date.now()});
+      toast(p.date ? `Задача: ${relDay(p.date).toLowerCase()}` : 'Задача в «Без даты»');
+    } else if (t === 'goal'){
+      const p = parseText(raw), date = p.date || curDay;
+      if (db.goals.filter(g => g.date === date).length >= 3) return toast('На этот день уже три планеты');
+      db.goals.push({id:uid(), date, text:p.title || raw.trim(), done:false});
+      toast(`Новая планета: ${relDay(date).toLowerCase()}`);
+    } else if (t === 'note'){
+      const tags = [...raw.matchAll(/#([\p{L}\d_-]+)/gu)].map(m => m[1].toLowerCase());
+      const clean = raw.replace(/(^|\s)#[\p{L}\d_-]+/gu, '$1').trim();
+      const [first, ...rest] = clean.split('\n');
+      db.notes.push({id:uid(), title:first.trim().slice(0,120), body:rest.join('\n').trim(), tag:tags[0]||'', pinned:false, updatedAt:Date.now()});
+      toast('Заметка сохранена');
+    } else {
+      const d = $('#capDate').value;
+      if (!d || d <= todayIso()) return toast('Выбери дату в будущем');
+      db.capsules.push({id:uid(), text:raw.trim(), openAt:d, createdAt:Date.now(), opened:false});
+      toast(`Капсула запечатана до ${fmt(d)} 🔒`);
+    }
+    save(); closeModal(); render();
+  };
+  upd(); setTimeout(() => ta.focus(), 60);
+}
+$('#captureBtn').onclick = () => openCapture(view === 'notes' ? 'note' : 'task');
+
+// ================= делегирование =================
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-act]'); if (!a) return;
-  const act = a.dataset.act;
-  const li = a.closest('[data-id]'); const id = li && li.dataset.id;
-  if (act === 'toggle-task'){ const t = db.tasks.find(x=>x.id===id); t.done = !t.done; t.doneAt = t.done ? Date.now() : null; save(); render(); }
-  else if (act === 'del-task'){ db.tasks = db.tasks.filter(x=>x.id!==id); save(); render(); toast('Удалено'); }
-  else if (act === 'edit-task'){ editTask(id); }
-  else if (act === 'toggle-goal'){ const g = db.goals.find(x=>x.id===id); g.done = !g.done; save(); render(); if (g.done) cheer(); }
-  else if (act === 'del-goal'){ db.goals = db.goals.filter(x=>x.id!==id); save(); render(); }
-  else if (act === 'edit-plan'){ editPlan(id); }
-  else if (act === 'toggle-step' || act === 'del-step'){
-    const p = db.plans.find(x=>x.id===id); const sid = a.closest('[data-sid]').dataset.sid;
-    if (act === 'toggle-step'){ const s = p.steps.find(x=>x.id===sid); s.done = !s.done; if (p.steps.every(x=>x.done)) toast('Все шаги выполнены! 🏆'); }
-    else p.steps = p.steps.filter(x=>x.id!==sid);
-    save(); renderPlans();
+  const act = a.dataset.act, host = a.closest('[data-id]'), id = host && host.dataset.id;
+  if (act === 'tt'){
+    const t = db.tasks.find(x => x.id === id); if (!t) return;
+    t.done = !t.done; t.doneAt = t.done ? Date.now() : null;
+    if (t.done) burst(a);
+    save(); render(); if (t.done && view === 'day') checkDayComplete();
   }
+  else if (act === 'et') editTask(id);
+  else if (act === 'dt'){ db.tasks = db.tasks.filter(x => x.id !== id); save(); render(); toast('Удалено'); }
+  else if (act === 'focus') openFocus(id);
+  else if (act === 'tg'){
+    const g = db.goals.find(x => x.id === id); if (!g) return;
+    g.done = !g.done; if (g.done) burst(host.querySelector('.planet'));
+    save(); render(); if (g.done) checkDayComplete();
+  }
+  else if (act === 'dg'){ db.goals = db.goals.filter(x => x.id !== id); save(); render(); }
+  else if (act === 'ep') editPlan(id);
+  else if (act === 'ts' || act === 'ds'){
+    const p = db.plans.find(x => x.id === id); const sid = a.closest('[data-sid]').dataset.sid;
+    if (act === 'ts'){
+      const s = p.steps.find(x => x.id === sid); s.done = !s.done;
+      if (s.done){ burst(a); if (p.steps.every(x => x.done)) toast('Все этапы пройдены! Отметь миссию выполненной 🏆'); }
+    } else p.steps = p.steps.filter(x => x.id !== sid);
+    save(); renderMissions();
+  }
+  else if (act === 'en') editNote(id);
+  else if (act === 'cap') openCapsule(id);
+  else if (act === 'newcap') openCapture('capsule');
 });
 document.addEventListener('submit', e => {
-  const f = e.target; if (f.dataset.act !== 'add-step') return;
+  const f = e.target; if (f.dataset.act !== 'addstep') return;
   e.preventDefault();
-  const inp = f.querySelector('input'); const v = inp.value.trim(); if (!v) return;
-  const p = db.plans.find(x => x.id === f.closest('[data-id]').dataset.id);
-  p.steps.push({id:uid(), text:v, done:false}); save(); renderPlans();
-  const again = document.querySelector(`[data-id="${p.id}"] form input`); if (again) again.focus();
+  const inp = f.querySelector('input'), v = inp.value.trim(); if (!v) return;
+  const pid = f.closest('[data-id]').dataset.id, p = db.plans.find(x => x.id === pid);
+  p.steps.push({id:uid(), text:v, done:false}); save(); renderMissions();
+  const again = document.querySelector(`.mission[data-id="${pid}"] form input`); if (again) again.focus();
 });
-function cheer(){
-  const goals = db.goals.filter(g => g.date === curDay);
-  if (goals.length && goals.every(g => g.done)) toast('Все цели дня выполнены! 🎉');
+function checkDayComplete(){
+  const d = dayData(), all = [...d.goals, ...d.tasks, ...d.late];
+  if (all.length && all.every(x => x.done)) toast('День выполнен на 100%! Загляни в небо ✦');
+  else if (d.goals.length && d.goals.every(g => g.done)) toast('Все планеты дня на орбите! 🪐');
 }
 
-// ---------- Модалка ----------
-function openModal(html){
-  $('#modal').innerHTML = html; $('#modalBg').classList.add('open');
-  const c = $('#mCancel'); if (c) c.onclick = closeModal;
-}
+// ================= модалка =================
+function openModal(html){ $('#modal').innerHTML = html; $('#modalBg').classList.add('open'); const c = $('#mCancel'); if (c) c.onclick = closeModal; }
 function closeModal(){ $('#modalBg').classList.remove('open'); $('#modal').innerHTML = ''; }
 $('#modalBg').onclick = e => { if (e.target === $('#modalBg')) closeModal(); };
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){ if ($('#modalBg').classList.contains('open')) closeModal(); else if ($('#sky').classList.contains('open')) closeSky(); else if ($('#focus').classList.contains('open')) closeFocus(); return; }
+  const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if (!typing && !e.metaKey && !e.ctrlKey && (e.key === 'n' || e.key === 'т') && !$('#modalBg').classList.contains('open')){ e.preventDefault(); openCapture(); }
+});
 
-// ---------- Настройки / резервная копия ----------
-$('#settingsBtn').onclick = () => {
+// ================= НЕБО =================
+let sky = null, skyRaf = 0;
+function skyItems(){
+  const items = [];
+  for (const t of db.tasks) if (t.done) items.push({id:t.id, title:t.title, kind:'task', prio:t.prio||0, date: t.doneAt ? iso(new Date(t.doneAt)) : (t.date || iso(new Date(t.createdAt)))});
+  for (const g of db.goals) if (g.done) items.push({id:g.id, title:g.text, kind:'goal', date:g.date});
+  for (const p of db.plans) if (p.archived) items.push({id:p.id, title:p.title, kind:'mission', date: iso(new Date(p.doneAt || p.createdAt))});
+  return items;
+}
+function layoutSky(){
+  const c = $('#skyCanvas'), dpr = Math.min(devicePixelRatio || 1, 2), w = innerWidth, h = innerHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  const items = skyItems(), byDay = new Map();
+  for (const it of items){ if (!byDay.has(it.date)) byDay.set(it.date, []); byDay.get(it.date).push(it); }
+  const days = [...byDay.keys()].sort(), n = days.length;
+  const cx = w/2, cy = h/2 + 10, maxR = Math.min(w, h) * .40;
+  const stars = [], cons = [];
+  days.forEach((d, k) => {
+    const r = n === 1 ? 0 : maxR * Math.sqrt((k + .6) / n), ang = k * 2.39996 + 1.2;
+    const dx = cx + r*Math.cos(ang), dy = cy + r*Math.sin(ang)*.82;
+    const list = byDay.get(d), spread = Math.min(54, 16 + list.length*7), group = [];
+    list.forEach((it, j) => {
+      const rr = rng(hash(it.id)), a = rr()*Math.PI*2, dist = list.length === 1 ? 0 : (.35 + rr()*.65) * spread;
+      const st = {...it, x: dx + Math.cos(a)*dist, y: dy + Math.sin(a)*dist, ph: rr()*6.28,
+        r: it.kind === 'mission' ? 4.2 : it.kind === 'goal' ? 2.8 : 1.5 + it.prio*.5,
+        col: it.kind === 'mission' ? '#f472b6' : it.kind === 'goal' ? '#fbbf24' : (it.prio === 2 ? '#fda4af' : it.prio === 1 ? '#fde68a' : '#e0e7ff')};
+      stars.push(st); group.push(st);
+    });
+    // созвездие: соединяем ближайших соседей по цепочке
+    if (group.length > 1){
+      const left = group.slice(1), chain = [group[0]];
+      while (left.length){ const last = chain[chain.length-1]; left.sort((p,q) => Math.hypot(p.x-last.x,p.y-last.y) - Math.hypot(q.x-last.x,q.y-last.y)); chain.push(left.shift()); }
+      cons.push({date:d, chain});
+    }
+  });
+  const dr = rng(99), dust = [];
+  for (let i=0;i<Math.round(w*h/2600);i++) dust.push({x:dr()*w, y:dr()*h, r:Math.pow(dr(),4)*1.2+.2, a:.08+dr()*.35, ph:dr()*6.28});
+  sky = {w, h, dpr, stars, cons, dust, sel: sky && sky.sel, cx, cy, maxR, days: n};
+  $('#skyStats').textContent = `${stars.length} ${plural(stars.length,'звезда','звезды','звёзд')} · ${n} ${plural(n,'созвездие','созвездия','созвездий')}`;
+  if (!sky.sel) $('#skyTip').innerHTML = stars.length ? 'Каждое сделанное дело зажигает звезду, а один день — это созвездие. <span class="sub">Нажми на звезду.</span>' : '<b>Небо пока пустое</b>Выполни первую задачу — и здесь зажжётся первая звезда ✦';
+}
+function drawSky(time){
+  const c = $('#skyCanvas'), x = c.getContext('2d'), s = sky;
+  x.setTransform(s.dpr,0,0,s.dpr,0,0); x.clearRect(0,0,s.w,s.h);
+  const g = x.createRadialGradient(s.cx, s.cy, 0, s.cx, s.cy, s.maxR*1.5);
+  g.addColorStop(0,'rgba(139,92,246,.30)'); g.addColorStop(.45,'rgba(236,72,153,.10)'); g.addColorStop(1,'rgba(4,4,26,0)');
+  x.fillStyle = g; x.fillRect(0,0,s.w,s.h);
+  for (const d of s.dust){ x.globalAlpha = d.a * (.7 + .3*Math.sin(time*.001 + d.ph)); x.fillStyle = '#fff'; x.beginPath(); x.arc(d.x,d.y,d.r,0,7); x.fill(); }
+  for (const k of s.cons){
+    const hl = s.sel && s.sel.date === k.date;
+    x.globalAlpha = hl ? .75 : .22; x.strokeStyle = hl ? '#fbbf24' : '#c7d2fe'; x.lineWidth = hl ? 1.3 : .8;
+    x.beginPath(); k.chain.forEach((p,i) => i ? x.lineTo(p.x,p.y) : x.moveTo(p.x,p.y)); x.stroke();
+  }
+  for (const st of s.stars){
+    const tw = reduced ? 1 : .65 + .35*Math.sin(time*.0025 + st.ph);
+    x.globalAlpha = tw; x.fillStyle = st.col; x.shadowColor = st.col; x.shadowBlur = st.r*5;
+    x.beginPath(); x.arc(st.x, st.y, st.r, 0, 7); x.fill();
+    if (st.kind !== 'task'){ x.globalAlpha = tw*.6; x.lineWidth = .8; x.strokeStyle = st.col; const L = st.r*3.5;
+      x.beginPath(); x.moveTo(st.x-L,st.y); x.lineTo(st.x+L,st.y); x.moveTo(st.x,st.y-L); x.lineTo(st.x,st.y+L); x.stroke(); }
+    x.shadowBlur = 0;
+  }
+  if (s.sel){ x.globalAlpha = 1; x.strokeStyle = '#fff'; x.lineWidth = 1.2; x.beginPath(); x.arc(s.sel.x, s.sel.y, s.sel.r + 7 + Math.sin(time*.005)*1.5, 0, 7); x.stroke(); }
+  x.globalAlpha = 1;
+  skyRaf = requestAnimationFrame(drawSky);
+}
+function openSky(){
+  $('#sky').classList.add('open'); sky = null; layoutSky();
+  cancelAnimationFrame(skyRaf); skyRaf = requestAnimationFrame(drawSky);
+}
+function closeSky(){ $('#sky').classList.remove('open'); cancelAnimationFrame(skyRaf); }
+$('#skyBtn').onclick = openSky;
+$('#skyClose').onclick = closeSky;
+$('#skyCanvas').addEventListener('pointerdown', e => {
+  if (!sky) return;
+  let best = null, bd = 30;
+  for (const st of sky.stars){ const d = Math.hypot(st.x - e.clientX, st.y - e.clientY); if (d < bd){ bd = d; best = st; } }
+  sky.sel = best;
+  if (best){
+    const kind = best.kind === 'mission' ? '🌟 Миссия' : best.kind === 'goal' ? '🪐 Цель дня' : '✦ Задача';
+    const cnt = sky.stars.filter(s => s.date === best.date).length;
+    $('#skyTip').innerHTML = `<b>${esc(best.title)}</b><span class="sub">${kind} · ${esc(fmt(best.date,{day:'numeric',month:'long',year:'numeric'}))} · в созвездии ${cnt} ${plural(cnt,'звезда','звезды','звёзд')}</span>`;
+  } else layoutSky();
+});
+
+// ================= ФОКУС (режим полёта) =================
+const F = {taskId:null, dur:25, left:25*60, endsAt:0, running:false, timer:0, finished:false};
+function fmtSec(s){ s = Math.max(0, Math.ceil(s)); return `${pad(Math.floor(s/60))}:${pad(s%60)}`; }
+function openFocus(taskId){
+  if (F.running && F.taskId !== taskId && taskId !== undefined){
+    if (!confirm('Уже идёт полёт. Начать новый с этой задачей?')) { showFocus(); return; }
+    stopFocus();
+  }
+  if (!F.running){ F.taskId = taskId; F.finished = false; if (!F.endsAt) F.left = F.dur*60; }
+  showFocus();
+}
+function showFocus(){ $('#focus').classList.add('open'); renderFocus(); }
+function closeFocus(){ $('#focus').classList.remove('open'); renderFocusPill(); }
+function renderFocus(){
+  const t = F.taskId && db.tasks.find(x => x.id === F.taskId);
+  $('#fTask').textContent = t ? t.title : 'Свободный полёт';
+  const left = F.running ? (F.endsAt - Date.now())/1000 : F.left, total = F.dur*60;
+  const prog = Math.min(1, Math.max(0, 1 - left/total));
+  $('#fTime').textContent = fmtSec(left);
+  $('#fArc').setAttribute('d', prog > 0 ? arcPath(130, 0, prog*360) : '');
+  const [dx,dy] = polar(130, prog*360); $('#fDot').setAttribute('cx', dx); $('#fDot').setAttribute('cy', dy);
+  $('#fStart').textContent = F.running ? 'Пауза' : (F.left < total ? 'Продолжить' : 'Старт');
+  $$('#fDur button').forEach(b => { b.classList.toggle('on', +b.dataset.m === F.dur); b.disabled = F.running || F.left < total; b.style.opacity = b.disabled && +b.dataset.m !== F.dur ? .4 : 1; });
+  const today = db.focus.filter(f => f.date === todayIso()).reduce((a,f) => a + f.min, 0);
+  if (F.finished){
+    const tt = F.taskId && db.tasks.find(x => x.id === F.taskId);
+    $('#fInfo').innerHTML = `<div class="done-msg">Полёт завершён! 🚀</div><div style="margin:6px 0 12px">Сегодня в фокусе: ${today} мин</div>${tt && !tt.done ? '<button class="btn" id="fDone">✓ Задача выполнена</button>' : ''}`;
+    const b = $('#fDone'); if (b) b.onclick = () => { tt.done = true; tt.doneAt = Date.now(); save(); burst(b); F.finished = false; render(); setTimeout(closeFocus, 500); toast('Готово! Новая звезда на небе ✦'); };
+  } else $('#fInfo').textContent = today ? `Сегодня в фокусе: ${today} мин` : 'Убери телефон экраном вниз. Одна задача — один полёт.';
+  if (F.running) document.title = `${fmtSec(left)} · Орбита`; else document.title = 'Орбита';
+  renderFocusPill();
+}
+function renderFocusPill(){
+  const p = $('#fpill'), show = (F.running || (F.left < F.dur*60 && F.left > 0)) && !$('#focus').classList.contains('open');
+  p.classList.toggle('hidden', !show);
+  if (show) p.textContent = `${F.running ? '🚀' : '⏸'} ${fmtSec(F.running ? (F.endsAt - Date.now())/1000 : F.left)}`;
+}
+function tickFocus(){
+  if (F.running && F.endsAt - Date.now() <= 0) return finishFocus();
+  if ($('#focus').classList.contains('open')) renderFocus(); else { renderFocusPill(); if (F.running) document.title = `${fmtSec((F.endsAt - Date.now())/1000)} · Орбита`; }
+}
+function startFocus(){ F.endsAt = Date.now() + F.left*1000; F.running = true; F.finished = false; clearInterval(F.timer); F.timer = setInterval(tickFocus, 250); renderFocus(); }
+function pauseFocus(){ F.left = Math.max(0, (F.endsAt - Date.now())/1000); F.running = false; clearInterval(F.timer); renderFocus(); }
+function stopFocus(){ clearInterval(F.timer); F.running = false; F.endsAt = 0; F.left = F.dur*60; F.finished = false; }
+function finishFocus(){
+  clearInterval(F.timer); F.running = false; F.endsAt = 0; F.left = F.dur*60; F.finished = true;
+  db.focus.push({id:uid(), taskId:F.taskId, min:F.dur, at:Date.now(), date:todayIso()}); save();
+  if (navigator.vibrate) navigator.vibrate([200,100,200]);
+  try { const ac = new (window.AudioContext || window.webkitAudioContext)(); [0,.18,.36].forEach((d,i) => { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = [660,880,1320][i]; g.gain.setValueAtTime(.0001, ac.currentTime+d); g.gain.exponentialRampToValueAtTime(.2, ac.currentTime+d+.02); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime+d+.5); o.connect(g).connect(ac.destination); o.start(ac.currentTime+d); o.stop(ac.currentTime+d+.55); }); } catch {}
+  showFocus(); render(); burst($('#fTime'));
+}
+$('#fStart').onclick = () => F.running ? pauseFocus() : startFocus();
+$('#fReset').onclick = () => { stopFocus(); renderFocus(); };
+$('#fClose').onclick = closeFocus;
+$('#fpill').onclick = showFocus;
+$('#fDur').onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; F.dur = +b.dataset.m; F.left = F.dur*60; renderFocus(); };
+
+// ================= настройки =================
+$('#setBtn').onclick = () => {
   const th = db.settings.theme;
+  const fm = db.focus.reduce((a,f) => a + f.min, 0);
   openModal(`<h3>Настройки</h3>
-    <div class="field"><label>Тема</label><select id="mTheme">
-      <option value="auto" ${th==='auto'?'selected':''}>Как в системе</option>
-      <option value="light" ${th==='light'?'selected':''}>Светлая</option>
-      <option value="dark" ${th==='dark'?'selected':''}>Тёмная</option></select></div>
-    <div class="field"><label>Статистика</label><div class="stats">
-      <div class="stat"><b>${db.tasks.filter(t=>t.done).length}</b><span>задач сделано</span></div>
+    <div class="field"><label>Тема</label><div class="themes" id="mTheme">
+      <button data-t="dark" class="${th==='dark'?'on':''}"><i style="background:radial-gradient(circle at 70% 30%,#8b5cf6,transparent 60%),#06061a"></i>Космос</button>
+      <button data-t="light" class="${th==='light'?'on':''}"><i style="background:radial-gradient(circle at 70% 30%,#f59e0b,transparent 60%),#fbf5ee"></i>Рассвет</button>
+      <button data-t="auto" class="${th==='auto'?'on':''}"><i style="background:linear-gradient(90deg,#06061a 50%,#fbf5ee 50%)"></i>Авто</button></div></div>
+    <div class="field"><label>Твоя вселенная</label><div class="stats">
+      <div class="stat"><b>${skyItems().length}</b><span>звёзд</span></div>
+      <div class="stat"><b>${Math.round(fm/60*10)/10}</b><span>часов фокуса</span></div>
       <div class="stat"><b>${db.notes.length}</b><span>заметок</span></div>
-      <div class="stat"><b>${db.plans.filter(p=>p.archived).length}</b><span>целей достигнуто</span></div></div></div>
+      <div class="stat"><b>${db.plans.filter(p=>p.archived).length}</b><span>миссий</span></div></div></div>
     <div class="field"><label>Резервная копия</label>
-      <div class="sub" style="margin-bottom:8px">Данные хранятся только на этом устройстве. Время от времени сохраняй копию в файл.</div>
-      <div class="row"><button class="btn ghost grow" id="mExport">⬇️ Скачать копию</button>
-      <label class="btn ghost grow" style="text-align:center;cursor:pointer">⬆️ Загрузить<input type="file" id="mImport" accept="application/json" hidden></label></div></div>
+      <div class="sub" style="margin-bottom:8px">Всё хранится только на этом устройстве. Время от времени сохраняй копию в файл.</div>
+      <div class="row"><button class="btn soft grow" id="mExport">⬇ Скачать копию</button>
+      <label class="btn soft grow" style="text-align:center;cursor:pointer">⬆ Загрузить<input type="file" id="mImport" accept="application/json,.json" hidden></label></div></div>
+    <div class="sub">Подсказка: клавиша <b>N</b> — быстро записать (на компьютере).</div>
     <div class="actions"><button class="btn danger" id="mWipe">Стереть всё</button><span class="grow"></span><button class="btn" id="mCancel">Готово</button></div>`);
-  $('#mTheme').onchange = () => { db.settings.theme = $('#mTheme').value; save(); applyTheme(); };
+  $('#mTheme').onclick = e => { const b = e.target.closest('button'); if (!b) return; db.settings.theme = b.dataset.t; save(); applyTheme(); $$('#mTheme button').forEach(x => x.classList.toggle('on', x === b)); render(); };
   $('#mExport').onclick = () => {
     const blob = new Blob([JSON.stringify(db, null, 2)], {type:'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = `moy-den-${todayIso()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `orbita-${todayIso()}.json`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
   $('#mImport').onchange = async e => {
     const f = e.target.files[0]; if (!f) return;
     try {
-      const data = JSON.parse(await f.text());
-      if (!data || !Array.isArray(data.tasks)) throw 0;
+      const data = JSON.parse(await f.text()); if (!data || !Array.isArray(data.tasks)) throw 0;
       if (!confirm('Заменить текущие данные данными из файла?')) return;
-      db = Object.assign(empty(), data); save(); applyTheme(); closeModal(); render(); toast('Данные загружены');
+      db = normalize(data); save(); applyTheme(); closeModal(); render(); toast('Данные загружены');
     } catch { toast('Не получилось прочитать файл'); }
   };
   $('#mWipe').onclick = () => { if (confirm('Точно удалить ВСЕ данные? Это нельзя отменить.')){ db = empty(); save(); applyTheme(); closeModal(); render(); } };
 };
 
-// ---------- Старт ----------
-document.querySelector('nav.tabs').onclick = e => { const b = e.target.closest('button'); if (b) setView(b.dataset.view); };
+// ================= старт =================
+$$('.dock [data-view]').forEach(b => b.onclick = () => setView(b.dataset.view));
 applyTheme();
-render();
-// При возвращении в приложение на следующий день — переключиться на сегодня
+setView('day');
 let lastSeen = todayIso();
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && todayIso() !== lastSeen){ if (curDay === lastSeen) curDay = todayIso(); lastSeen = todayIso(); render(); }
-});
+function dayTick(){
+  const t = todayIso();
+  if (t !== lastSeen){ if (curDay === lastSeen) curDay = t; lastSeen = t; render(); }
+  else if (view === 'day' && !$('#modalBg').classList.contains('open')) { renderHeader(); renderOrbit(dayData()); }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible'){ dayTick(); if (F.running) tickFocus(); } });
+setInterval(dayTick, 60000);
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script>

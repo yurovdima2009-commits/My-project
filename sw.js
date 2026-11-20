@@ -1,5 +1,5 @@
 // Офлайн-режим: сначала сеть (чтобы получать обновления), при её отсутствии — кэш.
-const CACHE = 'myday-v1';
+const CACHE = 'orbita-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', e => {
