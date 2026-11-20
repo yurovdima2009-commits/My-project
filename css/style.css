@@ -451,9 +451,15 @@ kbd { font-family: var(--f-body); font-size: 10px; font-weight: 700; padding: 2p
 .socials { display: flex; gap: 10px; }
 .socials a { width: 42px; height: 42px; display: grid; place-items: center; font-size: 12px; font-weight: 800; border: 1px solid var(--line); border-radius: 10px; transition: background .2s, box-shadow .2s; }
 .socials a:hover { background: rgba(77,107,255,.25); box-shadow: 0 0 18px rgba(77,107,255,.5); }
-.footer__map { --c: 24px; min-height: 220px; position: relative; overflow: hidden; }
-.footer__map iframe { position: absolute; inset: 1px; width: calc(100% - 2px); height: calc(100% - 2px); border: 0; filter: invert(.9) hue-rotate(200deg) saturate(.8) contrast(.9); }
-.footer__map-pin { position: absolute; left: 14px; bottom: 14px; font-size: 12px; font-weight: 700; padding: 6px 10px; background: rgba(5,4,26,.8); border-radius: 8px; pointer-events: none; }
+.footer__map { --c: 24px; min-height: 290px; position: relative; overflow: hidden; display: block; color: var(--text); }
+.footer__map-art { position: absolute; inset: 1px; width: calc(100% - 2px); height: calc(100% - 2px); transition: transform .6s; }
+.footer__map:hover .footer__map-art { transform: scale(1.06); }
+.footer__map-info { position: absolute; left: 16px; right: 16px; bottom: 16px; display: grid; gap: 4px; padding: 14px 16px; border-radius: 12px; background: rgba(5,4,26,.82); backdrop-filter: blur(6px); border: 1px solid rgba(110,100,255,.3); }
+.footer__map-info b { font-family: var(--f-display); font-size: 16px; }
+.footer__map-info small { color: var(--muted); font-size: 13px; }
+.footer__map-btn { margin-top: 6px; font-weight: 800; font-size: 13px; color: var(--cyan); }
+.footer__map:hover .footer__map-btn { text-decoration: underline; }
+.footer__map:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 .footer__bottom { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-top: 50px; padding-top: 22px; border-top: 1px solid rgba(110,100,255,.12); font-size: 12px; color: var(--muted); }
 
 /* toast */
@@ -482,9 +488,9 @@ kbd { font-family: var(--f-body); font-size: 10px; font-weight: 700; padding: 2p
   .nav {
     position: fixed; inset: 64px 0 auto 0; flex-direction: column; gap: 0; padding: 10px 16px 20px;
     background: rgba(5,4,26,.97); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line);
-    transform: translateY(-120%); transition: transform .35s; margin: 0;
+    transform: translateY(-120%); visibility: hidden; transition: transform .35s, visibility .35s; margin: 0;
   }
-  .nav.is-open { transform: none; }
+  .nav.is-open { transform: none; visibility: visible; }
   .nav a { padding: 14px 4px; border-bottom: 1px solid rgba(110,100,255,.12); font-size: 16px; }
   .header { background: rgba(5,4,26,.8); backdrop-filter: blur(14px); }
   .hero { padding-top: 96px; min-height: auto; }
