@@ -462,10 +462,11 @@ kbd { font-family: var(--f-body); font-size: 10px; font-weight: 700; padding: 2p
 .socials { display: flex; gap: 10px; }
 .socials a { width: 42px; height: 42px; display: grid; place-items: center; font-size: 12px; font-weight: 800; border: 1px solid var(--line); border-radius: 10px; transition: background .2s, box-shadow .2s; }
 .socials a:hover { background: rgba(77,107,255,.25); box-shadow: 0 0 18px rgba(77,107,255,.5); }
-.footer__map { --c: 24px; min-height: 290px; position: relative; overflow: hidden; display: block; color: var(--text); }
-.footer__map-art { position: absolute; inset: 1px; width: calc(100% - 2px); height: calc(100% - 2px); transition: transform .6s; }
+.footer__map { --c: 24px; position: relative; overflow: hidden; display: flex; flex-direction: column; color: var(--text); }
+.footer__map-art { display: block; margin: 1px 1px 0; width: calc(100% - 2px); aspect-ratio: 16 / 9; object-fit: cover; object-position: 20% 60%; transition: transform .6s; }
+.footer__map-tag { position: absolute; left: 16px; top: 16px; padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 800; background: var(--grad); box-shadow: 0 0 16px rgba(140,60,255,.6); }
 .footer__map:hover .footer__map-art { transform: scale(1.06); }
-.footer__map-info { position: absolute; left: 16px; right: 16px; bottom: 16px; display: grid; gap: 4px; padding: 14px 16px; border-radius: 12px; background: rgba(5,4,26,.82); backdrop-filter: blur(6px); border: 1px solid rgba(110,100,255,.3); }
+.footer__map-info { position: relative; display: grid; gap: 4px; padding: 14px 18px 18px; }
 .footer__map-info b { font-family: var(--f-display); font-size: 16px; }
 .footer__map-info small { color: var(--muted); font-size: 13px; }
 .footer__map-btn { margin-top: 6px; font-weight: 800; font-size: 13px; color: var(--cyan); }
