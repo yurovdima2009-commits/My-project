@@ -282,10 +282,20 @@ kbd { font-family: var(--f-body); font-size: 10px; font-weight: 700; padding: 2p
 
 .zone { margin-top: 26px; padding: 34px; display: grid; grid-template-columns: 1.15fr 1fr; gap: 44px; align-items: center; --c: 70px; }
 .zone__media { position: relative; }
-.zone__media .img-wrap { aspect-ratio: 4 / 3; clip-path: polygon(0 0, calc(100% - 70px) 0, 100% 70px, 100% 100%, 50px 100%, 0 calc(100% - 50px)); }
+.zone__media .img-wrap { aspect-ratio: 16 / 10; clip-path: polygon(0 0, calc(100% - 70px) 0, 100% 70px, 100% 100%, 50px 100%, 0 calc(100% - 50px)); }
 .zone__media img { transition: opacity .35s, transform 6s; }
 .zone__media:hover img { transform: scale(1.05); }
 .zone__media img.is-switching { opacity: 0; }
+.zone__media { touch-action: pan-y; }
+.zone__arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(140,130,255,.5); background: rgba(5,4,26,.7); backdrop-filter: blur(6px); color: #fff; font-size: 26px; line-height: 1; cursor: pointer; transition: background .2s, box-shadow .2s; }
+.zone__arrow:hover { background: rgba(77,107,255,.6); box-shadow: 0 0 20px rgba(77,107,255,.6); }
+.zone__arrow:focus-visible, .zone__dot:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.zone__arrow--prev { left: 14px; }
+.zone__arrow--next { right: 14px; }
+.zone__dots { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; gap: 8px; }
+.zone__dot { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: rgba(255,255,255,.4); cursor: pointer; transition: width .25s, background .25s; }
+.zone__arrow[hidden], .zone__dots[hidden] { display: none; }
+.zone__dot.is-active { width: 26px; border-radius: 6px; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
 .zone__tag { position: absolute; left: 18px; top: 18px; font-size: 11px; padding: 9px 12px; background: rgba(5,4,26,.75); border: 1px solid var(--line); backdrop-filter: blur(6px); }
 .zone__title { font-family: var(--f-pixel); font-size: 22px; font-weight: 400; color: var(--blue-2); margin: 0 0 14px; text-shadow: 0 0 16px rgba(77,107,255,.7); }
 .zone__desc { color: #c9c7f0; margin: 0 0 22px; }

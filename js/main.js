@@ -18,31 +18,31 @@
   const ZONES = {
     pc: {
       title: 'PC ЗОНА', tag: '20 ПК', from: 110, book: 'pc',
-      img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&q=75&auto=format&fit=crop',
+      imgs: ['assets/zones/pc-1.jpg', 'assets/zones/pc-2.jpg'],
       desc: 'Компьютерный зал на 20 мест с одинаковыми мощными ПК. Собирай пати и поднимай рейтинг.',
       features: ['Intel Core i5-13600KF + RTX 4060', 'Samsung Odyssey G4 — 240 Гц', 'Клавиатура Adamant, мышь Mirror, гарнитура Genezis', 'Кресла Zone 51 Clubpoint', 'Пакеты 3, 5 и 8 часов']
     },
     ps: {
       title: 'PLAYSTATION', tag: 'КОНСОЛИ', from: 250, book: 'ps',
-      img: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=1200&q=75&auto=format&fit=crop',
+      imgs: ['assets/zones/ps.jpg'],
       desc: 'Консоли Sony PlayStation на большом экране. Цена — за консоль, играйте компанией.',
       features: ['Файтинги, гонки, футбол', 'Удобно играть вдвоём и компанией', 'Подходит для дня рождения', 'Пакеты 3, 5 и 8 часов']
     },
     vr: {
       title: 'VR', tag: 'ВИРТУАЛЬНОСТЬ', from: 450, book: 'vr',
-      img: 'https://images.unsplash.com/photo-1592478411213-6153e4ebc07d?w=1200&q=75&auto=format&fit=crop',
+      imgs: ['assets/zones/vr.jpg'],
       desc: 'Шлем на голову — и ты внутри игры. Отличный вариант впервые попробовать виртуальную реальность.',
       features: ['Игры с полным погружением', 'Администратор поможет настроить шлем', 'Для детей и взрослых', 'Пакеты 3, 5 и 8 часов']
     },
     switch: {
       title: 'NINTENDO SWITCH', tag: 'КОНСОЛЬ', from: 120, book: 'switch',
-      img: 'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=1200&q=75&auto=format&fit=crop',
+      imgs: ['assets/zones/switch.jpg'],
       desc: 'Весёлые игры для компании и семьи — от гонок до вечеринок.',
       features: ['Игры для компании', 'Подходит для детей', 'Дешевле всего — от 120 ₽', 'Пакеты 3, 5 и 8 часов']
     },
     sport: {
       title: 'СПОРТ', tag: '3 ПЛОЩАДКИ', from: 500, book: 'workout',
-      img: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1200&q=75&auto=format&fit=crop',
+      imgs: [],
       desc: 'Физическая часть фиджитала: тренируйся и играй на настоящих площадках.',
       features: ['Зона воркаута — от 500 ₽/час', 'Зона стритбола — от 2500 ₽/час', 'Зона футбола — от 3000 ₽/час', 'Аренда для команды и тренировок']
     }
@@ -117,8 +117,48 @@
 
   /* ---------------- Zones tabs ---------------- */
   const zoneImg = $('#zone-img');
+  const zonePrev = $('#zone-prev'), zoneNext = $('#zone-next'), zoneDots = $('#zone-dots');
+  let zoneKey = 'pc', slide = 0;
+
+  function showSlide(i, animate) {
+    const z = ZONES[zoneKey];
+    const n = z.imgs.length;
+    slide = n ? (i + n) % n : 0;
+    const apply = () => {
+      if (n) { zoneImg.src = z.imgs[slide]; zoneImg.classList.remove('is-broken'); }
+      else { zoneImg.removeAttribute('src'); zoneImg.classList.add('is-broken'); }
+      zoneImg.alt = `Зона ${z.title}${n > 1 ? ` — фото ${slide + 1} из ${n}` : ''}`;
+      zoneImg.classList.remove('is-switching');
+    };
+    if (animate) { zoneImg.classList.add('is-switching'); setTimeout(apply, 220); } else apply();
+    const multi = n > 1;
+    zonePrev.hidden = zoneNext.hidden = zoneDots.hidden = !multi;
+    zoneDots.innerHTML = '';
+    if (multi) z.imgs.forEach((_, k) => {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'zone__dot' + (k === slide ? ' is-active' : '');
+      d.setAttribute('aria-label', `Фото ${k + 1}`);
+      d.addEventListener('click', () => showSlide(k, true));
+      zoneDots.appendChild(d);
+    });
+  }
+  zonePrev.addEventListener('click', () => showSlide(slide - 1, true));
+  zoneNext.addEventListener('click', () => showSlide(slide + 1, true));
+  // swipe on touch screens
+  let swipeX = null;
+  const media = $('.zone__media');
+  media.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') swipeX = e.clientX; });
+  media.addEventListener('pointerup', (e) => {
+    if (swipeX === null) return;
+    const dx = e.clientX - swipeX; swipeX = null;
+    if (Math.abs(dx) > 40 && ZONES[zoneKey].imgs.length > 1) showSlide(slide + (dx < 0 ? 1 : -1), true);
+  });
+  media.addEventListener('pointercancel', () => { swipeX = null; });
+
   function renderZone(key, animate) {
     const z = ZONES[key];
+    zoneKey = key;
     $('#zone-title').textContent = z.title;
     $('#zone-tag').textContent = z.tag;
     $('#zone-desc').textContent = z.desc;
@@ -134,14 +174,7 @@
       li.style.animationDelay = i * 60 + 'ms';
       ul.appendChild(li);
     });
-    if (animate) {
-      zoneImg.classList.add('is-switching');
-      setTimeout(() => {
-        zoneImg.src = z.img;
-        zoneImg.alt = 'Зона ' + z.title;
-        zoneImg.classList.remove('is-switching');
-      }, 250);
-    }
+    showSlide(0, animate);
   }
   $$('.tab').forEach((t) => t.addEventListener('click', () => {
     $$('.tab').forEach((x) => { x.classList.toggle('is-active', x === t); x.setAttribute('aria-selected', String(x === t)); });
