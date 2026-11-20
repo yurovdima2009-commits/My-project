@@ -379,6 +379,7 @@ kbd { font-family: var(--f-body); font-size: 10px; font-weight: 700; padding: 2p
 .g--10 { font-size: 24px; color: #63e08a; }
 .g--11 { font-size: 20px; font-family: var(--f-pixel); font-weight: 400; color: #7ed957; }
 .g--12 { font-size: 24px; color: var(--cyan); }
+.g--13 { font-size: 34px; background: linear-gradient(90deg, #ff6ad5, #ffb36b); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .games__more { color: var(--muted); }
 .faq-box { --c: 34px; padding: 34px 32px 34px; margin-top: 30px; backdrop-filter: blur(8px); }
 .faq-box::before { background: rgba(10,8,40,.78); }
