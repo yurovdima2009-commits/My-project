@@ -43,16 +43,16 @@ function init() {
   // custom dark "studio" with neon softboxes → reflections are tinted blue/violet instead of white
   {
     const env = new THREE.Scene();
-    env.background = new THREE.Color(0x04031a);
+    env.background = new THREE.Color(0x020204);
     const box = (color, w, h, pos, look) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
       m.position.set(...pos); m.lookAt(0, 0, 0); env.add(m);
     };
-    box(new THREE.Color(0x3d5bff).multiplyScalar(2.2), 6, 3, [-6, 3, 4]);
-    box(new THREE.Color(0xb44bff).multiplyScalar(2.2), 6, 3, [6, -2, 4]);
-    box(new THREE.Color(0x3de0ff).multiplyScalar(1.4), 8, 1, [0, 6, -2]);
-    box(new THREE.Color(0xd8d6ff).multiplyScalar(0.9), 5, 1.2, [0, 5, 6]);
-    box(new THREE.Color(0x2a1f80), 20, 4, [0, -6, 0]);
+    box(new THREE.Color(0x00b8f0).multiplyScalar(2.2), 6, 3, [-6, 3, 4]);
+    box(new THREE.Color(0xad31ff).multiplyScalar(2.2), 6, 3, [6, -2, 4]);
+    box(new THREE.Color(0x00b8f0).multiplyScalar(1.4), 8, 1, [0, 6, -2]);
+    box(new THREE.Color(0xffffff).multiplyScalar(0.18), 5, 1.2, [0, 5, 6]);
+    box(new THREE.Color(0x120a24), 20, 4, [0, -6, 0]);
     scene.environment = pmrem.fromScene(env, 0.035).texture;
   }
 
@@ -60,15 +60,15 @@ function init() {
   camera.position.set(0, 0, 9);
 
   // lights — neon blue / violet / cyan rim
-  scene.add(new THREE.AmbientLight(0x4a4aff, 0.35));
-  const keyLight = new THREE.DirectionalLight(0xffffff, 0.6);
+  scene.add(new THREE.AmbientLight(0x00b8f0, 0.35));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 0.3);
   keyLight.position.set(1, 4, 6);
   scene.add(keyLight);
-  const blueLight = new THREE.PointLight(0x3b5bff, 45, 20, 2);
+  const blueLight = new THREE.PointLight(0x00b8f0, 45, 20, 2);
   blueLight.position.set(-4.5, 2.2, 3.5);
-  const violetLight = new THREE.PointLight(0xb44bff, 40, 20, 2);
+  const violetLight = new THREE.PointLight(0xad31ff, 40, 20, 2);
   violetLight.position.set(4.5, -1.5, 3.5);
-  const rimLight = new THREE.PointLight(0x3de0ff, 50, 20, 2);
+  const rimLight = new THREE.PointLight(0x00b8f0, 50, 20, 2);
   rimLight.position.set(0, 3.5, -3.5);
   scene.add(blueLight, violetLight, rimLight);
 
@@ -110,7 +110,7 @@ function init() {
   }
 
   const neon = (color) => new THREE.MeshBasicMaterial({ color, toneMapped: false });
-  const plastic = (color = 0x15123a, extra = {}) => new THREE.MeshPhysicalMaterial({
+  const plastic = (color = 0x18181c, extra = {}) => new THREE.MeshPhysicalMaterial({
     color, metalness: 0.25, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.12, envMapIntensity: 0.9, ...extra
   });
 
@@ -142,7 +142,7 @@ function init() {
   });
   bodyGeo.translate(0, 0, -DEPTH / 2);
   bodyGeo.computeVertexNormals();
-  const bodyMat = plastic(0x100d34, { envMapIntensity: 1, roughness: 0.34, sheen: 0.4, sheenColor: new THREE.Color(0x5a4bff), sheenRoughness: 0.6 });
+  const bodyMat = plastic(0x141418, { envMapIntensity: 0.4, roughness: 0.36, sheen: 0.3, sheenColor: new THREE.Color(0x3a5fd0), sheenRoughness: 0.6 });
   const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
   pad.add(bodyMesh);
   const FRONT = DEPTH / 2 + BEVEL_T; // z of the front face
@@ -161,7 +161,7 @@ function init() {
     const seamGeo = new THREE.TubeGeometry(curve, 400, 0.022, 8, true);
     // vertex colors: gradient blue → violet → magenta around the loop
     const cols = [];
-    const c1 = new THREE.Color(0x3d5bff), c2 = new THREE.Color(0xb44bff), c3 = new THREE.Color(0x3de0ff), tmp = new THREE.Color();
+    const c1 = new THREE.Color(0x00b8f0), c2 = new THREE.Color(0xad31ff), c3 = new THREE.Color(0x00b8f0), tmp = new THREE.Color();
     const pos = seamGeo.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), y = pos.getY(i);
@@ -175,7 +175,7 @@ function init() {
   }
 
   // --- big halo behind the controller ---
-  const halo = makeGlow(0x5a3dff, 6.5, 0.34);
+  const halo = makeGlow(0x00b8f0, 6.5, 0.34);
   halo.position.set(0, -0.1, -1.2);
   root.add(halo);
 
@@ -216,10 +216,10 @@ function init() {
   }
 
   const FACE_DEF = [
-    { id: 'triangle', sym: '△', color: 0x3de0ff, css: '#3de0ff', dx: 0, dy: 1 },
-    { id: 'circle',   sym: '○', color: 0xff3bd4, css: '#ff3bd4', dx: 1, dy: 0 },
-    { id: 'cross',    sym: '✕', color: 0x4d6bff, css: '#6d86ff', dx: 0, dy: -1 },
-    { id: 'square',   sym: '□', color: 0xb45bff, css: '#c27bff', dx: -1, dy: 0 }
+    { id: 'triangle', sym: '△', color: 0x00b8f0, css: '#00b8f0', dx: 0, dy: 1 },
+    { id: 'circle',   sym: '○', color: 0xad31ff, css: '#c46bff', dx: 1, dy: 0 },
+    { id: 'cross',    sym: '✕', color: 0x6a7ff6, css: '#8A9BFF', dx: 0, dy: -1 },
+    { id: 'square',   sym: '□', color: 0x5a8cf8, css: '#7fb0ff', dx: -1, dy: 0 }
   ];
   const capGeo = new THREE.CylinderGeometry(0.17, 0.175, 0.13, 48);
   capGeo.rotateX(Math.PI / 2);
@@ -228,7 +228,7 @@ function init() {
   FACE_DEF.forEach((d) => {
     const group = new THREE.Group();
     group.position.set(FACE.x + d.dx * FACE.r, FACE.y + d.dy * FACE.r, FRONT);
-    const capMat = plastic(0x1b1846, { emissive: new THREE.Color(d.color), emissiveIntensity: 0.06 });
+    const capMat = plastic(0x1e1e22, { emissive: new THREE.Color(d.color), emissiveIntensity: 0.06 });
     const cap = new THREE.Mesh(capGeo, capMat);
     cap.position.z = 0.05;
     const sym = symbolMesh(d.id, d.color);
@@ -239,7 +239,7 @@ function init() {
     group.add(glow);
     pad.add(group);
     // static well ring around the button (doesn't move when pressed)
-    const well = new THREE.Mesh(wellGeo, plastic(0x0a0822));
+    const well = new THREE.Mesh(wellGeo, plastic(0x0d0d11));
     well.position.set(group.position.x, group.position.y, FRONT);
     pad.add(well);
     registerControl({
@@ -259,12 +259,12 @@ function init() {
     { id: 'down', sym: '↓', rot: Math.PI, dx: 0, dy: -1 },
     { id: 'left', sym: '←', rot: Math.PI / 2, dx: -1, dy: 0 }
   ];
-  const dpadColor = 0x7d84ff;
+  const dpadColor = 0x6a7ff6;
   DPAD_DEF.forEach((d) => {
     const group = new THREE.Group();
     group.position.set(DPAD.x + d.dx * 0.2, DPAD.y + d.dy * 0.2, FRONT);
     group.rotation.z = d.rot;
-    const mat = plastic(0x1b1846, { emissive: new THREE.Color(dpadColor), emissiveIntensity: 0.05 });
+    const mat = plastic(0x1e1e22, { emissive: new THREE.Color(dpadColor), emissiveIntensity: 0.05 });
     const arm = new THREE.Mesh(armGeo, mat);
     const arrow = new THREE.Mesh(arrowGeo, neon(dpadColor));
     arrow.rotation.z = Math.PI / 2;
@@ -274,12 +274,12 @@ function init() {
     group.add(arm, arrow, glow);
     pad.add(group);
     registerControl({
-      id: d.id, kind: 'dpad', label: d.sym, css: '#9aa0ff', color: new THREE.Color(dpadColor),
+      id: d.id, kind: 'dpad', label: d.sym, css: '#6a7ff6', color: new THREE.Color(dpadColor),
       group, mat, glow, pressDir: new THREE.Vector3(0, 0, -1), depth: 0.05, baseEmissive: 0.05
     }, [arm]);
   });
   { // dpad center
-    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.06, 4).rotateX(Math.PI / 2).rotateZ(Math.PI / 4), plastic(0x1b1846));
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.06, 4).rotateX(Math.PI / 2).rotateZ(Math.PI / 4), plastic(0x1e1e22));
     c.position.set(DPAD.x, DPAD.y, FRONT + 0.03);
     pad.add(c);
   }
@@ -290,7 +290,7 @@ function init() {
     // well
     const ring = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.024, 12, 64), neon(color));
     ring.position.set(x, y, FRONT + 0.005);
-    const hole = new THREE.Mesh(new THREE.CircleGeometry(0.33, 48), new THREE.MeshStandardMaterial({ color: 0x05040f, roughness: 0.9 }));
+    const hole = new THREE.Mesh(new THREE.CircleGeometry(0.33, 48), new THREE.MeshStandardMaterial({ color: 0x06060a, roughness: 0.9 }));
     hole.position.set(x, y, FRONT + 0.002);
     const ringGlow = makeGlow(color, 1.3, 0.25);
     ringGlow.position.set(x, y, FRONT);
@@ -298,12 +298,12 @@ function init() {
 
     const pivot = new THREE.Group();
     pivot.position.set(x, y, FRONT - 0.05);
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.13, 0.25, 24).rotateX(Math.PI / 2), plastic(0x0c0a24));
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.13, 0.25, 24).rotateX(Math.PI / 2), plastic(0x0e0e12));
     shaft.position.z = 0.12;
-    const capMat = plastic(0x1d1a4c, { emissive: new THREE.Color(color), emissiveIntensity: 0.04, roughness: 0.55 });
+    const capMat = plastic(0x212125, { emissive: new THREE.Color(color), emissiveIntensity: 0.04, roughness: 0.55 });
     const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.255, 0.24, 0.1, 48).rotateX(Math.PI / 2), capMat);
     cap.position.z = 0.27;
-    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.215, 0.032, 12, 48), plastic(0x24205a, { roughness: 0.7 }));
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.215, 0.032, 12, 48), plastic(0x28282c, { roughness: 0.7 }));
     rim.position.z = 0.325;
     const dot = new THREE.Mesh(new THREE.CircleGeometry(0.05, 24), neon(color));
     dot.position.z = 0.322;
@@ -312,13 +312,13 @@ function init() {
     const s = { id, pivot, cap, vx: 0, vy: 0, tx: 0, ty: 0, color: new THREE.Color(color), ring, ringGlow };
     sticks[id] = s;
     registerControl({
-      id: id === 'L' ? 'l3' : 'r3', kind: 'stick', stick: s, label: id + '3', css: id === 'L' ? '#4d6bff' : '#b44bff',
+      id: id === 'L' ? 'l3' : 'r3', kind: 'stick', stick: s, label: id + '3', css: id === 'L' ? '#00b8f0' : '#ad31ff',
       color: new THREE.Color(color), group: pivot, mat: capMat, glow: ringGlow, pressDir: new THREE.Vector3(0, 0, -1), depth: 0.05, baseEmissive: 0.04
     }, [cap, rim]);
     return s;
   }
-  makeStick('L', -0.64, -0.48, 0x3d5bff);
-  makeStick('R', 0.64, -0.48, 0xb44bff);
+  makeStick('L', -0.64, -0.48, 0x00b8f0);
+  makeStick('R', 0.64, -0.48, 0xad31ff);
 
   /* -------------------- touchpad with logo -------------------- */
   const tpCanvas = document.createElement('canvas');
@@ -329,20 +329,20 @@ function init() {
     const g = tpCanvas.getContext('2d');
     const W = tpCanvas.width, H = tpCanvas.height;
     const bg = g.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0, '#120f3c'); bg.addColorStop(1, '#0a0826');
+    bg.addColorStop(0, '#17171b'); bg.addColorStop(1, '#0e0e12');
     g.fillStyle = bg; g.fillRect(0, 0, W, H);
     g.strokeStyle = 'rgba(110,120,255,.14)'; g.lineWidth = 1;
     for (let x = 0; x < W; x += 24) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); }
     for (let y = 0; y < H; y += 24) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.shadowColor = '#5a6bff'; g.shadowBlur = 18;
-    g.fillStyle = '#7d8cff';
-    g.font = '400 50px "Press Start 2P", monospace';
-    g.fillText('ФИДЖИТАЛ', W / 2, H / 2 - 22);
-    g.shadowColor = '#b44bff';
-    g.fillStyle = '#c690ff';
-    g.font = '400 22px "Press Start 2P", monospace';
-    g.fillText('ХАБАРОВСК', W / 2, H / 2 + 42);
+    g.shadowColor = '#00b8f0'; g.shadowBlur = 18;
+    g.fillStyle = '#6a7ff6';
+    g.font = '400 46px "PHGTL", sans-serif';
+    g.fillText('ФИДЖИТАЛ', W / 2, H / 2 - 26);
+    g.shadowColor = '#ad31ff';
+    g.fillStyle = '#6a7ff6';
+    g.font = '400 32px "PHGTL", sans-serif';
+    g.fillText('ЦЕНТР', W / 2, H / 2 + 44);
     tpTex.needsUpdate = true;
   }
   drawTouchpad();
@@ -361,15 +361,15 @@ function init() {
   tpGroup.add(tp);
   pad.add(tpGroup);
   registerControl({
-    id: 'touch', kind: 'touch', label: 'TP', css: '#c690ff', color: new THREE.Color(0xb44bff),
+    id: 'touch', kind: 'touch', label: 'TP', css: '#6a7ff6', color: new THREE.Color(0xad31ff),
     group: tpGroup, mat: tpMat, glow: null, pressDir: new THREE.Vector3(0, 0, -1), depth: 0.03, baseEmissive: 0.55
   }, [tp]);
 
   // light bar under touchpad
-  const lightBarMat = new THREE.MeshBasicMaterial({ color: 0x8b6bff, toneMapped: false });
+  const lightBarMat = new THREE.MeshBasicMaterial({ color: 0xad31ff, toneMapped: false });
   const lightBar = new THREE.Mesh(new THREE.CapsuleGeometry(0.018, 0.9, 4, 12).rotateZ(Math.PI / 2), lightBarMat);
   lightBar.position.set(0, -0.12, FRONT + 0.01);
-  const lightBarGlow = makeGlow(0x8b6bff, 1.6, 0.3);
+  const lightBarGlow = makeGlow(0xad31ff, 1.6, 0.3);
   lightBarGlow.scale.set(2.2, 0.5, 1);
   lightBarGlow.position.copy(lightBar.position);
   pad.add(lightBar, lightBarGlow);
@@ -378,24 +378,24 @@ function init() {
   [['share', -0.86, '◧'], ['options', 0.86, '≡']].forEach(([id, x, sym]) => {
     const group = new THREE.Group();
     group.position.set(x, 0.62, FRONT);
-    const mat = plastic(0x1d1a4c, { emissive: new THREE.Color(0x7d84ff), emissiveIntensity: 0.08 });
+    const mat = plastic(0x212125, { emissive: new THREE.Color(0x6a7ff6), emissiveIntensity: 0.08 });
     const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.1, 4, 12), mat);
     m.position.z = 0.03;
     group.add(m);
     pad.add(group);
-    registerControl({ id, kind: 'small', label: sym, css: '#9aa0ff', color: new THREE.Color(0x7d84ff), group, mat, glow: null, pressDir: new THREE.Vector3(0, 0, -1), depth: 0.03, baseEmissive: 0.08 }, [m]);
+    registerControl({ id, kind: 'small', label: sym, css: '#6a7ff6', color: new THREE.Color(0x6a7ff6), group, mat, glow: null, pressDir: new THREE.Vector3(0, 0, -1), depth: 0.03, baseEmissive: 0.08 }, [m]);
   });
   { // home / logo button
     const group = new THREE.Group();
     group.position.set(0, -0.36, FRONT);
-    const mat = plastic(0x1d1a4c, { emissive: new THREE.Color(0xb44bff), emissiveIntensity: 0.6 });
+    const mat = plastic(0x212125, { emissive: new THREE.Color(0xad31ff), emissiveIntensity: 0.6 });
     const m = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.05, 32).rotateX(Math.PI / 2), mat);
     m.position.z = 0.025;
-    const glow = makeGlow(0xb44bff, 0.5, 0.35);
+    const glow = makeGlow(0xad31ff, 0.5, 0.35);
     glow.position.z = 0.05;
     group.add(m, glow);
     pad.add(group);
-    registerControl({ id: 'home', kind: 'home', label: 'E', css: '#d24bff', color: new THREE.Color(0xd24bff), group, mat, glow, pressDir: new THREE.Vector3(0, 0, -1), depth: 0.03, baseEmissive: 0.6 }, [m]);
+    registerControl({ id: 'home', kind: 'home', label: 'E', css: '#ad31ff', color: new THREE.Color(0xad31ff), group, mat, glow, pressDir: new THREE.Vector3(0, 0, -1), depth: 0.03, baseEmissive: 0.6 }, [m]);
   }
 
   /* -------------------- shoulder buttons & triggers -------------------- */
@@ -403,11 +403,11 @@ function init() {
   bumperGeo.translate(0, 0, -0.17);
   const triggerGeo = new THREE.ExtrudeGeometry(roundedRect(0.62, 0.22, 0.09), { depth: 0.24, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 4 });
   triggerGeo.translate(0, 0, -0.12);
-  [[-1, 'l1', 'l2', 'L1', 'L2', 0x3d5bff, '#6d86ff'], [1, 'r1', 'r2', 'R1', 'R2', 0xb44bff, '#c27bff']].forEach(([side, b, t, bl, tl, color, css]) => {
+  [[-1, 'l1', 'l2', 'L1', 'L2', 0x00b8f0, '#6a7ff6'], [1, 'r1', 'r2', 'R1', 'R2', 0xad31ff, '#ad31ff']].forEach(([side, b, t, bl, tl, color, css]) => {
     const g1 = new THREE.Group();
     g1.position.set(side * 1.42, 1.05, 0.05);
     g1.rotation.z = side * -0.08;
-    const m1 = plastic(0x1b1846, { emissive: new THREE.Color(color), emissiveIntensity: 0.1 });
+    const m1 = plastic(0x1e1e22, { emissive: new THREE.Color(color), emissiveIntensity: 0.1 });
     const bumper = new THREE.Mesh(bumperGeo, m1);
     const strip = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.025), neon(color));
     strip.position.set(0, 0, 0.205);
@@ -418,7 +418,7 @@ function init() {
     const g2 = new THREE.Group();
     g2.position.set(side * 1.38, 1.0, -0.33);
     g2.rotation.set(-0.35, 0, side * -0.08);
-    const m2 = plastic(0x15123a, { emissive: new THREE.Color(color), emissiveIntensity: 0.1 });
+    const m2 = plastic(0x18181c, { emissive: new THREE.Color(color), emissiveIntensity: 0.1 });
     const trig = new THREE.Mesh(triggerGeo, m2);
     g2.add(trig);
     pad.add(g2);
@@ -429,7 +429,7 @@ function init() {
   /* Ambient: floating neon cubes + star dust                            */
   /* ------------------------------------------------------------------ */
   const cubes = [];
-  const cubeCols = [0x3d5bff, 0xb44bff, 0x3de0ff, 0xd24bff];
+  const cubeCols = [0x00b8f0, 0xad31ff, 0x00b8f0, 0xad31ff];
   const CUBE_POS = [[-2.9, 1.8, -1.5], [2.8, 1.9, -0.8], [3.0, -1.5, -1.2], [-2.7, -1.8, -0.4], [-1.2, 2.4, -2.8], [1.5, -2.3, -2.2], [0.3, 2.6, -3.6]];
   CUBE_POS.forEach((p, i) => {
     const size = 0.22 + (i % 3) * 0.12;
@@ -460,7 +460,7 @@ function init() {
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    var dust = new THREE.Points(g, new THREE.PointsMaterial({ color: 0x8c8cff, size: 0.035, transparent: true, opacity: 0.7, depthWrite: false, blending: THREE.AdditiveBlending }));
+    var dust = new THREE.Points(g, new THREE.PointsMaterial({ color: 0x6a7ff6, size: 0.035, transparent: true, opacity: 0.7, depthWrite: false, blending: THREE.AdditiveBlending }));
     scene.add(dust);
   }
 
@@ -684,7 +684,7 @@ function init() {
     const now = performance.now();
     if (now - lastSpinBurst < 600) return;
     lastSpinBurst = now;
-    burst(new THREE.Vector3(0, 0, 0.5), new THREE.Color(0x6a5bff), 30, 1.6);
+    burst(new THREE.Vector3(0, 0, 0.5), new THREE.Color(0x6a7ff6), 30, 1.6);
   }
 
   /* ------------------------------------------------------------------ */
@@ -866,8 +866,8 @@ function init() {
       violetLight.color.setHSL((t * 0.6 + 0.4) % 1, 0.9, 0.6);
       lightBarMat.color.copy(hueTmp);
     } else {
-      blueLight.color.lerp(new THREE.Color(0x3b5bff), 0.05);
-      violetLight.color.lerp(new THREE.Color(0xb44bff), 0.05);
+      blueLight.color.lerp(new THREE.Color(0x00b8f0), 0.05);
+      violetLight.color.lerp(new THREE.Color(0xad31ff), 0.05);
       const pulse = 0.75 + Math.sin(t * 2.2) * 0.25;
       lightBarMat.color.setRGB(0.55 * pulse * 1.4, 0.42 * pulse * 1.4, 1.0 * pulse * 1.4);
     }
