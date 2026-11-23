@@ -7,6 +7,14 @@ const res = await build({
 });
 const js = res.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
 const css = readFileSync('src/style.css', 'utf8');
+const icon = readFileSync('icon.png').toString('base64');
+// для iPhone: иконка и полноэкранный режим при запуске с экрана «Домой»
+const appleMeta = `<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Трейдинг">
+<meta name="theme-color" content="#10161d">
+<link rel="apple-touch-icon" href="data:image/png;base64,${icon}">`;
 const head = `<title>Академия реального трейдинга</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,5 +27,8 @@ const body = `<div id="root"></div>
 <script>${js}</script>`;
 mkdirSync('dist', { recursive: true });
 writeFileSync('dist/artifact.html', head + '\n' + body + '\n');
-writeFileSync('trading-academy.html', `<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n${head}\n</head>\n<body>\n${body}\n</body>\n</html>\n`);
+const full = `<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n${appleMeta}\n${head}\n</head>\n<body>\n${body}\n</body>\n</html>\n`;
+writeFileSync('trading-academy.html', full);
+mkdirSync('../docs', { recursive: true });
+writeFileSync('../docs/index.html', full);
 console.log('ok', (js.length / 1024).toFixed(0) + ' KB js');
