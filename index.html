@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Лидоискатель Хабаровск</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --bg:#0b0d14; --bg2:#11141f; --card:rgba(255,255,255,.04); --card-h:rgba(255,255,255,.07);
+  --line:rgba(255,255,255,.08); --text:#eef0f7; --muted:#8b91a7;
+  --accent:#7c5cff; --accent2:#22d3ee; --hot:#ff5c7a; --warm:#ffb347; --cold:#4ade80;
+  --radius:16px; --shadow:0 10px 40px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Manrope,system-ui,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;
+  background:radial-gradient(40% 40% at 15% 10%,rgba(124,92,255,.25),transparent 70%),
+             radial-gradient(35% 35% at 90% 20%,rgba(34,211,238,.15),transparent 70%),
+             radial-gradient(40% 40% at 60% 100%,rgba(255,92,122,.12),transparent 70%)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+input,select,textarea{font:inherit;color:var(--text)}
+.app{display:grid;grid-template-columns:440px 1fr;height:100vh}
+aside{display:flex;flex-direction:column;border-right:1px solid var(--line);background:rgba(11,13,20,.75);backdrop-filter:blur(20px);min-height:0}
+.head{padding:20px 20px 14px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 24px rgba(124,92,255,.45)}
+.logo h1{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.logo p{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-top:16px;background:var(--card);padding:4px;border-radius:12px;border:1px solid var(--line)}
+.tab{flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);transition:.2s}
+.tab.on{background:linear-gradient(135deg,rgba(124,92,255,.9),rgba(124,92,255,.6));color:#fff;box-shadow:0 4px 14px rgba(124,92,255,.35)}
+.tab .badge{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:rgba(255,255,255,.2);font-size:11px}
+.panel{display:none;flex-direction:column;min-height:0;flex:1}
+.panel.on{display:flex}
+.controls{padding:0 20px 12px;display:flex;flex-direction:column;gap:10px}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 11px;border-radius:999px;font-size:12.5px;font-weight:600;background:var(--card);border:1px solid var(--line);transition:.15s}
+.chip:hover{background:var(--card-h)}
+.chip.on{background:rgba(124,92,255,.18);border-color:rgba(124,92,255,.6);color:#fff}
+.row{display:flex;gap:8px;align-items:center}
+.search{flex:1;padding:10px 12px;border-radius:11px;background:var(--card);border:1px solid var(--line);outline:none}
+.search:focus{border-color:var(--accent)}
+.sel{padding:10px;font-size:14px;border-radius:11px;background:var(--bg2);border:1px solid var(--line);outline:none}
+.btn{padding:11px 16px;border-radius:12px;font-weight:700;font-size:14px;background:linear-gradient(135deg,var(--accent),#5b3dff);
+  box-shadow:0 6px 20px rgba(124,92,255,.4);transition:.15s;display:inline-flex;gap:8px;align-items:center;justify-content:center}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.6;transform:none;cursor:wait}
+.btn.ghost{background:var(--card);border:1px solid var(--line);box-shadow:none;font-weight:600}
+a.btn{color:inherit;text-decoration:none}
+.btn.sm{padding:7px 10px;font-size:12px;border-radius:9px}
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none}
+.toggle input{accent-color:var(--hot);width:16px;height:16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 20px 12px}
+.stat{padding:10px 12px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.stat b{display:block;font-size:20px;font-weight:800}
+.stat span{font-size:11px;color:var(--muted)}
+.stat.hot b{color:var(--hot)} .stat.warm b{color:var(--warm)}
+.list{flex:1;overflow:auto;padding:4px 14px 20px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.list::-webkit-scrollbar{width:8px}.list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:8px}
+.card{padding:14px;border-radius:var(--radius);background:var(--card);border:1px solid var(--line);transition:.15s;cursor:pointer;position:relative}
+.card:hover{background:var(--card-h);border-color:rgba(255,255,255,.15)}
+.card.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card h3{font-size:15px;font-weight:700;line-height:1.25}
+.cat{font-size:12px;color:var(--muted);margin-top:2px}
+.score{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:15px}
+.s-hot{background:rgba(255,92,122,.15);color:var(--hot);border:1px solid rgba(255,92,122,.35)}
+.s-warm{background:rgba(255,179,71,.13);color:var(--warm);border:1px solid rgba(255,179,71,.3)}
+.s-cold{background:rgba(74,222,128,.1);color:var(--cold);border:1px solid rgba(74,222,128,.25)}
+.meta{display:flex;flex-direction:column;gap:3px;margin-top:8px;font-size:12.5px;color:#c5c9d8}
+.meta a{color:var(--accent2);text-decoration:none}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.tag{font-size:11px;padding:3px 8px;border-radius:6px;font-weight:600}
+.t-red{background:rgba(255,92,122,.14);color:#ff8fa3}
+.t-ylw{background:rgba(255,179,71,.14);color:#ffc77a}
+.t-grn{background:rgba(74,222,128,.12);color:#86efac}
+.t-gry{background:rgba(255,255,255,.07);color:var(--muted)}
+.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
+.empty .big{font-size:40px;margin-bottom:8px}
+main{position:relative;min-width:0}
+#map{position:absolute;inset:0;background:#0e1118}
+.leaflet-container{font-family:Manrope,sans-serif}
+.leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#161a27;color:var(--text);border:1px solid var(--line)}
+.leaflet-popup-content{font-size:13px}
+.leaflet-control-attribution{background:rgba(11,13,20,.7)!important;color:var(--muted)!important}
+.leaflet-control-attribution a{color:var(--accent2)!important}
+.leaflet-bar a{background:#161a27!important;color:var(--text)!important;border-color:var(--line)!important}
+.floating{position:absolute;top:16px;right:16px;z-index:500;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.legend{position:absolute;bottom:24px;right:16px;z-index:500;padding:12px 14px;border-radius:14px;background:rgba(17,20,31,.85);
+  backdrop-filter:blur(12px);border:1px solid var(--line);font-size:12px;display:flex;flex-direction:column;gap:6px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.loader{position:absolute;inset:0;z-index:600;display:none;place-items:center;background:rgba(11,13,20,.55);backdrop-filter:blur(4px)}
+.loader.on{display:grid}
+.spin{width:46px;height:46px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);animation:sp 0.8s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loader p{color:var(--muted);font-size:14px;text-align:center}
+.modal{position:fixed;inset:0;z-index:1000;display:none;place-items:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);padding:16px}
+.modal.on{display:grid}
+.mbox{width:min(560px,100%);max-height:90vh;overflow:auto;background:#141826;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:var(--shadow)}
+.mbox h2{font-size:18px;margin-bottom:4px}
+.mbox .sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+.mbox textarea{width:100%;min-height:220px;padding:12px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);outline:none;resize:vertical;line-height:1.5;font-size:14px}
+.mbox .row{margin-top:12px;justify-content:flex-end;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(30px);opacity:0;z-index:1100;padding:12px 18px;border-radius:12px;
+  background:#1d2234;border:1px solid var(--line);box-shadow:var(--shadow);font-size:14px;transition:.25s;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.status-sel{padding:6px 8px;border-radius:8px;background:var(--bg2);border:1px solid var(--line);font-size:12px}
+.note{width:100%;margin-top:8px;padding:8px 10px;border-radius:9px;background:var(--bg2);border:1px solid var(--line);font-size:12.5px;outline:none;resize:vertical;min-height:36px}
+.funnel{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:0 20px 12px}
+.funnel .stat b{font-size:17px}
+.mobile-toggle{display:none}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr;grid-template-rows:1fr}
+  aside{position:absolute;inset:0;z-index:700;transition:transform .25s}
+  aside.hidden{transform:translateY(calc(100% - 64px))}
+  .mobile-toggle{display:flex;position:fixed;left:16px;right:16px;bottom:16px;z-index:800}
+  main{position:absolute;inset:0}
+  .floating{top:12px;right:12px;left:12px}
+  .legend{bottom:84px}
+  .head{padding:16px}
+  .controls,.stats,.funnel{padding-left:16px;padding-right:16px}
+  .list{padding-left:12px;padding-right:12px;padding-bottom:84px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside id="side">
+    <div class="head">
+      <div class="logo">
+        <div class="logo-ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M11 8v6M8 11h6"/></svg>
+        </div>
+        <div>
+          <h1>Лидоискатель</h1>
+          <p>Клиенты для веб-студии · Хабаровск</p>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab on" data-tab="find">🔎 Поиск</button>
+        <button class="tab" data-tab="crm">📋 Мои клиенты <span class="badge" id="crmCount">0</span></button>
+      </div>
+    </div>
+
+    <!-- ПОИСК -->
+    <section class="panel on" id="p-find">
+      <div class="controls">
+        <div class="label">Сфера бизнеса</div>
+        <div class="chips" id="cats"></div>
+        <div class="row">
+          <button class="btn" id="go" style="flex:1">Найти заведения</button>
+        </div>
+        <div class="row">
+          <input class="search" id="q" placeholder="Фильтр по названию или адресу…">
+          <select class="sel" id="sort">
+            <option value="score">По шансу</option>
+            <option value="name">По имени</option>
+          </select>
+        </div>
+        <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <label class="toggle"><input type="checkbox" id="onlyNoSite" checked> Только без сайта</label>
+          <label class="toggle"><input type="checkbox" id="onlyPhone"> Есть телефон</label>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="stTotal">0</b><span>найдено</span></div>
+        <div class="stat hot"><b id="stHot">0</b><span>без сайта</span></div>
+        <div class="stat warm"><b id="stPhone">0</b><span>с телефоном</span></div>
+      </div>
+      <div class="list" id="list">
+        <div class="empty"><div class="big">🎯</div>Выбери сферу бизнеса и нажми<br><b>«Найти заведения»</b>.<br><br>Приложение найдёт места в Хабаровске и покажет, у кого <b>нет сайта</b> — это твои потенциальные клиенты.</div>
+      </div>
+    </section>
+
+    <!-- CRM -->
+    <section class="panel" id="p-crm">
+      <div class="funnel">
+        <div class="stat"><b id="fNew">0</b><span>новые</span></div>
+        <div class="stat warm"><b id="fCont">0</b><span>написал</span></div>
+        <div class="stat"><b id="fInt" style="color:var(--accent2)">0</b><span>интерес</span></div>
+        <div class="stat"><b id="fDeal" style="color:var(--cold)">0</b><span>сделка</span></div>
+      </div>
+      <div class="controls">
+        <div class="row">
+          <select class="sel" id="crmFilter" style="flex:1">
+            <option value="all">Все статусы</option>
+            <option value="new">🆕 Новый</option>
+            <option value="contacted">✉️ Написал / позвонил</option>
+            <option value="interested">🔥 Интересно</option>
+            <option value="deal">💰 Сделка</option>
+            <option value="rejected">❌ Отказ</option>
+          </select>
+          <button class="btn ghost sm" id="exportCsv">⬇ CSV</button>
+        </div>
+      </div>
+      <div class="list" id="crmList"></div>
+    </section>
+  </aside>
+
+  <main>
+    <div id="map"></div>
+    <div class="floating">
+      <button class="btn ghost sm" id="fitBtn">⤢ Показать все</button>
+    </div>
+    <div class="legend">
+      <div><span class="dot" style="background:var(--hot)"></span>Горячий — нет сайта</div>
+      <div><span class="dot" style="background:var(--warm)"></span>Тёплый — только соцсети</div>
+      <div><span class="dot" style="background:var(--cold)"></span>Холодный — сайт есть</div>
+    </div>
+    <div class="loader" id="loader"><div><div class="spin"></div><p id="loaderText">Ищу заведения в Хабаровске…</p></div></div>
+  </main>
+</div>
+
+<button class="btn mobile-toggle" id="mobToggle">☰ Список / Карта</button>
+
+<div class="modal" id="modal">
+  <div class="mbox">
+    <h2 id="mTitle">Сообщение клиенту</h2>
+    <div class="sub" id="mSub">Скопируй и отправь в WhatsApp, Telegram или ВК</div>
+    <div class="chips" id="mTpl" style="margin-bottom:10px"></div>
+    <textarea id="mText"></textarea>
+    <div class="row">
+      <button class="btn ghost" id="mClose">Закрыть</button>
+      <a class="btn ghost" id="mWa" target="_blank" rel="noopener">WhatsApp</a>
+      <button class="btn" id="mCopy">📋 Скопировать</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ================= НАСТРОЙКИ ================= */
+// Границы Хабаровска (юг, запад, север, восток)
+const BBOX = [48.33, 134.95, 48.62, 135.25];
+const CENTER = [48.48, 135.08];
+
+// Зеркала Overpass API (бесплатная база OpenStreetMap). Перебираются по очереди.
+const OVERPASS = [
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter'
+];
+
+const CATEGORIES = [
+  {id:'food',   name:'🍽 Кафе и рестораны', q:[['amenity','cafe|restaurant|fast_food|bar|pub|ice_cream'],['shop','bakery|confectionery|pastry']]},
+  {id:'beauty', name:'💅 Красота',          q:[['shop','beauty|hairdresser|cosmetics|massage|tattoo'],['amenity','spa']]},
+  {id:'fit',    name:'💪 Фитнес и спорт',   q:[['leisure','fitness_centre|sports_centre|dance'],['shop','sports']]},
+  {id:'auto',   name:'🚗 Авто',             q:[['shop','car_repair|car|tyres|car_parts'],['amenity','car_wash'],['craft','car_repair']]},
+  {id:'med',    name:'🦷 Медицина',         q:[['amenity','dentist|clinic|doctors|veterinary'],['healthcare','dentist|clinic|laboratory|physiotherapist']]},
+  {id:'shop',   name:'🛍 Магазины',         q:[['shop','clothes|florist|gift|shoes|jewelry|furniture|electronics|mobile_phone|pet|toys|optician|interior_decoration']]},
+  {id:'serv',   name:'🧰 Услуги',           q:[['shop','laundry|dry_cleaning|tailor|photo|copyshop|funeral_directors|travel_agency'],['craft','photographer|tailor|shoemaker|key_cutter'],['office','estate_agent|lawyer|notary|travel_agent']]},
+  {id:'hotel',  name:'🏨 Отели',            q:[['tourism','hotel|hostel|guest_house|motel']]},
+  {id:'edu',    name:'🎓 Обучение и дети',  q:[['amenity','language_school|driving_school|music_school|dancing_school|kindergarten|childcare'],['leisure','playground_indoor']]}
+];
+
+const STATUSES = {new:'🆕 Новый',contacted:'✉️ Написал',interested:'🔥 Интересно',deal:'💰 Сделка',rejected:'❌ Отказ'};
+
+/* ================= СОСТОЯНИЕ ================= */
+let selected = new Set(['food','beauty']);
+let places = [];
+let markers = new Map();
+let activeId = null;
+let crm = loadCrm();
+
+/* ================= ХРАНИЛИЩЕ ================= */
+function loadCrm(){ try{ return JSON.parse(localStorage.getItem('lead_crm')||'{}'); }catch(e){ return {}; } }
+function saveCrm(){ try{ localStorage.setItem('lead_crm', JSON.stringify(crm)); }catch(e){} renderCrm(); }
+
+/* ================= КАРТА ================= */
+const map = L.map('map',{zoomControl:true}).setView(CENTER, 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:19, attribution:'© OpenStreetMap'
+}).addTo(map);
+const layer = L.layerGroup().addTo(map);
+
+/* ================= УТИЛИТЫ ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('on'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'),2200); }
+
+const TYPE_RU = {
+  cafe:'Кафе',restaurant:'Ресторан',fast_food:'Фастфуд',bar:'Бар',pub:'Паб',ice_cream:'Мороженое',bakery:'Пекарня',confectionery:'Кондитерская',pastry:'Кондитерская',
+  beauty:'Салон красоты',hairdresser:'Парикмахерская',cosmetics:'Косметика',massage:'Массаж',tattoo:'Тату-салон',spa:'СПА',
+  fitness_centre:'Фитнес-клуб',sports_centre:'Спорткомплекс',dance:'Танцы',sports:'Спорттовары',
+  car_repair:'Автосервис',car:'Автосалон',tyres:'Шиномонтаж',car_parts:'Автозапчасти',car_wash:'Автомойка',
+  dentist:'Стоматология',clinic:'Клиника',doctors:'Медцентр',veterinary:'Ветклиника',laboratory:'Лаборатория',physiotherapist:'Физиотерапия',
+  clothes:'Одежда',florist:'Цветы',gift:'Подарки',shoes:'Обувь',jewelry:'Ювелирный',furniture:'Мебель',electronics:'Электроника',mobile_phone:'Телефоны',pet:'Зоотовары',toys:'Игрушки',optician:'Оптика',interior_decoration:'Декор',
+  laundry:'Прачечная',dry_cleaning:'Химчистка',tailor:'Ателье',photo:'Фотоуслуги',copyshop:'Копицентр',funeral_directors:'Ритуальные услуги',travel_agency:'Турагентство',
+  photographer:'Фотограф',shoemaker:'Ремонт обуви',key_cutter:'Изготовление ключей',estate_agent:'Недвижимость',lawyer:'Юрист',notary:'Нотариус',travel_agent:'Турагентство',
+  hotel:'Отель',hostel:'Хостел',guest_house:'Гостевой дом',motel:'Мотель',
+  language_school:'Языковая школа',driving_school:'Автошкола',music_school:'Музыкальная школа',dancing_school:'Школа танцев',kindergarten:'Детский сад',childcare:'Детский центр',playground_indoor:'Детская площадка'
+};
+const TAG_KEYS = ['amenity','shop','leisure','craft','healthcare','office','tourism'];
+
+function buildQuery(){
+  const [s,w,n,e] = BBOX, bb = `(${s},${w},${n},${e})`;
+  let parts = [];
+  CATEGORIES.filter(c=>selected.has(c.id)).forEach(c=>{
+    c.q.forEach(([k,v])=> parts.push(`nwr["${k}"~"^(${v})$"]["name"]${bb};`));
+  });
+  return `[out:json][timeout:60];(${parts.join('')});out center tags;`;
+}
+
+async function fetchOverpass(query){
+  let lastErr;
+  for (const url of OVERPASS){
+    try{
+      $('#loaderText').textContent = 'Ищу заведения… (' + new URL(url).host + ')';
+      const ctrl = new AbortController(); const t = setTimeout(()=>ctrl.abort(), 70000);
+      const r = await fetch(url,{method:'POST',body:'data='+encodeURIComponent(query),
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ctrl.signal});
+      clearTimeout(t);
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return await r.json();
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr;
+}
+
+function categoryOf(tags){
+  for (const k of TAG_KEYS){
+    if(tags[k] && TYPE_RU[tags[k]]){
+      const cat = CATEGORIES.find(c=>c.q.some(([kk,v])=>kk===k && v.split('|').includes(tags[k])));
+      return {type:TYPE_RU[tags[k]], cat:cat?cat.id:null};
+    }
+  }
+  return {type:'Заведение',cat:null};
+}
+
+function analyze(el){
+  const t = el.tags||{};
+  const lat = el.lat ?? el.center?.lat, lon = el.lon ?? el.center?.lon;
+  const siteRaw = t.website || t['contact:website'] || t.url || '';
+  const socialRe = /(vk\.com|vk\.ru|instagram\.com|t\.me|ok\.ru|facebook\.com|taplink|linktr)/i;
+  const socials = [];
+  if(t['contact:vk']||/vk\.(com|ru)/i.test(siteRaw)) socials.push('ВК');
+  if(t['contact:instagram']||/instagram/i.test(siteRaw)) socials.push('Instagram');
+  if(t['contact:telegram']||/t\.me/i.test(siteRaw)) socials.push('Telegram');
+  if(t['contact:whatsapp']) socials.push('WhatsApp');
+  const hasRealSite = siteRaw && !socialRe.test(siteRaw);
+  const phone = t.phone || t['contact:phone'] || t['contact:mobile'] || '';
+  const email = t.email || t['contact:email'] || '';
+  const addr = [t['addr:street'], t['addr:housenumber']].filter(Boolean).join(', ');
+  const {type,cat} = categoryOf(t);
+
+  // Оценка шанса продажи (0–100)
+  let score = 20;
+  if(!hasRealSite) score += 45;
+  if(!hasRealSite && socials.length) score += 5;   // активны в соцсетях, но без сайта — понимают ценность онлайна
+  if(phone) score += 15;
+  if(email) score += 5;
+  if(t.opening_hours) score += 5;                   // живой работающий бизнес
+  if(!t.brand && !t['brand:wikidata']) score += 5;  // не сетевой — решения принимает владелец
+  else score -= 25;
+  score = Math.max(5, Math.min(99, score));
+
+  const level = hasRealSite ? 'cold' : (socials.length ? 'warm' : 'hot');
+  return {
+    id: el.type[0]+el.id, name:t.name, type, cat, lat, lon, phone, email, addr,
+    site: hasRealSite ? siteRaw : '', socials, hours:t.opening_hours||'', brand:t.brand||'',
+    score, level
+  };
+}
+
+/* ================= ПОИСК ================= */
+async function search(){
+  if(!selected.size){ toast('Выбери хотя бы одну сферу'); return; }
+  $('#go').disabled = true; $('#loader').classList.add('on');
+  try{
+    const data = await fetchOverpass(buildQuery());
+    const seen = new Set();
+    places = (data.elements||[]).map(analyze).filter(p=>{
+      if(!p.lat||!p.name) return false;
+      const key = p.name.toLowerCase()+'|'+p.lat.toFixed(3)+'|'+p.lon.toFixed(3);
+      if(seen.has(key)) return false; seen.add(key); return true;
+    });
+    renderList(); fitAll();
+    toast(`Найдено ${places.length} заведений`);
+  }catch(e){
+    $('#list').innerHTML = `<div class="empty"><div class="big">⚠️</div>Не удалось загрузить данные.<br>Проверь интернет и попробуй ещё раз — сервер карт иногда перегружен.<br><br><button class="btn sm" onclick="search()">Повторить</button></div>`;
+  }finally{
+    $('#go').disabled = false; $('#loader').classList.remove('on');
+  }
+}
+
+function filtered(){
+  const q = $('#q').value.trim().toLowerCase();
+  let arr = places.filter(p=>{
+    if($('#onlyNoSite').checked && p.site) return false;
+    if($('#onlyPhone').checked && !p.phone) return false;
+    if(q && !(p.name.toLowerCase().includes(q) || p.addr.toLowerCase().includes(q) || p.type.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  arr.sort($('#sort').value==='name' ? (a,b)=>a.name.localeCompare(b.name,'ru') : (a,b)=>b.score-a.score);
+  return arr;
+}
+
+const COLORS = {hot:'#ff5c7a',warm:'#ffb347',cold:'#4ade80'};
+const scoreCls = s => s>=70?'s-hot':s>=45?'s-warm':'s-cold';
+
+function placeCard(p, inCrm){
+  const tags = [];
+  if(!p.site) tags.push(`<span class="tag t-red">Нет сайта</span>`); else tags.push(`<span class="tag t-grn">Сайт есть</span>`);
+  if(p.socials.length) tags.push(`<span class="tag t-ylw">${esc(p.socials.join(', '))}</span>`);
+  if(p.brand) tags.push(`<span class="tag t-gry">Сеть: ${esc(p.brand)}</span>`);
+  if(p.hours) tags.push(`<span class="tag t-gry">🕐 есть часы работы</span>`);
+  const q = encodeURIComponent(p.name+' Хабаровск');
+  const saved = !!crm[p.id];
+  return `
+  <div class="card ${activeId===p.id?'active':''}" data-id="${p.id}">
+    <div class="card-top">
+      <div><h3>${esc(p.name)}</h3><div class="cat">${esc(p.type)}${p.addr?' · '+esc(p.addr):''}</div></div>
+      <div class="score ${scoreCls(p.score)}" title="Шанс продажи">${p.score}</div>
+    </div>
+    <div class="meta">
+      ${p.phone?`<div>📞 <a href="tel:${esc(p.phone.split(/[;,]/)[0])}">${esc(p.phone)}</a></div>`:''}
+      ${p.email?`<div>✉️ <a href="mailto:${esc(p.email)}">${esc(p.email)}</a></div>`:''}
+      ${p.site?`<div>🌐 <a href="${esc(p.site.startsWith('http')?p.site:'https://'+p.site)}" target="_blank" rel="noopener">${esc(p.site)}</a></div>`:''}
+    </div>
+    <div class="tags">${tags.join('')}</div>
+    ${inCrm?`
+      <div class="actions">
+        <select class="status-sel" data-status="${p.id}">${Object.entries(STATUSES).map(([k,v])=>`<option value="${k}" ${crm[p.id].status===k?'selected':''}>${v}</option>`).join('')}</select>
+        <button class="btn ghost sm" data-pitch="${p.id}">✍️ Текст</button>
+        <a class="btn ghost sm" href="https://2gis.ru/khabarovsk/search/${q}" target="_blank" rel="noopener">2ГИС</a>
+        <button class="btn ghost sm" data-del="${p.id}">🗑</button>
+      </div>
+      <textarea class="note" data-note="${p.id}" placeholder="Заметка: с кем говорил, что ответили…">${esc(crm[p.id].note||'')}</textarea>`
+    :`
+      <div class="actions">
+        <button class="btn sm" data-save="${p.id}" ${saved?'disabled':''}>${saved?'✓ В списке':'+ В клиенты'}</button>
+        <button class="btn ghost sm" data-pitch="${p.id}">✍️ Текст</button>
+        <a class="btn ghost sm" href="https://2gis.ru/khabarovsk/search/${q}" target="_blank" rel="noopener">2ГИС</a>
+        <a class="btn ghost sm" href="https://yandex.ru/maps/76/khabarovsk/search/${q}" target="_blank" rel="noopener">Яндекс</a>
+      </div>`}
+  </div>`;
+}
+
+function renderList(){
+  const arr = filtered();
+  $('#stTotal').textContent = places.length;
+  $('#stHot').textContent = places.filter(p=>!p.site).length;
+  $('#stPhone').textContent = places.filter(p=>p.phone).length;
+  $('#list').innerHTML = arr.length ? arr.slice(0,400).map(p=>placeCard(p,false)).join('')
+    : `<div class="empty"><div class="big">🔍</div>${places.length?'Под фильтры ничего не подходит':'Пока пусто — нажми «Найти заведения»'}</div>`;
+  renderMarkers(arr);
+}
+
+function renderMarkers(arr){
+  layer.clearLayers(); markers.clear();
+  arr.forEach(p=>{
+    const m = L.circleMarker([p.lat,p.lon],{radius:7,color:'#0b0d14',weight:2,fillColor:COLORS[p.level],fillOpacity:.95})
+      .bindPopup(`<b>${esc(p.name)}</b><br>${esc(p.type)}<br>${p.phone?'📞 '+esc(p.phone)+'<br>':''}Шанс: <b>${p.score}</b>`)
+      .on('click',()=>focusPlace(p.id,false));
+    m.addTo(layer); markers.set(p.id,m);
+  });
+}
+
+function fitAll(){
+  const pts = [...markers.values()].map(m=>m.getLatLng());
+  if(pts.length) map.fitBounds(L.latLngBounds(pts).pad(.1)); else map.setView(CENTER,12);
+}
+
+function focusPlace(id, fly=true){
+  activeId = id;
+  document.querySelectorAll('.card').forEach(c=>c.classList.toggle('active',c.dataset.id===id));
+  const m = markers.get(id);
+  if(m && fly){ map.flyTo(m.getLatLng(),16,{duration:.6}); m.openPopup(); }
+  if(!fly){ const c=document.querySelector(`#list .card[data-id="${id}"]`); c&&c.scrollIntoView({behavior:'smooth',block:'center'}); }
+}
+
+/* ================= CRM ================= */
+function renderCrm(){
+  const items = Object.values(crm);
+  $('#crmCount').textContent = items.length;
+  const cnt = s => items.filter(i=>i.status===s).length;
+  $('#fNew').textContent=cnt('new'); $('#fCont').textContent=cnt('contacted'); $('#fInt').textContent=cnt('interested'); $('#fDeal').textContent=cnt('deal');
+  const f = $('#crmFilter').value;
+  const arr = items.filter(i=>f==='all'||i.status===f).sort((a,b)=>b.added-a.added);
+  $('#crmList').innerHTML = arr.length ? arr.map(i=>placeCard(i.place,true)).join('')
+    : `<div class="empty"><div class="big">📋</div>Здесь будут твои клиенты.<br>Нажимай <b>«+ В клиенты»</b> в поиске, чтобы вести их по воронке:<br>новый → написал → интерес → сделка.</div>`;
+}
+
+function exportCsv(){
+  const rows = [['Название','Тип','Адрес','Телефон','Email','Сайт','Соцсети','Шанс','Статус','Заметка']];
+  Object.values(crm).forEach(({place:p,status,note})=>rows.push([p.name,p.type,p.addr,p.phone,p.email,p.site,p.socials.join(' '),p.score,STATUSES[status],note||'']));
+  const csv = '﻿'+rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download = 'klienty-habarovsk.csv'; a.click();
+}
+
+/* ================= ШАБЛОНЫ СООБЩЕНИЙ ================= */
+const TEMPLATES = {
+  short: p => `Здравствуйте! Меня зовут [Имя], я делаю сайты для бизнеса в Хабаровске.\n\nНашёл «${p.name}» на карте и заметил, что у вас ${p.site?'сайт можно сделать современнее и удобнее с телефона':'пока нет своего сайта'}. Сейчас многие клиенты сначала ищут ${p.type.toLowerCase()} в интернете и выбирают тех, у кого есть страница с ценами, фото и кнопкой записи.\n\nМогу бесплатно сделать для вас пример главной страницы — посмотрите, и если понравится, обсудим. Интересно?`,
+  benefit: p => `Добрый день!\n\nЯ веб-разработчик из Хабаровска. Помогаю местному бизнесу получать клиентов из интернета.\n\nДля «${p.name}» могу сделать сайт, где будет:\n• меню / прайс и фото\n• кнопка звонка и WhatsApp\n• онлайн-запись или заявка\n• отметка на картах 2ГИС и Яндекс\n\nСрок — от 5 дней, цена ниже, чем у студий. Покажу примеры работ. Удобно созвониться на 5 минут?`,
+  call: p => `Скрипт звонка — «${p.name}»\n\n1. «Здравствуйте! Подскажите, могу поговорить с владельцем или управляющим?»\n2. «Меня зовут [Имя], я делаю сайты для бизнеса в Хабаровске. Звоню, потому что увидел, что у ${p.type.toLowerCase()} «${p.name}» ${p.site?'сайт устарел':'нет сайта'}.»\n3. «Скажите, откуда к вам сейчас в основном приходят клиенты?»\n4. (слушаешь) → «Сайт помогает тем, кто ищет в Яндексе и 2ГИС. Могу бесплатно сделать пример, чтобы вы посмотрели — куда удобнее отправить, WhatsApp?»\n5. Возражение «дорого» → «Пример бесплатный, ни к чему не обязывает».\n6. Возражение «есть Инстаграм» → «Отлично! Сайт не заменяет, а дополняет — его находят через поиск те, кто вас ещё не знает.»`
+};
+let pitchPlace=null, pitchTpl='short';
+function openPitch(id){
+  pitchPlace = places.find(p=>p.id===id) || crm[id]?.place;
+  if(!pitchPlace) return;
+  $('#mTitle').textContent = 'Сообщение для «'+pitchPlace.name+'»';
+  $('#mTpl').innerHTML = [['short','Короткое'],['benefit','С выгодами'],['call','Скрипт звонка']]
+    .map(([k,v])=>`<button class="chip ${k===pitchTpl?'on':''}" data-tpl="${k}">${v}</button>`).join('');
+  $('#mText').value = TEMPLATES[pitchTpl](pitchPlace);
+  const ph = (pitchPlace.phone||'').split(/[;,]/)[0].replace(/\D/g,'').replace(/^8/,'7');
+  const wa = $('#mWa');
+  if(ph){ wa.style.display=''; wa.href='https://wa.me/'+ph+'?text='+encodeURIComponent($('#mText').value); } else wa.style.display='none';
+  $('#modal').classList.add('on');
+}
+
+/* ================= СОБЫТИЯ ================= */
+$('#cats').innerHTML = CATEGORIES.map(c=>`<button class="chip ${selected.has(c.id)?'on':''}" data-cat="${c.id}">${c.name}</button>`).join('');
+$('#cats').addEventListener('click',e=>{
+  const b=e.target.closest('[data-cat]'); if(!b) return;
+  const id=b.dataset.cat; selected.has(id)?selected.delete(id):selected.add(id); b.classList.toggle('on');
+});
+$('#go').onclick = search;
+['#q','#sort','#onlyNoSite','#onlyPhone'].forEach(s=>$(s).addEventListener('input',renderList));
+$('#fitBtn').onclick = fitAll;
+$('#crmFilter').onchange = renderCrm;
+$('#exportCsv').onclick = exportCsv;
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='p-'+t.dataset.tab));
+  if(t.dataset.tab==='crm'){ renderCrm(); renderMarkers(Object.values(crm).map(i=>i.place)); fitAll(); }
+  else renderList();
+});
+
+document.addEventListener('click',e=>{
+  const s=e.target.closest('[data-save]'), pi=e.target.closest('[data-pitch]'), d=e.target.closest('[data-del]'), tp=e.target.closest('[data-tpl]');
+  if(s){ e.stopPropagation(); const p=places.find(x=>x.id===s.dataset.save); crm[p.id]={place:p,status:'new',note:'',added:Date.now()}; saveCrm(); s.textContent='✓ В списке'; s.disabled=true; toast('Добавлено в «Мои клиенты»'); return; }
+  if(pi){ e.stopPropagation(); openPitch(pi.dataset.pitch); return; }
+  if(d){ e.stopPropagation(); delete crm[d.dataset.del]; saveCrm(); renderMarkers(Object.values(crm).map(i=>i.place)); return; }
+  if(tp){ pitchTpl=tp.dataset.tpl; openPitch(pitchPlace.id); return; }
+  if(e.target.closest('a,button,select,textarea,input')) return;
+  const c=e.target.closest('.card'); if(c){ focusPlace(c.dataset.id); if(innerWidth<=860) $('#side').classList.add('hidden'); }
+});
+document.addEventListener('change',e=>{
+  const st=e.target.closest('[data-status]'); if(st){ crm[st.dataset.status].status=st.value; saveCrm(); toast('Статус обновлён'); }
+});
+document.addEventListener('input',e=>{
+  const n=e.target.closest('[data-note]'); if(n){ crm[n.dataset.note].note=n.value; try{localStorage.setItem('lead_crm',JSON.stringify(crm));}catch(_){} }
+});
+$('#mText').addEventListener('input',()=>{ const wa=$('#mWa'); if(wa.href) wa.href=wa.href.split('?')[0]+'?text='+encodeURIComponent($('#mText').value); });
+$('#mClose').onclick = ()=>$('#modal').classList.remove('on');
+$('#modal').onclick = e=>{ if(e.target.id==='modal') $('#modal').classList.remove('on'); };
+$('#mCopy').onclick = async ()=>{
+  try{ await navigator.clipboard.writeText($('#mText').value); }catch(_){ $('#mText').select(); document.execCommand('copy'); }
+  toast('Текст скопирован ✓');
+};
+$('#mobToggle').onclick = ()=>$('#side').classList.toggle('hidden');
+
+renderCrm();
+</script>
+</body>
+</html>
