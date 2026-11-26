@@ -44,6 +44,7 @@ const DEFAULT_STATE = () => ({
   cities: ['Хабаровск'], cats: ['cafe', 'coffee'], words: [], openSphere: 'food',
   geo: {}, results: [], leads: {}, stop: {},
   templates: JSON.parse(JSON.stringify(window.DEFAULT_TEMPLATES)), tplId: 't1',
+  autoTpl: { none: 't1', social: 't5', site: 't6' }, // какой шаблон подставлять: нет сайта / только соцсети / есть сайт
   demos: {}, sentLog: {},
   ui: { view: 'search', site: 'all', contact: 'all', hideChains: true, hideBase: false, sort: 'score', city: '', q: '', baseStatus: '', baseQ: '', mapSrc: 'results' },
 });
@@ -51,6 +52,9 @@ let S;
 try { S = Object.assign(DEFAULT_STATE(), JSON.parse(localStorage.getItem(KEY) || (window.LR_PRESET ? JSON.stringify(window.LR_PRESET) : '{}'))); } catch (e) { S = DEFAULT_STATE(); }
 S.settings = Object.assign(DEFAULT_STATE().settings, S.settings);
 S.ui = Object.assign(DEFAULT_STATE().ui, S.ui);
+// Добавляем новые стандартные шаблоны тем, у кого приложение уже было установлено
+window.DEFAULT_TEMPLATES.forEach(t => { if (!S.templates.some(x => x.id === t.id)) S.templates.push(JSON.parse(JSON.stringify(t))); });
+S.autoTpl = Object.assign({ none: 't1', social: 't5', site: 't6' }, S.autoTpl);
 const save = debounce(() => {
   try { localStorage.setItem(KEY, JSON.stringify(S)); }
   catch (e) { toast('Память браузера переполнена. Очистите старые результаты поиска в «Настройках».', 5000); }
@@ -260,7 +264,10 @@ function fillTemplate(text, lead) {
     .replaceAll('{оффер}', st.offer || '');
 }
 const currentTpl = () => S.templates.find(t => t.id === S.tplId) || S.templates[0];
-const leadMessage = l => l.msg || fillTemplate(currentTpl()?.text, l);
+// Шаблон для клиента: выбранный вручную → по наличию сайта → основной
+const leadTpl = l => S.templates.find(t => t.id === l.tplId) || S.templates.find(t => t.id === S.autoTpl[l.siteStatus || 'none']) || currentTpl();
+const leadMessage = l => l.msg || fillTemplate(leadTpl(l)?.text, l);
+const tplOptions = l => S.templates.map(t => `<option value="${t.id}" ${t.id === leadTpl(l)?.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
 
 // ================= Навигация =================
 const view = $('#view');
@@ -435,7 +442,7 @@ function viewOutreach() {
         <div class="row" style="justify-content:space-between"><span class="muted num">${outIdx + 1} из ${q.length}</span><div class="row">${siteTag(l)}<span class="score ${l.score >= 60 ? 'hi' : ''}">${l.score}</span></div></div>
         <div><h2 style="margin:0 0 4px;font-size:22px">${esc(l.name)}</h2><div class="muted">${esc(l.city)} · ${esc(l.cat)}${l.addr ? ' · ' + esc(l.addr) : ''}</div></div>
         <div class="row">
-          <select class="input" data-act-change="tpl" style="width:auto">${S.templates.map(t => `<option value="${t.id}" ${t.id === S.tplId ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select>
+          <select class="input" data-act-change="tpl" data-id="${esc(l.id)}" style="width:auto">${tplOptions(l)}</select>
           ${l.demoLink ? `<a class="btn sm" href="${esc(l.demoLink)}" target="_blank" rel="noopener">Открыть демо</a>` : `<button class="btn sm primary" data-act="demo" data-id="${esc(l.id)}">Сделать демо</button>`}
           <button class="btn sm" data-act="aiMsg" data-id="${esc(l.id)}">✨ Сделать личным</button>
           ${l.msg ? `<button class="btn sm" data-act="resetMsg" data-id="${esc(l.id)}">Сбросить текст</button>` : ''}
@@ -517,12 +524,13 @@ function viewTemplates() {
   view.innerHTML = `
   <div class="topbar"><h1>Шаблоны сообщений</h1><button class="btn" data-act="tplAdd">+ Новый шаблон</button></div>
   <div class="scroll"><div class="settings">
-    <div class="chips">${S.templates.map(x => `<button class="chip ${x.id === t?.id ? 'on' : ''}" data-act="tplPick" data-v="${x.id}">${esc(x.name)}${x.id === S.tplId ? ' ★' : ''}</button>`).join('')}</div>
+    <div class="chips">${S.templates.map(x => `<button class="chip ${x.id === t?.id ? 'on' : ''}" data-act="tplPick" data-v="${x.id}">${esc(x.name)}${Object.values(S.autoTpl).includes(x.id) ? ' ★' : ''}</button>`).join('')}</div>
     ${t ? `<div class="card-box stack">
       <label class="field"><span>Название</span><input class="input" id="tplName" value="${esc(t.name)}"></label>
       <div class="field"><span>Текст. Нажмите на переменную, чтобы вставить её:</span><div class="chips">${vars.map(v => `<button class="chip add" data-act="tplVar" data-v="${v}">${v}</button>`).join('')}</div></div>
       <textarea class="input" id="tplText" rows="11">${esc(t.text)}</textarea>
-      <div class="row"><button class="btn primary" data-act="tplDefault" data-v="${t.id}" ${t.id === S.tplId ? 'disabled' : ''}>${t.id === S.tplId ? '★ Используется по умолчанию' : 'Сделать основным'}</button><button class="btn danger" data-act="tplDel" data-v="${t.id}">Удалить</button></div>
+      <div class="field"><span>Подставлять автоматически, если у заведения:</span><div class="chips">${[['none', 'Нет сайта'], ['social', 'Только соцсети'], ['site', 'Есть сайт']].map(([k, n]) => `<button class="chip ${S.autoTpl[k] === t.id ? 'on' : 'add'}" data-act="tplAuto" data-k="${k}" data-v="${t.id}">${S.autoTpl[k] === t.id ? '✓' : '+'} ${n}</button>`).join('')}</div></div>
+      <div class="row"><button class="btn danger" data-act="tplDel" data-v="${t.id}">Удалить шаблон</button></div>
     </div>
     <div class="card-box"><div class="label">Так увидит клиент (пример: ${esc(sample.name)})</div><div id="tplPreview" style="white-space:pre-wrap">${esc(fillTemplate(t.text, sample))}</div></div>` : ''}
     <button class="btn" data-act="tplReset" style="align-self:flex-start">Вернуть стандартные шаблоны</button>
@@ -624,7 +632,7 @@ function renderDrawer() {
     </div>
     <div class="stack" style="gap:8px">
       <div class="label" style="margin:0;justify-content:space-between">Сообщение
-        <select class="input" data-act-change="tpl" style="width:auto;padding:4px 8px;font-size:12px;text-transform:none;letter-spacing:0">${S.templates.map(t => `<option value="${t.id}" ${t.id === S.tplId ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select></div>
+        <select class="input" data-act-change="tpl" data-id="${esc(l.id)}" style="width:auto;padding:4px 8px;font-size:12px;text-transform:none;letter-spacing:0">${tplOptions(l)}</select></div>
       <textarea class="input" id="dMsg" rows="7">${esc(msg)}</textarea>
       <div class="row"><button class="btn sm" data-act="copyMsg">Копировать</button><button class="btn sm" data-act="aiMsg" data-id="${esc(l.id)}">✨ Сделать личным (ИИ)</button>${l.msg ? '<button class="btn sm" data-act="resetMsg" data-id="' + esc(l.id) + '">Сбросить</button>' : ''}</div>
     </div>
@@ -855,10 +863,10 @@ document.addEventListener('click', async e => {
     // шаблоны
     case 'tplPick': tplEdit = v; renderView(); break;
     case 'tplAdd': { const nt = { id: 't' + Date.now(), name: 'Новый шаблон', text: 'Здравствуйте! …' }; S.templates.push(nt); tplEdit = nt.id; save(); renderView(); break; }
-    case 'tplDel': if (S.templates.length <= 1) return toast('Нужен хотя бы один шаблон'); S.templates = S.templates.filter(x => x.id !== v); if (S.tplId === v) S.tplId = S.templates[0].id; tplEdit = null; save(); renderView(); break;
-    case 'tplDefault': S.tplId = v; save(); renderView(); toast('Этот шаблон теперь основной'); break;
+    case 'tplDel': if (S.templates.length <= 1) return toast('Нужен хотя бы один шаблон'); S.templates = S.templates.filter(x => x.id !== v); if (S.tplId === v) S.tplId = S.templates[0].id; Object.keys(S.autoTpl).forEach(k => { if (S.autoTpl[k] === v) S.autoTpl[k] = S.tplId; }); tplEdit = null; save(); renderView(); break;
+    case 'tplAuto': S.autoTpl[a.dataset.k] = v; save(); renderView(); toast('Готово: этот шаблон будет подставляться сам'); break;
     case 'tplVar': { const ta = $('#tplText'); const p = ta.selectionStart; ta.value = ta.value.slice(0, p) + v + ta.value.slice(ta.selectionEnd); ta.focus(); ta.selectionStart = ta.selectionEnd = p + v.length; ta.dispatchEvent(new Event('input', { bubbles: true })); break; }
-    case 'tplReset': S.templates = JSON.parse(JSON.stringify(window.DEFAULT_TEMPLATES)); S.tplId = 't1'; tplEdit = null; save(); renderView(); break;
+    case 'tplReset': S.templates = JSON.parse(JSON.stringify(window.DEFAULT_TEMPLATES)); S.tplId = 't1'; S.autoTpl = { none: 't1', social: 't5', site: 't6' }; tplEdit = null; save(); renderView(); break;
     // настройки
     case 'testAi': { const out = $('#aiTest'); out.textContent = 'Проверяю…'; try { await window.AI.ask('Ответь одним словом: работает', { apiKey: S.settings.apiKey, model: S.settings.model, maxTokens: 2000 }); out.textContent = '✓ Ключ работает'; } catch (err) { out.textContent = err.message; } break; }
     case 'backup': download(`lidradar-backup-${todayKey()}.json`, JSON.stringify(Object.assign({}, S, { settings: Object.assign({}, S.settings, { apiKey: '' }) })), 'application/json'); toast('Копия сохранена (без API-ключа)'); break;
@@ -909,7 +917,7 @@ document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.ui) { S.ui[t.dataset.ui] = t.value; page = 1; save(); renderView(); }
   if (t.dataset.uicheck) { S.ui[t.dataset.uicheck] = t.checked; page = 1; save(); renderView(); }
-  if (t.dataset.actChange === 'tpl') { S.tplId = t.value; Object.values(S.leads).forEach(l => { if (l.id === drawerId || l.id === $('#outMsg')?.dataset.id) delete l.msg; }); save(); refreshAfterLeadChange(); }
+  if (t.dataset.actChange === 'tpl') { const l = S.leads[t.dataset.id]; if (l) { l.tplId = t.value; delete l.msg; save(); refreshAfterLeadChange(); } }
   if (t.dataset.set === 'model') { S.settings.model = t.value; save(); }
   if (t.dataset.lead && (S.ui.view === 'base')) viewBase();
   if (t.id === 'restoreIn') restore(t);
