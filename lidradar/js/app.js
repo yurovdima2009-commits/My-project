@@ -541,7 +541,7 @@ function viewTemplates() {
 function demoBase() {
   if (S.settings.demoBase) return S.settings.demoBase;
   if (location.protocol === 'https:') return new URL('demo.html', location.href).href;
-  return 'https://yurovdima2009-commits.github.io/My-project/demo.html';
+  return 'https://yurovdima2009-commits.github.io/My-project/lidradar/demo.html';
 }
 function viewSettings() {
   const st = S.settings;
