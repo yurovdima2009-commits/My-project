@@ -169,12 +169,19 @@ function normalizeEl(el, city, cats, words) {
   };
 }
 
+// Сайт: OpenStreetMap знает далеко не про все сайты, поэтому «нет на карте» = «не указан», пока не проверим
+function siteOf(l) {
+  if (l.website || l.check?.site === 'has') return 'site';
+  return (l.instagram || l.vk || l.telegram) ? 'social' : 'none';
+}
+const isChecked = l => !!l.check;
 function scoreLead(l, chainNames) {
-  const site = l.website ? 'site' : (l.instagram || l.vk || l.telegram) ? 'social' : 'none';
+  const site = siteOf(l);
   const d = normPhone(l.phone);
-  const chain = !!l.brand || (chainNames && chainNames.has(l.name.toLowerCase()));
+  if (chainNames) l.chainByName = chainNames.has(l.name.toLowerCase());
+  const chain = !!l.brand || !!l.chainByName;
   let s = 0;
-  if (site === 'none') s += 35; else if (site === 'social') s += 30; else s += 5;
+  if (site === 'none') s += isChecked(l) ? 42 : 26; else if (site === 'social') s += isChecked(l) ? 36 : 28; else s += 5;
   if (d) s += isMobile(d) ? 25 : 15;
   if (l.instagram || l.vk || l.telegram || l.whatsapp) s += 12;
   if (l.addr) s += 6; if (l.hours) s += 6; if (l.email) s += 4;
@@ -215,6 +222,7 @@ async function runSearch() {
     Object.assign(l, scoreLead(l, chainNames));
     const old = S.leads[l.id];
     S.leads[l.id] = old ? Object.assign({}, old, l, pickCrm(old)) : Object.assign(l, { status: 'new', added: Date.now() });
+    if (old?.check) { const n = S.leads[l.id]; if (old.check.url && !n.website) n.website = old.check.url; ['instagram', 'vk', 'telegram', 'phone'].forEach(k => { if (!n[k] && old[k]) n[k] = old[k]; }); Object.assign(n, scoreLead(n)); }
     ids.push(l.id);
   });
   S.results = ids;
@@ -227,7 +235,7 @@ async function runSearch() {
   else if (errors.length) toast(`Найдено ${ids.length}. Ошибки: ${errors.join('; ')}`, 6000);
   else toast(`Найдено мест: ${ids.length}`);
 }
-const CRM_FIELDS = ['inBase', 'status', 'note', 'person', 'nextDate', 'history', 'demoLink', 'msg', 'label', 'added', 'updated', 'lastContact', 'myPhone'];
+const CRM_FIELDS = ['check', 'inBase', 'status', 'note', 'person', 'nextDate', 'history', 'demoLink', 'msg', 'label', 'added', 'updated', 'lastContact', 'myPhone'];
 const pickCrm = o => { const r = {}; CRM_FIELDS.forEach(k => { if (o[k] !== undefined) r[k] = o[k]; }); return r; };
 function updateProgress() { const el = $('#progressText'); if (el && searching) el.textContent = searching.text; }
 
@@ -269,6 +277,78 @@ const leadTpl = l => S.templates.find(t => t.id === l.tplId) || S.templates.find
 const leadMessage = l => l.msg || fillTemplate(leadTpl(l)?.text, l);
 const tplOptions = l => S.templates.map(t => `<option value="${t.id}" ${t.id === leadTpl(l)?.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
 
+// ================= Проверка сайтов =================
+let checking = null; const checkingIds = new Set();
+const NOT_A_SITE = /2gis|yandex\.|google\.|goo\.gl|zoon|restoclub|tripadvisor|flamp|delivery-club|eda\.yandex|market-delivery|taplink|linktr|instagram|vk\.com|t\.me|wa\.me|ok\.ru|facebook|tiktok|youtube|avito|hh\.ru|rusprofile|list-org|spark|yell\.ru|orgpage|spravker/i;
+function applyCheck(l, r, by) {
+  let url = typeof r.website === 'string' ? r.website.trim() : '';
+  if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+  if (url && NOT_A_SITE.test(url)) url = '';
+  l.check = { site: url ? 'has' : 'none', url: url || null, at: Date.now(), by, sure: r.sure !== false, note: String(r.note || '').slice(0, 160) };
+  if (url) l.website = url;
+  const clean = v => (typeof v === 'string' && v.trim() && !/^null$/i.test(v.trim())) ? v.trim() : '';
+  if (!l.instagram && clean(r.instagram)) l.instagram = clean(r.instagram);
+  if (!l.vk && clean(r.vk)) l.vk = clean(r.vk);
+  if (!l.telegram && clean(r.telegram)) l.telegram = clean(r.telegram);
+  if (!l.phone && clean(r.phone)) { l.phone = clean(r.phone); l.phones = l.phone; }
+  Object.assign(l, scoreLead(l));
+  l.updated = Date.now();
+}
+function setSiteManual(id, url) {
+  const l = S.leads[id]; if (!l) return;
+  if (url === null) applyCheck(l, { website: null }, 'manual');
+  else { l.website = /^https?:/i.test(url) ? url : 'https://' + url; applyCheck(l, { website: l.website }, 'manual'); }
+  save(); refreshAfterLeadChange();
+}
+async function checkLeads(ids) {
+  ids = ids.filter(id => S.leads[id]);
+  if (!ids.length) return toast('Некого проверять');
+  if (!S.settings.apiKey) return openCheckModal(ids.slice(0, 25));
+  if (checking) return toast('Проверка уже идёт');
+  checking = { done: 0, total: ids.length, found: 0 };
+  ids.forEach(id => checkingIds.add(id)); renderView();
+  let errors = 0, lastErr = '';
+  const queue = ids.slice();
+  async function worker() {
+    while (queue.length) {
+      const id = queue.shift(); const l = S.leads[id];
+      try {
+        const text = await window.AI.ask(window.AI.checkPrompt(l), { apiKey: S.settings.apiKey, model: S.settings.model, maxTokens: 8000, webSearch: true });
+        applyCheck(l, window.AI.extractJson(text), 'ai');
+        if (l.check.site === 'has') checking.found++;
+      } catch (e) { errors++; lastErr = e.message; if (/ключ|доступа|не найдена/i.test(e.message)) queue.length = 0; }
+      checkingIds.delete(id); checking.done++; save();
+      if (S.ui.view === 'search') renderView(); if (drawerId === id) renderDrawer();
+    }
+  }
+  await Promise.all([worker(), worker(), worker()]);
+  const c = checking; checking = null; checkingIds.clear(); renderView(); if (drawerId) renderDrawer();
+  toast(errors ? `Проверено ${c.done - errors} из ${c.total}. Ошибка: ${lastErr}` : `Проверено ${c.total}: сайт нашёлся у ${c.found}`, 6000);
+}
+let checkModal = null;
+function openCheckModal(ids) { checkModal = { ids, answer: '' }; renderCheckModal(); }
+function renderCheckModal() {
+  if (!checkModal) { $('#modalRoot').innerHTML = ''; return; }
+  const leads = checkModal.ids.map(id => S.leads[id]).filter(Boolean);
+  $('#modalRoot').innerHTML = `<div class="modal" id="modal"><div class="modal-box small">
+    <div class="mleft" style="border:0">
+      <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2>Проверить сайты: ${leads.length}</h2><button class="btn sm" data-act="cmClose" aria-label="Закрыть">✕</button></div>
+      <div class="muted">Бесплатно через claude.ai: Claude сам поищет каждое заведение в интернете. Чтобы проверять в один клик, добавьте API-ключ в «Настройках».</div>
+      <div class="chips">${leads.slice(0, 12).map(l => `<span class="chip">${esc(l.name)}</span>`).join('')}${leads.length > 12 ? `<span class="chip">и ещё ${leads.length - 12}</span>` : ''}</div>
+      <div class="step"><div class="step-h"><span class="n">1</span>Скопируйте запрос и отправьте его в claude.ai</div>
+        <div class="row"><button class="btn primary" data-act="cmCopy">Скопировать запрос</button><a class="btn" href="https://claude.ai/new" target="_blank" rel="noopener">Открыть claude.ai</a></div>
+        <div class="hint">В claude.ai должен быть включён поиск в интернете (Web search) — значок в поле ввода.</div></div>
+      <div class="step"><div class="step-h"><span class="n">2</span>Вставьте ответ Claude сюда</div>
+        <textarea class="input" id="cmAnswer" rows="6" placeholder='[{"id": "n123", "website": …}]'>${esc(checkModal.answer)}</textarea>
+        <button class="btn primary" data-act="cmApply">Применить</button></div>
+    </div></div></div>`;
+}
+function applyBatchAnswer(text) {
+  const arr = window.AI.extractJsonArray(text); let n = 0, found = 0;
+  arr.forEach(r => { const l = S.leads[String(r.id || '').trim()]; if (l) { applyCheck(l, r, 'claude.ai'); n++; if (l.check.site === 'has') found++; } });
+  save(); return { n, found };
+}
+
 // ================= Навигация =================
 const view = $('#view');
 let page = 1; const PAGE = 120; let configCollapsed = false;
@@ -291,7 +371,10 @@ function filteredResults() {
   const u = S.ui, q = u.q.trim().toLowerCase();
   let arr = S.results.map(id => S.leads[id]).filter(l => l && !S.stop[l.id]);
   if (u.city) arr = arr.filter(l => l.city === u.city);
-  if (u.site !== 'all') arr = arr.filter(l => u.site === 'nosite' ? l.siteStatus !== 'site' : l.siteStatus === u.site);
+  if (u.site === 'nosite') arr = arr.filter(l => l.siteStatus !== 'site');
+  else if (u.site === 'verified') arr = arr.filter(l => l.siteStatus !== 'site' && isChecked(l));
+  else if (u.site === 'unchecked') arr = arr.filter(l => l.siteStatus !== 'site' && !isChecked(l));
+  else if (u.site !== 'all') arr = arr.filter(l => l.siteStatus === u.site);
   if (u.contact === 'phone') arr = arr.filter(l => l.phone);
   if (u.contact === 'mobile') arr = arr.filter(l => isMobile(normPhone(l.phone)) || l.whatsapp);
   if (u.contact === 'social') arr = arr.filter(l => l.instagram || l.vk || l.telegram);
@@ -304,8 +387,14 @@ function filteredResults() {
 }
 function siteTag(l) {
   if (l.chain) return '<span class="tag chain">Сеть</span>';
-  return l.siteStatus === 'none' ? '<span class="tag hot">Нет сайта</span>' : l.siteStatus === 'social' ? '<span class="tag social">Только соцсети</span>' : '<span class="tag site">Есть сайт</span>';
+  if (l.siteStatus === 'site') return '<span class="tag site">Есть сайт</span>';
+  if (l.siteStatus === 'social') return isChecked(l) ? '<span class="tag social">Только соцсети ✓</span>' : '<span class="tag social unk" title="Соцсети есть, сайт не проверен">Соцсети · сайт?</span>';
+  return isChecked(l) ? '<span class="tag hot">Нет сайта ✓</span>' : '<span class="tag unk" title="На карте сайт не указан. Нажмите «Проверить сайт»">Сайт не указан</span>';
 }
+const SPHERE_EMOJI = { food: '🍽', beauty: '💅', med: '🩺', pets: '🐾', auto: '🚗', sport: '🏋️', edu: '🎓', kids: '🧸', fun: '🎳', events: '📸', hotels: '🏨', home: '🛠', services: '🧺', b2b: '💼', shops: '🛍', other: '📍' };
+const CAT_EMOJI = { cafe: '☕', coffee: '☕', restaurant: '🍽', fastfood: '🍔', pizza: '🍕', shawarma: '🌯', sushi: '🍣', burger: '🍔', bar: '🍸', bakery: '🥐', confect: '🧁', barber: '💈', hair: '✂️', nails: '💅', tattoo: '🖋', massage: '💆', florist: '💐', florist2: '💐', dentist: '🦷', vet: '🐾', vet2: '🐾', carwash: '🫧', fitness: '🏋️', hotel: '🏨', photo: '📸', hookah: '💨' };
+const leadEmoji = l => CAT_EMOJI[l.catId] || SPHERE_EMOJI[l.sphere] || '📍';
+const scoreRing = l => `<span class="ring ${l.score >= 60 ? 'hi' : l.score >= 40 ? 'mid' : ''}" style="--p:${l.score}" title="Оценка ${l.score} из 100: насколько это перспективный клиент"><b class="num">${l.score}</b></span>`;
 function chIcons(l) {
   const c = channels(l);
   return [
@@ -319,13 +408,27 @@ function chIcons(l) {
 }
 function leadCard(l) {
   const st = window.STATUSES[l.status] || window.STATUSES.new;
-  return `<article class="lead ${l.inBase ? 'inbase' : ''} ${drawerId === l.id ? 'sel' : ''}" data-open="${esc(l.id)}" style="--status:${st.color}">
-    <div class="lead-top"><input type="checkbox" data-check="${esc(l.id)}" ${selected.has(l.id) ? 'checked' : ''} aria-label="Выбрать">${siteTag(l)}<span style="flex:1"></span><span class="score ${l.score >= 60 ? 'hi' : ''} num" title="Оценка: насколько это перспективный клиент">${l.score}</span></div>
-    <h3>${esc(l.name)}</h3>
-    <div class="meta">📍 ${esc(l.city)} · ${esc(l.cat)}${l.addr ? ' · ' + esc(l.addr) : ''}</div>
+  return `<article class="lead ${l.inBase ? 'inbase' : ''} ${drawerId === l.id ? 'sel' : ''} ${checkingIds.has(l.id) ? 'checking' : ''}" data-open="${esc(l.id)}" style="--status:${st.color}">
+    <div class="lead-top"><input type="checkbox" data-check="${esc(l.id)}" ${selected.has(l.id) ? 'checked' : ''} aria-label="Выбрать">${siteTag(l)}<span style="flex:1"></span>${scoreRing(l)}</div>
+    <div class="lead-id"><span class="avatar s-${esc(l.sphere || 'other')}">${leadEmoji(l)}</span><div style="min-width:0"><h3>${esc(l.name)}</h3>
+    <div class="meta">${esc(l.cat)}${l.addr ? ' · ' + esc(l.addr) : ' · ' + esc(l.city)}</div></div></div>
     <div class="lead-bottom">${chIcons(l) || '<span class="muted" style="font-size:12px">контактов на карте нет</span>'}<span class="grow"></span>
       ${l.inBase ? `<span class="spill" style="font-size:11px"><i style="background:${st.color}"></i>${st.label}</span>` : `<button class="btn sm" data-act="tobase" data-id="${esc(l.id)}">+ В базу</button>`}
     </div></article>`;
+}
+function summaryTiles() {
+  const all = S.results.map(id => S.leads[id]).filter(l => l && !S.stop[l.id] && !(S.ui.hideChains && l.chain));
+  const n = f => all.filter(f).length;
+  const tiles = [
+    ['all', 'Всего', all.length, 'var(--text)'],
+    ['verified', 'Нет сайта ✓', n(l => l.siteStatus !== 'site' && isChecked(l)), 'var(--accent)'],
+    ['unchecked', 'Не проверено', n(l => l.siteStatus !== 'site' && !isChecked(l)), 'var(--faint)'],
+    ['social', 'Соцсети', n(l => l.siteStatus === 'social'), 'var(--violet)'],
+    ['site', 'Есть сайт', n(l => l.siteStatus === 'site'), 'var(--good)'],
+  ];
+  const unchecked = all.filter(l => l.siteStatus !== 'site' && !isChecked(l)).length;
+  return `<div class="tiles">${tiles.map(([k, label, v, c]) => `<button class="tile ${S.ui.site === k ? 'on' : ''}" data-act="siteFilter" data-v="${k}" style="--c:${c}"><b class="num">${v}</b><span>${label}</span></button>`).join('')}</div>
+  ${unchecked ? `<div class="checkbar"><span>⚠️ На карте указаны не все сайты. Перед тем как писать, проверьте — есть ли сайт на самом деле.</span><button class="btn sm primary" data-act="checkTop" ${checking ? 'disabled' : ''}>🔎 Проверить ${Math.min(20, unchecked)} лучших</button></div>` : ''}`;
 }
 function viewSearch() {
   const u = S.ui;
@@ -352,14 +455,14 @@ function viewSearch() {
         <div class="chips" style="margin-top:6px">${window.SPHERES.map(s => { const n = s.cats.filter(c => S.cats.includes(c.id)).length; return `<button class="chip ${S.openSphere === s.id ? 'on' : ''}" data-act="sphere" data-v="${s.id}">${esc(s.label)}${n ? ` <span class="count">${n}</span>` : ''}</button>`; }).join('')}</div>
         ${sp ? `<div class="sphere-cats chips">${sp.cats.map(c => `<button class="chip ${S.cats.includes(c.id) ? 'on' : 'add'}" data-act="toggleCat" data-v="${c.id}">${S.cats.includes(c.id) ? '✓' : '+'} ${esc(c.label)}</button>`).join('')}</div>` : ''}
       </div>
-      <div class="hint">Данные берутся из открытой карты OpenStreetMap. Телефоны есть не у всех мест — недостающие контакты найдёте кнопками 2ГИС и Яндекс в карточке.</div>
+      <div class="hint">Данные берутся из открытой карты OpenStreetMap. Сайты и телефоны там указаны не у всех — поэтому у каждого места есть кнопка «Проверить сайт»: Claude поищет в интернете и найдёт сайт, телефон и соцсети.</div>
     </div>
     <div class="results">
       ${searching ? `<div class="progress"><div class="spin"></div><span id="progressText">${esc(searching.text)}</span></div>` : ''}
       ${S.results.length ? `<div class="filters">
         <input class="input grow" id="fq" placeholder="Поиск по найденным…" value="${esc(u.q)}">
         ${cities.length > 1 ? `<select class="input" data-ui="city"><option value="">Все города</option>${cities.map(c => `<option ${u.city === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>` : ''}
-        <select class="input" data-ui="site"><option value="all">Любой сайт</option><option value="nosite" ${u.site === 'nosite' ? 'selected' : ''}>Без сайта</option><option value="none" ${u.site === 'none' ? 'selected' : ''}>Совсем ничего</option><option value="social" ${u.site === 'social' ? 'selected' : ''}>Только соцсети</option><option value="site" ${u.site === 'site' ? 'selected' : ''}>Есть сайт</option></select>
+        <select class="input" data-ui="site">${[['all', 'Любой сайт'], ['nosite', 'Без сайта (все)'], ['verified', 'Нет сайта — проверено ✓'], ['unchecked', 'Сайт не проверен'], ['social', 'Только соцсети'], ['site', 'Есть сайт']].map(([v, n]) => `<option value="${v}" ${u.site === v ? 'selected' : ''}>${n}</option>`).join('')}</select>
         <select class="input" data-ui="contact"><option value="all">Любые контакты</option><option value="any" ${u.contact === 'any' ? 'selected' : ''}>Есть хоть какой-то</option><option value="phone" ${u.contact === 'phone' ? 'selected' : ''}>С телефоном</option><option value="mobile" ${u.contact === 'mobile' ? 'selected' : ''}>С мобильным</option><option value="social" ${u.contact === 'social' ? 'selected' : ''}>Есть соцсети</option></select>
         <select class="input" data-ui="sort"><option value="score">Сначала перспективные</option><option value="name" ${u.sort === 'name' ? 'selected' : ''}>По названию</option><option value="cat" ${u.sort === 'cat' ? 'selected' : ''}>По категории</option></select>
         <label class="row muted" style="font-size:12px;gap:5px"><input type="checkbox" data-uicheck="hideChains" ${u.hideChains ? 'checked' : ''}> без сетей</label>
@@ -368,11 +471,14 @@ function viewSearch() {
       ${selected.size ? `<div class="bulkbar"><b>Выбрано: ${selected.size}</b>
         <button class="btn sm primary" data-act="bulkBase">+ В базу</button>
         <button class="btn sm" data-act="bulkQueue">В очередь рассылки</button>
+        <button class="btn sm" data-act="bulkCheck">🔎 Проверить сайты</button>
         <button class="btn sm danger" data-act="bulkStop">В стоп</button>
         <button class="btn sm" data-act="bulkClear">Снять</button></div>` : ''}
       <div class="scroll">
         ${!S.results.length && !searching ? `<div class="empty"><h3>Найдём клиентов на карте</h3>Выберите города и сферы слева и нажмите «Найти». Приложение соберёт заведения с адресами, телефонами и соцсетями, отметит тех, у кого нет сайта, и оценит каждого по шкале от 0 до 100.</div>` : ''}
         ${S.results.length && !arr.length && !searching ? `<div class="empty"><h3>Под фильтры никто не подошёл</h3>Ослабьте фильтры сверху.</div>` : ''}
+        ${S.results.length && !searching ? summaryTiles() : ''}
+        ${checking ? `<div class="progress"><div class="spin"></div><span>Проверяю сайты: ${checking.done} из ${checking.total}…</span></div>` : ''}
         ${arr.length ? `<div class="row" style="padding:12px 16px 0;justify-content:space-between"><span class="muted num">Показано ${Math.min(arr.length, page * PAGE)} из ${arr.length}</span><button class="btn sm" data-act="selectAll">Выбрать все ${arr.length}</button></div>` : ''}
         <div class="cards">${arr.slice(0, page * PAGE).map(leadCard).join('')}</div>
         ${arr.length > page * PAGE ? `<div style="text-align:center;padding:0 0 24px"><button class="btn" data-act="more">Показать ещё</button></div>` : ''}
@@ -445,6 +551,7 @@ function viewOutreach() {
           <select class="input" data-act-change="tpl" data-id="${esc(l.id)}" style="width:auto">${tplOptions(l)}</select>
           ${l.demoLink ? `<a class="btn sm" href="${esc(l.demoLink)}" target="_blank" rel="noopener">Открыть демо</a>` : `<button class="btn sm primary" data-act="demo" data-id="${esc(l.id)}">Сделать демо</button>`}
           <button class="btn sm" data-act="aiMsg" data-id="${esc(l.id)}">✨ Сделать личным</button>
+          ${l.siteStatus !== 'site' && !isChecked(l) ? `<button class="btn sm" data-open="${esc(l.id)}" title="Сайт на карте не указан — проверьте в карточке">⚠️ Сайт не проверен</button>` : ''}
           ${l.msg ? `<button class="btn sm" data-act="resetMsg" data-id="${esc(l.id)}">Сбросить текст</button>` : ''}
         </div>
         <textarea class="input" id="outMsg" data-id="${esc(l.id)}" rows="9">${esc(msg)}</textarea>
@@ -586,8 +693,8 @@ function viewSettings() {
 
 // ================= Карточка лида =================
 const drawer = $('#drawer');
-let drawerId = null, listCtx = [], drawerList = [], miniMap = null;
-function openDrawer(id, list) { drawerId = id; drawerList = list && list.length ? list : (listCtx.includes(id) ? listCtx : [id]); renderDrawer(); drawer.classList.add('open'); $$('.lead.sel').forEach(e => e.classList.remove('sel')); $(`.lead[data-open="${CSS.escape(id)}"]`)?.classList.add('sel'); }
+let drawerId = null, listCtx = [], drawerList = [], miniMap = null, siteInputOpen = false;
+function openDrawer(id, list) { if (id !== drawerId) siteInputOpen = false; drawerId = id; drawerList = list && list.length ? list : (listCtx.includes(id) ? listCtx : [id]); renderDrawer(); drawer.classList.add('open'); $$('.lead.sel').forEach(e => e.classList.remove('sel')); $(`.lead[data-open="${CSS.escape(id)}"]`)?.classList.add('sel'); }
 function closeDrawer() { drawer.classList.remove('open'); drawerId = null; $$('.lead.sel').forEach(e => e.classList.remove('sel')); if (miniMap) { miniMap.remove(); miniMap = null; } }
 function renderDrawer() {
   const l = S.leads[drawerId]; if (!l) return closeDrawer();
@@ -610,7 +717,20 @@ function renderDrawer() {
       <button class="btn" data-act="demo" data-id="${esc(l.id)}">🖥 ${l.demoLink ? 'Демо ✓' : 'Сделать демо'}</button>
       <button class="btn danger" data-act="dStop">⦸ В стоп</button>
     </div>
-    <div class="stats"><div><b class="num">${l.score}</b><span>оценка</span></div><div><b>${l.siteStatus === 'site' ? 'есть' : l.siteStatus === 'social' ? 'соцсети' : 'нет'}</b><span>сайт</span></div><div><b class="num">${(l.history || []).filter(h => h.s === 'sent').length}</b><span>касаний</span></div></div>
+    <div class="stats"><div><b class="num">${l.score}</b><span>оценка</span></div><div><b>${l.siteStatus === 'site' ? 'есть' : !isChecked(l) ? '?' : l.siteStatus === 'social' ? 'соцсети' : 'нет'}</b><span>сайт</span></div><div><b class="num">${(l.history || []).filter(h => h.s === 'sent').length}</b><span>касаний</span></div></div>
+    <div class="sitebox ${l.siteStatus === 'site' ? 'ok' : isChecked(l) ? 'none' : 'unk'}">
+      <div class="label" style="margin:0">Сайт</div>
+      <div class="sitestate">${l.siteStatus === 'site' ? `✅ Есть: <a href="${esc(channels(l).web?.href || '#')}" target="_blank" rel="noopener">${esc(channels(l).web?.label || '')}</a>` : isChecked(l) ? `❌ Сайта нет${l.siteStatus === 'social' ? ', только соцсети' : ''} <span class="muted">· проверено ${fmtDate(l.check.at)}${l.check.by === 'manual' ? ' вручную' : ''}</span>` : `❔ На карте не указан — <b>проверьте, прежде чем писать</b>`}
+        ${l.check?.note ? `<div class="muted" style="font-size:12px;margin-top:3px">${esc(l.check.note)}</div>` : ''}</div>
+      ${siteInputOpen ? `<div class="row" style="flex-wrap:nowrap"><input class="input" id="siteUrl" placeholder="https://адрес-сайта.ru"><button class="btn sm primary" data-act="dSiteHas">Сохранить</button></div>` : ''}
+      <div class="row">
+        ${checkingIds.has(l.id) ? `<span class="btn sm" aria-busy="true"><span class="spin"></span> Ищу в интернете…</span>` : `<button class="btn sm primary" data-act="dCheck">✨ Проверить ${S.settings.apiKey ? '(ИИ)' : 'через Claude'}</button>`}
+        <a class="btn sm" href="https://yandex.ru/search/?text=${enc(l.name + ' ' + l.city + ' официальный сайт')}" target="_blank" rel="noopener">Яндекс</a>
+        ${l.siteStatus !== 'site' ? `<button class="btn sm" data-act="dSiteHas">Сайт есть</button>` : ''}
+        ${!isChecked(l) || l.siteStatus === 'site' ? `<button class="btn sm" data-act="dSiteNone">Сайта нет</button>` : ''}
+        ${isChecked(l) ? `<button class="btn sm" data-act="dSiteReset" title="Сбросить проверку">↺</button>` : ''}
+      </div>
+    </div>
     <div>
       <div class="label">Написать</div>
       <div class="channels">
@@ -809,6 +929,16 @@ document.addEventListener('click', async e => {
     case 'tobase': toBase(id); toast('Добавлено в базу'); renderView(); if (drawerId === id) renderDrawer(); break;
     case 'selectAll': filteredResults().forEach(x => selected.add(x.id)); renderView(); break;
     case 'bulkClear': selected.clear(); renderView(); break;
+    case 'bulkCheck': { const ids = [...selected]; selected.clear(); checkLeads(ids); break; }
+    case 'checkTop': checkLeads(filteredResults().filter(x => x.siteStatus !== 'site' && !isChecked(x) && !x.chain).slice(0, 20).map(x => x.id)); break;
+    case 'siteFilter': S.ui.site = S.ui.site === v && v !== 'all' ? 'all' : v; page = 1; save(); renderView(); break;
+    case 'dCheck': checkLeads([drawerId]); break;
+    case 'dSiteNone': setSiteManual(drawerId, null); toast('Отмечено: сайта нет'); break;
+    case 'dSiteHas': { const inp = $('#siteUrl'); if (!inp) { siteInputOpen = true; renderDrawer(); $('#siteUrl')?.focus(); break; } const u = inp.value.trim(); if (!u) { toast('Вставьте адрес сайта'); break; } siteInputOpen = false; setSiteManual(drawerId, u); toast('Сайт сохранён'); break; }
+    case 'dSiteReset': { const x = S.leads[drawerId]; if (x) { if (x.check?.url && x.website === x.check.url) x.website = ''; delete x.check; Object.assign(x, scoreLead(x)); save(); refreshAfterLeadChange(); } break; }
+    case 'cmClose': checkModal = null; renderCheckModal(); break;
+    case 'cmCopy': copy(window.AI.checkBatchPrompt(checkModal.ids.map(id => S.leads[id]).filter(Boolean))); break;
+    case 'cmApply': try { const r = applyBatchAnswer($('#cmAnswer').value); checkModal = null; renderCheckModal(); renderView(); if (drawerId) renderDrawer(); toast(`Обновлено ${r.n}: сайт нашёлся у ${r.found}`, 5000); } catch (err) { toast('Не получилось прочитать ответ: ' + err.message, 5000); } break;
     case 'bulkBase': selected.forEach(x => toBase(x)); toast(`В базу: ${selected.size}`); selected.clear(); renderView(); break;
     case 'bulkQueue': selected.forEach(x => { toBase(x); setStatus(x, 'queue'); }); toast(`В очередь: ${selected.size}`); selected.clear(); renderView(); break;
     case 'bulkStop': selected.forEach(x => toStop(x)); toast(`В стоп: ${selected.size}`); selected.clear(); renderView(); break;
@@ -923,7 +1053,7 @@ document.addEventListener('change', e => {
   if (t.id === 'restoreIn') restore(t);
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { if (B) { B = null; renderBuilder(); } else if (drawerId) closeDrawer(); }
+  if (e.key === 'Escape') { if (checkModal) { checkModal = null; renderCheckModal(); } else if (B) { B = null; renderBuilder(); } else if (drawerId) closeDrawer(); }
   if (drawerId && !e.target.closest('input,textarea,select') && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
     const i = drawerList.indexOf(drawerId) + (e.key === 'ArrowRight' ? 1 : -1);
     if (drawerList[i]) openDrawer(drawerList[i], drawerList);

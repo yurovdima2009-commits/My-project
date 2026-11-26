@@ -6,7 +6,7 @@
   let sdkPromise = null;
   const loadSdk = () => (sdkPromise ||= import(SDK_URL));
 
-  async function ask(prompt, { apiKey, model = 'claude-opus-5-5', maxTokens = 16000, effort = 'low' } = {}) {
+  async function ask(prompt, { apiKey, model = 'claude-opus-5-5', maxTokens = 16000, effort = 'low', webSearch = false } = {}) {
     if (!apiKey) throw new Error('Добавьте API-ключ в «Настройках» или используйте режим «через claude.ai».');
     let mod;
     try { mod = await loadSdk(); } catch (e) { throw new Error('Не загрузилась библиотека Claude. Проверьте интернет.'); }
@@ -23,7 +23,15 @@
         params.betas = ['server-side-fallback-2026-07-01'];
         params.fallbacks = 'default';
       }
-      const res = await client.beta.messages.create(params);
+      // Веб-поиск: Claude сам ищет в интернете (платно, примерно 1 ₽ за поиск)
+      if (webSearch) params.tools = [{ type: 'web_search_20260209', name: 'web_search', max_uses: 4 }];
+      let res = await client.beta.messages.create(params);
+      // Долгий поиск может прерваться паузой — продолжаем, сервер сам продолжит с того же места
+      for (let k = 0; res.stop_reason === 'pause_turn' && k < 4; k++) {
+        params.messages = [{ role: 'user', content: prompt }, { role: 'assistant', content: res.content }];
+        res = await client.beta.messages.create(params);
+      }
+      if (res.stop_reason === 'pause_turn') throw new Error('Поиск занял слишком долго. Попробуйте ещё раз.');
       if (res.stop_reason === 'refusal') throw new Error('ИИ отказался выполнять этот запрос. Попробуйте изменить данные.');
       const text = res.content.filter(b => b.type === 'text').map(b => b.text).join('');
       if (res.stop_reason === 'max_tokens') throw new Error('Ответ получился слишком длинным и оборвался. Попробуйте ещё раз.');
@@ -107,6 +115,39 @@ ${extra ? `\nДополнительно известно (используй э�
 hits — 6 штук, features — 3 штуки.`;
   }
 
+  // Проверка сайта и контактов через поиск в интернете
+  const CHECK_RULES = `Собственный сайт — это отдельный домен самого заведения (например, kafe-zerno.ru). НЕ считаются сайтом: страницы в 2ГИС, Яндекс Картах, Google Картах, Zoon, Restoclub, Tripadvisor, Flamp, агрегаторах доставки (Яндекс Еда, Delivery Club), Taplink, страницы в соцсетях, сайты сетей-франшиз, если у точки нет своей страницы.
+Если не уверен, что нашёл именно это заведение в этом городе, — ставь null. Ничего не выдумывай.`;
+  function checkPrompt(lead) {
+    return `Найди в интернете информацию об этом заведении и проверь, есть ли у него собственный сайт.
+
+${leadFacts(lead)}
+
+${CHECK_RULES}
+
+Верни ТОЛЬКО JSON без пояснений:
+{"website": "https://… или null", "instagram": "ник или null", "vk": "ссылка или null", "telegram": "ник или null", "phone": "телефон или null", "sure": true или false, "note": "коротко, что нашёл (до 100 символов)"}`;
+  }
+  function checkBatchPrompt(leads) {
+    return `Для каждого заведения из списка найди в интернете, есть ли у него собственный сайт, и его контакты. Ищи каждое отдельно.
+
+${CHECK_RULES}
+
+Список (id — номер для ответа):
+${leads.map(l => `- id: ${l.id} | ${l.name} | ${l.cat || ''} | г. ${l.city}${l.addr ? ', ' + l.addr : ''}${l.phone ? ' | тел. ' + l.phone : ''}`).join('\n')}
+
+Верни ТОЛЬКО JSON-массив без пояснений, по одному объекту на каждое заведение:
+[{"id": "…", "website": "https://… или null", "instagram": "ник или null", "vk": "ссылка или null", "telegram": "ник или null", "phone": "телефон или null", "sure": true или false}]`;
+  }
+  function extractJsonArray(text) {
+    const s = String(text || '');
+    const fence = s.match(/```(?:json)?\s*([\s\S]*?)```/);
+    const body = fence ? fence[1] : s;
+    const a = body.indexOf('['), b = body.lastIndexOf(']');
+    if (a < 0 || b < a) throw new Error('В ответе не найден список. Скопируйте ответ целиком.');
+    return JSON.parse(body.slice(a, b + 1));
+  }
+
   function messagePrompt(lead, baseText, me) {
     return `Помоги написать первое сообщение владельцу местного бизнеса. Я — ${me.name || 'фрилансер'}, предлагаю: ${me.offer || 'сделать сайт'}${me.price ? ` (цена ${me.price})` : ''}.
 
@@ -154,5 +195,5 @@ ${baseText}
     };
   }
 
-  window.AI = { ask, extractJson, demoPrompt, messagePrompt, quickDemo };
+  window.AI = { ask, extractJson, extractJsonArray, demoPrompt, messagePrompt, quickDemo, checkPrompt, checkBatchPrompt };
 })();
