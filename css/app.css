@@ -255,3 +255,12 @@ pre.code { background: var(--panel-2); border: 1px solid var(--line); border-rad
 
 /* Тёмная тема: затемняем светлую карту OpenStreetMap */
 :root:not([data-theme="light"]) .osm-tiles { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.9) saturate(.6); }
+
+/* Карта не должна перекрывать карточку заведения */
+#bigmap, .minimap { position: relative; z-index: 0; isolation: isolate; }
+.drawer { z-index: 1200; }
+.modal { z-index: 1300; }
+.toast { z-index: 1400; }
+/* Подпись карты — маленькая и неприметная */
+.leaflet-control-attribution { font-size: 9px !important; opacity: .45; background: transparent !important; color: var(--muted) !important; }
+.leaflet-control-attribution a { color: inherit !important; }

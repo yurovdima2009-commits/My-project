@@ -327,6 +327,7 @@ const byId = id => allPlaces().find(p => p.id === id);
 
 // ---------- Карта ----------
 const map = L.map('map', {zoomControl:false, preferCanvas:false}).setView(CITY_CENTER, 13);
+map.attributionControl.setPrefix(false);
 L.control.zoom({position:'topright'}).addTo(map);
 let tileLayer;
 function isDark(){
@@ -337,7 +338,7 @@ function setTiles(){
   if (tileLayer) map.removeLayer(tileLayer);
   tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom:19, className:'osm-tiles',
-    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    attribution:'© OSM'
   }).addTo(map);
 }
 setTiles();

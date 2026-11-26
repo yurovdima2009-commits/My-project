@@ -464,7 +464,7 @@ function viewOutreach() {
 // ================= Вид: Карта =================
 let bigMap = null;
 // Подложка карты OpenStreetMap (бесплатно). В тёмной теме тайлы затемняются фильтром.
-function addTiles(m) { L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, className: 'osm-tiles', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(m); }
+function addTiles(m) { L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, className: 'osm-tiles', attribution: '© OSM' }).addTo(m); }
 const SITE_COLORS = { none: '#f2a93b', social: '#a77bf3', site: '#3fbf7a', chain: '#e25d5d' };
 function viewMap() {
   const src = S.ui.mapSrc;
@@ -478,6 +478,7 @@ function viewMap() {
   if (typeof L === 'undefined') { $('#bigmap').innerHTML = '<div class="empty">Карта не загрузилась. Проверьте интернет.</div>'; return; }
   const g = S.geo[S.cities[0]];
   bigMap = L.map('bigmap', { zoomControl: true }).setView(g ? [g.lat, g.lon] : [48.48, 135.08], 12);
+  bigMap.attributionControl.setPrefix(false); // без флага и ссылки Leaflet
   addTiles(bigMap);
   const pts = [];
   arr.forEach(l => {
