@@ -237,3 +237,8 @@ pre.code { background: var(--panel-2); border: 1px solid var(--line); border-rad
   .status-grid { grid-template-columns: repeat(3, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* iPhone: отступы под «чёлку» и полоску внизу экрана */
+.dbody { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+.drawer { padding-top: env(safe-area-inset-top); }
+@media (max-width: 860px) { .mleft { padding-bottom: calc(18px + env(safe-area-inset-bottom)); } .modal-box { padding-top: env(safe-area-inset-top); } }
