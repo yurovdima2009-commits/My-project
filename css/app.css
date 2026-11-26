@@ -242,3 +242,16 @@ pre.code { background: var(--panel-2); border: 1px solid var(--line); border-rad
 .dbody { padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
 .drawer { padding-top: env(safe-area-inset-top); }
 @media (max-width: 860px) { .mleft { padding-bottom: calc(18px + env(safe-area-inset-bottom)); } .modal-box { padding-top: env(safe-area-inset-top); } }
+
+/* Телефон: ничего не должно вылезать за правый край */
+.view, .results, .config, .cards > * { min-width: 0; }
+@media (max-width: 860px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .search-layout { grid-template-columns: minmax(0, 1fr); }
+  .cards { grid-template-columns: minmax(0, 1fr); }
+  .filters .input { flex: 1 1 140px; min-width: 0; }
+  .topbar h1 { font-size: 16px; }
+}
+
+/* Тёмная тема: затемняем светлую карту OpenStreetMap */
+:root:not([data-theme="light"]) .osm-tiles { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.9) saturate(.6); }

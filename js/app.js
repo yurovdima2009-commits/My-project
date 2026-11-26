@@ -115,17 +115,23 @@ async function geocode(city) {
 }
 
 async function overpass(q) {
-  let last;
-  for (const url of OVERPASS) {
-    try {
-      const ctrl = new AbortController(); const tm = setTimeout(() => ctrl.abort(), 150000);
-      const r = await fetch(url, { method: 'POST', body: 'data=' + enc(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctrl.signal });
-      clearTimeout(tm);
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return await r.json();
-    } catch (e) { last = e; }
-  }
-  throw last || new Error('сервер карты не ответил');
+  // Спрашиваем все серверы сразу и берём первый нормальный ответ: какой-нибудь из них почти всегда свободен
+  const ctrls = OVERPASS.map(() => new AbortController());
+  const timer = setTimeout(() => ctrls.forEach(c => c.abort()), 100000);
+  const tries = OVERPASS.map(async (url, i) => {
+    const r = await fetch(url, { method: 'POST', body: 'data=' + enc(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctrls[i].signal });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (j.remark && /runtime error|timed out|out of memory/i.test(j.remark) && !(j.elements || []).length) throw new Error(j.remark);
+    return { j, i };
+  });
+  try {
+    const { j, i } = await Promise.any(tries);
+    ctrls.forEach((c, k) => { if (k !== i) c.abort(); });
+    return j;
+  } catch (e) {
+    throw new Error('серверы карты сейчас перегружены — попробуйте через минуту');
+  } finally { clearTimeout(timer); }
 }
 
 function normalizeEl(el, city, cats, words) {
@@ -185,11 +191,12 @@ async function runSearch() {
     try {
       searching.text = `Ищу город «${city}» на карте…`; updateProgress();
       const g = await geocode(city);
-      const scope = g.area ? '(area.a)' : `(${g.bbox.join(',')})`;
+      // поиск по прямоугольнику вокруг города: на серверах он в разы быстрее, чем по границе города
+      const scope = `(${g.bbox.join(',')})`;
       const lines = [];
       cats.forEach(c => c.q.forEach(f => lines.push(`nwr${f}["name"]${scope};`)));
       words.forEach(w => ['amenity', 'shop', 'office', 'craft', 'leisure', 'tourism'].forEach(k => lines.push(`nwr["name"~"${reEsc(w)}",i]["${k}"]${scope};`)));
-      const q = `[out:json][timeout:150];${g.area ? `area(id:${g.area})->.a;` : ''}(${lines.join('')});out center tags;`;
+      const q = `[out:json][timeout:90];(${lines.join('')});out center tags;`;
       searching.text = `Собираю места: ${city} (${cats.length + words.length} категорий)…`; updateProgress();
       const j = await overpass(q);
       (j.elements || []).forEach(el => { const l = normalizeEl(el, city, cats, words); if (l) found.push(l); });
@@ -456,8 +463,8 @@ function viewOutreach() {
 
 // ================= Вид: Карта =================
 let bigMap = null;
-function tileUrl() { return document.documentElement.dataset.theme === 'light' ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'; }
-function addTiles(m) { L.tileLayer(tileUrl(), { subdomains: 'abcd', maxZoom: 20, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>' }).addTo(m); }
+// Подложка карты OpenStreetMap (бесплатно). В тёмной теме тайлы затемняются фильтром.
+function addTiles(m) { L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, className: 'osm-tiles', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(m); }
 const SITE_COLORS = { none: '#f2a93b', social: '#a77bf3', site: '#3fbf7a', chain: '#e25d5d' };
 function viewMap() {
   const src = S.ui.mapSrc;
