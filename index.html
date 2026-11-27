@@ -1,548 +1,606 @@
 <title>AQUAVAPOR Presentation</title>
-<meta name="description" content="AQUAVAPOR investor presentation: a private floating sauna at sea off the Dubai coast, with a live 3D model.">
+<meta name="description" content="AQUAVAPOR investor presentation: a private floating sauna at sea off the Dubai coast, in a live 3D film.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<style>
-/* Layout: a live 3D sea scene fills the screen; a fixed 1920×1080 stage of slides floats above it and the camera flies between shots */
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Marcellus&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>/* Layout: a live 3D film of the sea fills the screen; each slide is its own editorial composition on a 1920×1080 stage, set in the logo's brushed gold and ice blue */
 :root{
-  --ink:#050C16;
-  --glass:rgba(8,20,34,.52);
-  --glass-line:rgba(255,255,255,.14);
-  --sand:#F5F1E8;
-  --mist:#B9C6D3;
-  --gold:#D9B577;
-  --gold-2:#F3D9A4;
-  --ember:#FF8A4C;
-  --sea:#53E0D2;
-  --f-display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
-  --f-body:'Inter',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --bg:#04070C;
+  --ink:#F4EFE6;
+  --mute:#AEB9C4;
+  --dim:#7D8A97;
+  --gold-1:#F4DDA6;
+  --gold-2:#CFA661;
+  --gold-3:#8E6A32;
+  --ice:#9AD3F7;
+  --ice-2:#4A9BD8;
+  --ember:#FF9B5E;
+  --line:rgba(244,221,166,.38);
+  --f-brand:'Marcellus',Georgia,'Times New Roman',serif;
+  --f-serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --f-sans:'Manrope','Segoe UI',system-ui,-apple-system,Arial,sans-serif;
   --f-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   color-scheme:dark;
 }
-html,body{height:100%;margin:0;overflow:hidden;background:var(--ink);color:var(--sand);font-family:var(--f-body)}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--f-sans)}
 *{box-sizing:border-box}
-#gl{position:fixed;inset:0;width:100%;height:100%;display:block;transition:filter .35s ease}
-#gl.whoosh{filter:blur(7px) brightness(1.25) saturate(1.2)}
-.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 55%,transparent 55%,rgba(3,8,15,.55) 100%)}
-.grain{position:fixed;inset:-50%;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1s steps(4) infinite}
-@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-1%)}100%{transform:translate(0,0)}}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block}
+.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 120% 90% at 50% 50%,transparent 58%,rgba(2,4,8,.62) 100%)}
 
-/* labels projected from the 3D model */
+/* 3D callouts: a dot, a hairline, words. No boxes. */
 #labels{position:fixed;inset:0;pointer-events:none}
-.lbl3d{position:absolute;left:0;top:0;display:flex;align-items:center;gap:10px;opacity:0;white-space:nowrap;font-family:var(--f-mono);font-size:13px;letter-spacing:.06em;color:var(--sand)}
-.lbl3d i{width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(217,181,119,.25),0 0 18px var(--gold);flex:none}
-.lbl3d b{display:block;width:46px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
-.lbl3d span{background:rgba(5,12,22,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-line);padding:8px 12px;border-radius:10px}
+.lbl3d{position:absolute;left:0;top:0;display:flex;align-items:center;gap:0;opacity:0;white-space:nowrap;will-change:transform}
+.lbl3d i{position:relative;width:9px;height:9px;border-radius:50%;background:var(--gold-1);box-shadow:0 0 14px 2px rgba(244,221,166,.8);flex:none}
+.lbl3d i::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(244,221,166,.6);animation:ping 2.6s ease-out infinite}
+@keyframes ping{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.8);opacity:0}}
+.lbl3d b{display:block;width:64px;height:1px;background:linear-gradient(90deg,var(--gold-1),rgba(244,221,166,.15));margin:0 12px 0 6px}
+.lbl3d span{font-family:var(--f-mono);font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 18px rgba(0,0,0,.7)}
+.lbl3d span em{display:block;font-style:normal;color:var(--gold-1);font-size:12px;letter-spacing:.2em;margin-bottom:4px}
 
 /* stage */
 #stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0}
-.slide{position:absolute;inset:0;padding:110px 120px;visibility:hidden;display:flex;flex-direction:column}
+.slide{position:absolute;inset:0;visibility:hidden}
 .slide.active{visibility:visible}
-.scrim-l::before,.scrim-r::before,.scrim-b::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none}
-.scrim-l::before{background:linear-gradient(90deg,rgba(4,10,19,.86) 0%,rgba(4,10,19,.55) 38%,transparent 62%)}
-.scrim-r::before{background:linear-gradient(270deg,rgba(4,10,19,.86) 0%,rgba(4,10,19,.55) 38%,transparent 62%)}
-.scrim-b::before{background:linear-gradient(0deg,rgba(4,10,19,.9) 0%,rgba(4,10,19,.45) 38%,transparent 58%),linear-gradient(180deg,rgba(4,10,19,.82) 0%,rgba(4,10,19,.3) 34%,transparent 55%)}
+.slide::before{content:"";position:absolute;inset:0;pointer-events:none}
+.sc-l::before{background:linear-gradient(90deg,rgba(3,6,11,.82) 0%,rgba(3,6,11,.5) 34%,transparent 58%)}
+.sc-r::before{background:linear-gradient(270deg,rgba(3,6,11,.82) 0%,rgba(3,6,11,.5) 36%,transparent 60%)}
+.sc-b::before{background:linear-gradient(0deg,rgba(3,6,11,.88) 0%,rgba(3,6,11,.45) 40%,transparent 62%),linear-gradient(180deg,rgba(3,6,11,.7) 0%,transparent 30%)}
+.sc-bl::before{background:radial-gradient(ellipse 70% 80% at 0% 100%,rgba(3,6,11,.85) 0%,rgba(3,6,11,.4) 45%,transparent 70%),linear-gradient(180deg,rgba(3,6,11,.65) 0%,transparent 28%)}
+.sc-full::before{background:radial-gradient(ellipse 90% 80% at 60% 45%,rgba(3,6,11,.5),rgba(3,6,11,.82))}
+.abs{position:absolute}
 
-.eyebrow{font-family:var(--f-mono);font-size:20px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:16px;margin:0 0 26px}
-.eyebrow::before{content:"";width:46px;height:1px;background:currentColor}
-h1,h2,h3{font-family:var(--f-display);font-weight:600;margin:0;line-height:.98;letter-spacing:-.01em}
-h2{font-size:104px;max-width:1300px}
-h2 em,h1 em{font-style:italic;font-weight:500;color:var(--gold)}
-h3{font-size:44px;line-height:1.05}
-p{margin:0;font-size:28px;line-height:1.45;color:var(--mist)}
-.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.1em;margin-bottom:-.1em}
+/* type system */
+.kick{font-family:var(--f-mono);font-size:17px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-1);display:flex;align-items:center;gap:18px;margin:0}
+.kick b{font-weight:400;color:var(--dim)}
+.kick::after{content:"";width:80px;height:1px;background:linear-gradient(90deg,var(--gold-2),transparent)}
+h1,h2,h3{margin:0;font-weight:400}
+h2{font-family:var(--f-brand);font-size:86px;line-height:1.02;letter-spacing:.005em;color:var(--ink);text-shadow:0 2px 30px rgba(0,0,0,.35)}
+h2 em,.ital{font-family:var(--f-serif);font-style:italic;font-weight:500;color:var(--gold-1);letter-spacing:0}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em;margin-bottom:-.12em}
 .w>span{display:inline-block}
-.gold-text{background:linear-gradient(100deg,var(--gold-2),var(--gold) 45%,#B0874A);-webkit-background-clip:text;background-clip:text;color:transparent}
+p{margin:0}
+.body{font-size:26px;line-height:1.5;color:var(--mute)}
+.body b{color:var(--ink);font-weight:600}
+.gold{background:linear-gradient(100deg,#FFF0C8 0%,var(--gold-1) 18%,var(--gold-2) 46%,#E9C98A 62%,var(--gold-3) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ice{background:linear-gradient(100deg,#EAF7FF,var(--ice) 40%,var(--ice-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.outline{color:transparent;-webkit-text-stroke:1.5px var(--gold-2)}
+.num{font-family:var(--f-serif);font-weight:300;font-variant-numeric:lining-nums tabular-nums;line-height:.9}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border:1px solid var(--glass-line);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
-.src{position:absolute;left:120px;right:120px;bottom:56px;font-size:19px;color:#8C9CAD;line-height:1.4}
+.hair{height:1px;background:linear-gradient(90deg,var(--gold-2),rgba(207,166,97,.1))}
+.src{position:absolute;left:120px;right:120px;bottom:52px;font-size:17px;line-height:1.45;color:var(--dim);letter-spacing:.01em}
+.src::before{content:"";display:block;width:40px;height:1px;background:var(--dim);margin-bottom:12px}
+.cap{font-family:var(--f-mono);font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
 
-/* cover */
-.cover h1{font-size:210px;line-height:.82;letter-spacing:-.02em;margin-top:150px}
-.cover .lead{font-size:36px;color:var(--sand);max-width:820px;margin-top:40px;line-height:1.35}
-.cover .lead em{font-family:var(--f-display);font-size:1.25em;color:var(--gold)}
-.cover .meta{margin-top:auto;display:flex;gap:60px;align-items:flex-end}
-.cover .meta div{font-size:22px;color:var(--mist)}
-.cover .meta b{display:block;font-family:var(--f-mono);font-weight:400;font-size:16px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
-.hint{position:absolute;right:120px;bottom:118px;font-family:var(--f-mono);font-size:18px;letter-spacing:.2em;color:var(--mist);text-transform:uppercase;display:flex;align-items:center;gap:16px}
-.hint kbd{font-family:inherit;border:1px solid var(--glass-line);border-radius:10px;padding:8px 14px;background:var(--glass)}
+/* 01 cover */
+.s-cover .mark{position:absolute;left:120px;top:150px;width:230px;filter:drop-shadow(0 10px 40px rgba(0,0,0,.5))}
+.s-cover .word{position:absolute;left:118px;top:430px;width:900px}
+.s-cover .tag{position:absolute;left:122px;top:560px;font-family:var(--f-serif);font-style:italic;font-size:50px;line-height:1.2;color:var(--ink);max-width:880px}
+.s-cover .tag span{color:var(--gold-1)}
+.s-cover .credits{position:absolute;left:122px;bottom:120px;display:flex;align-items:center;gap:22px;font-family:var(--f-mono);font-size:16px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+.s-cover .credits i{width:6px;height:6px;transform:rotate(45deg);background:var(--gold-2);display:block}
+.s-cover .fine{position:absolute;left:122px;bottom:72px;font-size:15px;color:var(--dim);letter-spacing:.04em}
+.s-cover .hint{position:absolute;right:120px;bottom:120px;font-family:var(--f-mono);font-size:15px;letter-spacing:.3em;color:var(--mute);text-transform:uppercase;display:flex;align-items:center;gap:16px}
+.s-cover .hint::before{content:"";width:60px;height:1px;background:var(--gold-2)}
 
-/* cards */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:auto;margin-bottom:60px}
-.card{padding:42px}
-.card .k{font-family:var(--f-mono);font-size:18px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
-.card .big{font-family:var(--f-display);font-size:84px;font-weight:600;line-height:1;margin:22px 0 16px}
-.card h3{margin:18px 0 14px}
-.card p{font-size:25px}
+/* 02 opportunity */
+.s-opp h2{position:absolute;left:120px;top:110px;width:1200px}
+.trio{position:absolute;left:120px;right:120px;bottom:150px;display:grid;grid-template-columns:repeat(3,1fr)}
+.trio>div{padding:0 50px;border-left:1px solid var(--line)}
+.trio>div:first-child{padding-left:0;border-left:none}
+.trio .big{font-family:var(--f-serif);font-weight:300;font-size:110px;line-height:.95;margin:22px 0 22px;letter-spacing:-.01em}
+.trio .big small{font-size:.42em;font-style:italic;color:var(--mute)}
+.trio p{font-size:24px;line-height:1.5;color:var(--mute);max-width:460px}
 
-/* experience */
-.xp{display:grid;grid-template-columns:800px 1fr;height:100%}
-.xp ul{list-style:none;margin:46px 0 0;padding:0;display:grid;gap:0}
-.xp li{display:grid;grid-template-columns:70px 1fr;align-items:baseline;font-size:29px;color:var(--sand);padding:17px 0;border-bottom:1px solid rgba(255,255,255,.12)}
-.xp li b{font-family:var(--f-mono);font-weight:400;font-size:17px;color:var(--gold);letter-spacing:.1em}
-.xp .side{display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;gap:24px}
-.bignum{font-family:var(--f-display);font-weight:600;font-size:280px;line-height:.8;letter-spacing:-.03em}
-.pill{font-family:var(--f-mono);font-size:19px;letter-spacing:.14em;text-transform:uppercase;padding:14px 22px;border-radius:999px;border:1px solid var(--glass-line);background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--sand)}
+/* 03 experience: an itinerary drawn as a path */
+.s-xp h2{position:absolute;left:120px;top:110px}
+.s-xp svg.route{position:absolute;left:100px;top:290px;width:120px;height:600px;overflow:visible}
+.route path{fill:none;stroke:url(#gGold);stroke-width:2}
+.route .dot{fill:var(--bg);stroke:var(--gold-1);stroke-width:2}
+.stop{position:absolute;width:560px}
+.stop .n{font-family:var(--f-mono);font-size:14px;letter-spacing:.24em;color:var(--gold-1)}
+.stop p{font-size:27px;line-height:1.3;color:var(--ink);margin-top:6px}
+.s-xp .dur{position:absolute;right:120px;top:60px;text-align:right}
+.s-xp .dur .num{font-size:330px;letter-spacing:-.04em}
+.s-xp .dur .cap{display:block;margin-top:8px}
 
-/* day */
-.day-head{display:flex;justify-content:space-between;align-items:flex-start}
-.clock{font-family:var(--f-mono);font-size:150px;font-weight:500;letter-spacing:-.04em;line-height:1;color:var(--sand);text-shadow:0 0 60px rgba(255,170,100,.35)}
-.timeline{margin-top:auto;margin-bottom:70px;position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:24px;padding-top:50px}
-.timeline .rail{position:absolute;left:0;right:0;top:0;height:3px;background:rgba(255,255,255,.18);border-radius:3px}
-.timeline .rail i{position:absolute;inset:0;background:linear-gradient(90deg,var(--sea),var(--gold),var(--ember));transform-origin:left;border-radius:3px}
-.tstep{position:relative;padding:30px;transition:border-color .4s,background-color .4s,transform .4s}
-.tstep::before{content:"";position:absolute;left:30px;top:-61px;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid var(--gold);transition:background-color .4s,box-shadow .4s}
-.tstep .t{font-family:var(--f-mono);font-size:19px;color:var(--gold)}
-.tstep h3{font-size:42px;margin:12px 0 10px}
-.tstep p{font-size:22px}
-.tstep.on{border-color:rgba(255,160,90,.7);background:rgba(60,30,18,.5);transform:translateY(-10px)}
-.tstep.on::before{background:var(--ember);box-shadow:0 0 24px var(--ember)}
+/* 04/06 interiors: one headline, the room does the talking */
+.s-room h2{position:absolute;left:120px;bottom:210px;width:900px}
+.s-room .aside{position:absolute;left:122px;bottom:128px;display:flex;gap:28px;align-items:center;font-family:var(--f-mono);font-size:16px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+.s-room .aside i{width:6px;height:6px;transform:rotate(45deg);background:var(--gold-2);display:block}
+.s-room .kick{position:absolute;left:120px;top:110px}
 
-/* platform */
-.plat{display:grid;grid-template-columns:1fr 600px;height:100%;gap:60px}
-.plat .panel{align-self:end;padding:40px;display:flex;flex-direction:column;gap:30px;margin-bottom:40px}
-.meter .row{display:flex;justify-content:space-between;align-items:baseline;font-size:21px;color:var(--mist);margin-bottom:12px}
-.meter .row b{font-family:var(--f-mono);font-weight:500;color:var(--sand);font-size:36px}
-.meter .bar{height:14px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
-.meter .bar i{display:block;height:100%;border-radius:99px;transform-origin:left}
-.need .bar i{width:88.7%;background:linear-gradient(90deg,var(--gold),var(--ember))}
-.have .bar i{width:100%;background:linear-gradient(90deg,var(--sea),#A8F1E9)}
-.specs{display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;border-top:1px solid var(--glass-line);padding-top:26px}
-.specs div{font-size:21px;color:var(--sand);line-height:1.35}
-.specs small{display:block;font-family:var(--f-mono);font-size:14px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+/* 05 view: letterbox film frame */
+.lb{position:absolute;left:0;right:0;height:120px;background:#000;transform-origin:center}
+.lb.t{top:0}.lb.b{bottom:0}
+.s-view .sub{position:absolute;left:0;right:0;bottom:170px;text-align:center}
+.s-view .sub p{font-family:var(--f-serif);font-style:italic;font-size:64px;line-height:1.1;color:var(--ink);text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.s-view .sub .cap{margin-top:22px;display:block;color:var(--gold-1)}
+.s-view .tc{position:absolute;top:150px;right:130px;font-family:var(--f-mono);font-size:15px;letter-spacing:.2em;color:var(--mute)}
+.s-view .tc::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#ff4a3d;margin-right:12px;vertical-align:1px;animation:rec 1.4s steps(2) infinite}
+@keyframes rec{50%{opacity:.2}}
 
-/* market */
-.mk{display:grid;grid-template-columns:1fr 1020px;gap:40px;height:100%}
-.mk .panel{padding:40px 50px}
-.rb{display:grid;grid-template-columns:330px 1fr;gap:26px;align-items:center;padding:14px 0}
-.rb .n{font-size:24px;color:var(--sand);line-height:1.25}
-.rb .n small{display:block;font-family:var(--f-mono);font-size:16px;color:var(--mist);margin-top:4px}
-.rb .tr{position:relative;height:46px;background:rgba(255,255,255,.06);border-radius:10px}
-.rb .r{position:absolute;top:0;bottom:0;border-radius:10px;background:linear-gradient(90deg,rgba(185,198,211,.35),rgba(185,198,211,.6));transform-origin:left}
-.rb.us .n{font-family:var(--f-display);font-size:36px;font-weight:600}
-.rb.us .r{background:linear-gradient(90deg,var(--gold),var(--ember));box-shadow:0 0 40px rgba(255,138,76,.6)}
-.axis{display:grid;grid-template-columns:330px 1fr;gap:26px;font-family:var(--f-mono);font-size:15px;color:var(--mist)}
-.axis .tk{position:relative;height:20px}
-.axis .tk span{position:absolute;transform:translateX(-50%)}
-.axis .tk span:first-child{transform:none}
-.axis .tk span:last-child{transform:translateX(-100%)}
-.chips{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
-.chips .pill{font-size:16px}
+/* 07 plunge: heat / cold */
+.s-plunge .hc{position:absolute;left:110px;top:170px;font-family:var(--f-brand);font-size:230px;line-height:.86;letter-spacing:.02em}
+.s-plunge .hc .heat{background:linear-gradient(100deg,#FFE0B8,var(--ember) 45%,#C94A26);-webkit-background-clip:text;background-clip:text;color:transparent;display:block}
+.s-plunge .hc .cold{display:block}
+.s-plunge .hc .slash{display:block;width:520px;height:1px;margin:26px 0 30px;background:linear-gradient(90deg,var(--ember),var(--ice))}
+.s-plunge .line{position:absolute;left:122px;bottom:130px;font-family:var(--f-serif);font-style:italic;font-size:46px;color:var(--ink)}
 
-/* stats */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:auto;margin-bottom:70px}
-.stat{padding:38px 36px}
-.stat .n{font-family:var(--f-display);font-weight:600;font-size:110px;line-height:.9;white-space:nowrap;font-variant-numeric:tabular-nums}
-.stat .l{font-size:22px;margin-top:20px;color:var(--mist);line-height:1.4}
+/* 08 day: the sun's arc */
+.s-day h2{position:absolute;left:120px;top:110px;font-size:74px;width:1000px}
+.s-day .clock{position:absolute;right:120px;top:96px;font-size:190px;letter-spacing:-.02em;color:var(--ink)}
+.s-day svg.arc{position:absolute;left:120px;top:330px;width:1680px;height:300px;overflow:visible}
+.arc .path{fill:none;stroke:rgba(244,221,166,.35);stroke-width:1.5;stroke-dasharray:3 9}
+.arc .done{fill:none;stroke:url(#gSun);stroke-width:2.5}
+.arc .sun{fill:#FFE2B0;filter:url(#glow)}
+.steps5{position:absolute;left:120px;right:120px;bottom:140px;display:grid;grid-template-columns:repeat(5,1fr)}
+.steps5>div{padding:0 26px;border-left:1px solid rgba(255,255,255,.14);transition:opacity .5s}
+.steps5>div:first-child{padding-left:0;border-left:none}
+.steps5 .t{font-family:var(--f-mono);font-size:16px;letter-spacing:.12em;color:var(--dim);transition:color .5s}
+.steps5 h3{font-family:var(--f-brand);font-size:40px;margin:10px 0 10px;color:var(--mute);transition:color .5s}
+.steps5 p{font-size:20px;line-height:1.45;color:var(--dim);transition:color .5s}
+.steps5 .on .t{color:var(--gold-1)}.steps5 .on h3{color:var(--ink)}.steps5 .on p{color:var(--mute)}
 
-/* financials */
-.fin{display:grid;grid-template-columns:520px 1fr;gap:44px;margin-top:auto;margin-bottom:80px}
-.fin .col{display:flex;flex-direction:column;gap:20px}
-.fin .stat{padding:22px 30px}
-.fin .stat .n{font-size:76px}
-.fin .stat .l{margin-top:10px;font-size:20px}
-.chart{padding:44px 48px}
-.chart .ttl{font-family:var(--f-mono);font-size:17px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:26px}
-.sc{display:grid;grid-template-columns:270px 1fr;gap:24px;align-items:center;padding:13px 0}
-.sc .nm{font-size:23px;color:var(--mist)}
-.sc.base .nm{color:var(--sand);font-weight:600}
-.sc .bw{display:flex;align-items:center;gap:18px}
-.sc .b{height:44px;border-radius:8px;background:#5D7186;transform-origin:left;flex:none}
-.sc.base .b{background:linear-gradient(90deg,#fff,var(--sand));box-shadow:0 0 30px rgba(255,255,255,.3)}
-.sc.up .b{background:linear-gradient(90deg,var(--gold),var(--gold-2))}
-.sc .v{font-family:var(--f-mono);font-size:20px;color:var(--sand);white-space:nowrap}
+/* 09 platform: layer index */
+.s-layers h2{position:absolute;left:120px;top:110px;width:760px}
+.layers{position:absolute;right:120px;top:190px;width:640px}
+.layers>div{display:grid;grid-template-columns:150px 1fr;align-items:center;padding:26px 0;border-top:1px solid var(--line)}
+.layers>div:last-child{border-bottom:1px solid var(--line)}
+.layers .num{font-size:110px;color:transparent;-webkit-text-stroke:1.2px var(--gold-2)}
+.layers h3{font-family:var(--f-brand);font-size:36px;color:var(--ink)}
+.layers p{font-size:20px;color:var(--mute);margin-top:6px}
+.s-layers .meta{position:absolute;left:122px;bottom:130px;display:flex;gap:60px}
+.s-layers .meta div{font-size:22px;color:var(--ink)}
+.s-layers .meta .cap{display:block;margin-bottom:8px}
 
-/* invest */
-.inv{display:grid;grid-template-columns:1fr 760px;gap:50px;margin-top:auto;margin-bottom:70px}
-.funds{padding:44px}
-.stack{display:flex;height:70px;border-radius:14px;overflow:hidden;margin:30px 0 34px}
-.stack i{display:block;height:100%;transform-origin:left}
-.legend{display:grid;gap:14px}
-.legend div{display:grid;grid-template-columns:22px 1fr auto;gap:16px;align-items:center;font-size:23px;color:var(--sand)}
-.legend s{width:18px;height:18px;border-radius:5px;text-decoration:none;display:block}
-.legend .mono{font-size:22px}
-.tranches{display:grid;gap:24px}
-.tranche{padding:34px 38px}
-.tranche .k{font-family:var(--f-mono);font-size:17px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
-.tranche .big{font-family:var(--f-display);font-size:92px;font-weight:600;line-height:1;margin:10px 0}
-.tranche p{font-size:23px}
-.tranche.gated{border-color:rgba(217,181,119,.8);background:linear-gradient(150deg,rgba(217,181,119,.22),rgba(8,20,34,.55))}
+/* 10 hull: blueprint */
+.s-blue::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(154,211,247,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(154,211,247,.07) 1px,transparent 1px),linear-gradient(rgba(154,211,247,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(154,211,247,.035) 1px,transparent 1px);background-size:160px 160px,160px 160px,32px 32px,32px 32px;mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,#000 40%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 50%,#000 40%,transparent 100%)}
+.corner{position:absolute;width:40px;height:40px;border-color:rgba(154,211,247,.6);border-style:solid;border-width:0}
+.corner.tl{left:60px;top:60px;border-left-width:1px;border-top-width:1px}.corner.tr{right:60px;top:60px;border-right-width:1px;border-top-width:1px}
+.corner.bl{left:60px;bottom:60px;border-left-width:1px;border-bottom-width:1px}.corner.br{right:60px;bottom:60px;border-right-width:1px;border-bottom-width:1px}
+.s-blue .kick{color:var(--ice)}.s-blue .kick::after{background:linear-gradient(90deg,var(--ice-2),transparent)}
+.s-blue h2{position:absolute;left:120px;top:150px;width:900px;font-size:78px}
+.s-blue h2 em{color:var(--ice)}
+.sheet{position:absolute;left:120px;bottom:130px;width:700px;font-family:var(--f-mono);font-size:19px;letter-spacing:.04em}
+.sheet div{display:flex;align-items:baseline;gap:14px;padding:9px 0;color:var(--ink)}
+.sheet div span:first-child{color:var(--ice);text-transform:uppercase;letter-spacing:.2em;font-size:14px}
+.sheet div i{flex:1;border-bottom:1px dotted rgba(154,211,247,.45);transform:translateY(-4px)}
+.flowkey{position:absolute;right:120px;bottom:130px;display:grid;gap:12px;font-family:var(--f-mono);font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.flowkey span{display:flex;align-items:center;gap:14px}
+.flowkey s{width:46px;height:3px;border-radius:3px;display:block;text-decoration:none}
+.dim-line{position:absolute;left:120px;top:96px;font-family:var(--f-mono);font-size:13px;letter-spacing:.2em;color:var(--ice);opacity:.8}
 
-/* roadmap */
-.road{margin-top:auto;margin-bottom:60px;position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:22px;padding-top:56px}
-.road .rail{position:absolute;left:0;right:0;top:0;height:3px;background:rgba(255,255,255,.2)}
-.road .rail i{position:absolute;inset:0;background:linear-gradient(90deg,var(--sea),var(--gold),var(--ember));transform-origin:left}
-.ms{padding:30px;position:relative}
-.ms::before{content:"";position:absolute;left:30px;top:-67px;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid var(--gold)}
-.ms .t{font-family:var(--f-mono);font-size:18px;color:var(--gold);letter-spacing:.1em}
-.ms h3{font-size:44px;margin:12px 0 10px}
-.ms p{font-size:21px}
-.ms.gate{background:linear-gradient(160deg,var(--gold-2),var(--gold));border-color:transparent}
-.ms.gate::before{background:var(--gold-2);box-shadow:0 0 30px var(--gold)}
-.ms.gate .t,.ms.gate p,.ms.gate h3{color:#1A2333}
+/* 11 solar: energy ring */
+.s-solar .no{position:absolute;left:120px;top:150px;font-family:var(--f-brand);font-size:96px;line-height:1.04}
+.s-solar .no span{display:block}
+.s-solar .no span:nth-child(3){color:var(--gold-1)}
+.s-solar .body{position:absolute;left:122px;top:520px;width:640px}
+.s-solar .tags{position:absolute;left:122px;bottom:130px;font-family:var(--f-mono);font-size:15px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute);display:flex;gap:22px;align-items:center}
+.s-solar .tags i{width:6px;height:6px;transform:rotate(45deg);background:var(--gold-2);display:block}
+.ring{position:absolute;right:150px;top:200px;width:620px;height:620px}
+.ring svg{width:100%;height:100%;overflow:visible;transform:rotate(-90deg)}
+.ring .base{fill:none;stroke:rgba(255,255,255,.08);stroke-width:2}
+.ring .have{fill:none;stroke:url(#gIce);stroke-width:4;stroke-linecap:round}
+.ring .need{fill:none;stroke:url(#gGold);stroke-width:14;stroke-linecap:round}
+.ring .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring .c .num{font-size:170px}
+.ring .c .of{font-family:var(--f-serif);font-style:italic;font-size:40px;color:var(--ice);margin-top:-6px}
+.ring .c .cap{margin-top:16px}
 
-/* risks */
-.risks{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:auto;margin-bottom:20px}
-.risk{padding:30px 34px}
-.risk h3{font-size:36px;color:var(--sand)}
-.risk p{font-size:21px;margin-top:14px;padding-top:14px;border-top:1px solid var(--glass-line)}
-.risk p b{color:var(--sea);font-family:var(--f-mono);font-weight:400;font-size:15px;letter-spacing:.16em;display:block;margin-bottom:6px;text-transform:uppercase}
+/* 12 safety */
+.s-safe h2{position:absolute;left:120px;top:110px;width:1300px;font-size:78px}
+.icons3{position:absolute;left:120px;right:120px;bottom:150px;display:grid;grid-template-columns:repeat(3,1fr)}
+.icons3>div{padding:0 50px;border-left:1px solid var(--line)}
+.icons3>div:first-child{padding-left:0;border-left:none}
+.icons3 svg{width:84px;height:84px;stroke:var(--gold-1);fill:none;stroke-width:1.5}
+.icons3 h3{font-family:var(--f-brand);font-size:38px;margin:22px 0 14px;color:var(--ink)}
+.icons3 p{font-size:21px;line-height:1.5;color:var(--mute)}
 
-/* team */
-.team{display:grid;grid-template-columns:900px 1fr;height:100%}
-.team .txt{display:flex;flex-direction:column;gap:26px;margin-top:44px}
-.team .txt p b{color:var(--sand)}
-.contact{margin-top:auto;padding:34px 40px;display:flex;gap:50px;align-items:center;align-self:flex-start}
-.contact small{display:block;font-family:var(--f-mono);font-size:15px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:6px}
-.contact span{font-family:var(--f-mono);font-size:27px;color:var(--sand);user-select:all}
-.thanks{align-self:start;justify-self:end;margin-top:40px;font-family:var(--f-display);font-style:italic;font-size:150px;line-height:.85;text-align:right}
+/* 13 market: price spectrum */
+.s-mkt h2{position:absolute;right:120px;top:110px;width:820px;text-align:right;font-size:72px}
+.s-mkt .kick{position:absolute;right:120px;top:70px;justify-content:flex-end}
+.spec{position:absolute;left:760px;right:120px;top:470px;height:330px}
+.spec .axis{position:absolute;left:0;right:0;bottom:40px;height:1px;background:rgba(255,255,255,.35)}
+.spec .tick{position:absolute;bottom:14px;font-family:var(--f-mono);font-size:14px;color:var(--dim);transform:translateX(-50%)}
+.spec .tick::before{content:"";position:absolute;left:50%;bottom:22px;width:1px;height:10px;background:rgba(255,255,255,.35)}
+.spec .rng{position:absolute;height:3px;border-radius:3px;background:linear-gradient(90deg,rgba(174,185,196,.5),rgba(244,239,230,.9));transform-origin:left}
+.spec .rl{position:absolute;font-size:23px;text-shadow:0 1px 10px rgba(0,0,0,.8);color:var(--ink);white-space:nowrap}
+.spec .rl small{display:block;font-family:var(--f-mono);font-size:13px;color:var(--dim);letter-spacing:.06em;margin-top:4px}
+.spec .beam{position:absolute;bottom:40px;width:2px;height:290px;background:linear-gradient(0deg,var(--gold-1),rgba(244,221,166,0));transform-origin:bottom;box-shadow:0 0 24px rgba(244,221,166,.6)}
+.spec .us{position:absolute;bottom:250px;transform:translateX(-50%);text-align:center;width:300px}
+.spec .us img{width:58px;display:block;margin:0 auto 10px}
+.spec .us b{font-family:var(--f-brand);font-weight:400;font-size:30px;letter-spacing:.1em;color:var(--gold-1)}
+.spec .us small{display:block;font-family:var(--f-mono);font-size:13px;color:var(--mute);margin-top:6px}
+.s-mkt .who{position:absolute;left:760px;right:120px;bottom:140px;font-size:21px;color:var(--mute);line-height:1.6}
+.s-mkt .who b{color:var(--ink);font-weight:600}
+
+/* 14 model: a formula */
+.s-model h2{position:absolute;left:120px;top:110px;width:1300px;font-size:74px}
+.formula{position:absolute;left:120px;right:120px;display:flex;align-items:flex-end;gap:30px;flex-wrap:nowrap}
+.formula.f1{top:430px}.formula.f2{top:690px}
+.term{display:flex;flex-direction:column}
+.term .num{font-size:128px;color:var(--ink);white-space:nowrap}
+.term .cap{margin-top:12px;white-space:nowrap}
+.op{font-family:var(--f-serif);font-weight:300;font-size:90px;color:var(--gold-2);padding-bottom:42px}
+.term.res .num{font-size:150px}
+
+/* 15 financials: beams */
+.s-fin h2{position:absolute;left:120px;top:110px;width:1300px;font-size:74px}
+.trio-v{position:absolute;left:120px;top:400px;width:460px}
+.trio-v>div{padding:20px 0;border-top:1px solid var(--line)}
+.trio-v .num{font-size:96px}
+.trio-v p{font-size:19px;color:var(--mute);margin-top:6px}
+.beams{position:absolute;left:720px;right:120px;bottom:170px;height:470px;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;border-bottom:1px solid rgba(255,255,255,.35)}
+.beams>div{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.beams .bar{width:6px;border-radius:6px 6px 0 0;background:linear-gradient(0deg,rgba(174,185,196,.25),rgba(174,185,196,.85));transform-origin:bottom}
+.beams .base .bar{width:10px;background:linear-gradient(0deg,rgba(255,255,255,.3),#fff);box-shadow:0 0 30px rgba(255,255,255,.5)}
+.beams .up .bar{background:linear-gradient(0deg,rgba(207,166,97,.25),var(--gold-1));box-shadow:0 0 26px rgba(244,221,166,.35)}
+.beams .v{font-family:var(--f-serif);font-size:44px;color:var(--ink);margin-bottom:14px}
+.beams .base .v{color:#fff;font-weight:600}
+.beams .lab{position:absolute;top:100%;margin-top:16px;text-align:center;font-size:17px;color:var(--mute);width:220px}
+.beams .lab b{display:block;font-family:var(--f-mono);font-weight:400;color:var(--gold-1);font-size:14px;letter-spacing:.14em;margin-top:6px}
+
+/* 16 invest: donut */
+.s-inv h2{position:absolute;left:120px;top:110px;width:1100px;font-size:78px}
+.donut{position:absolute;right:170px;top:250px;width:560px;height:560px}
+.donut svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.donut circle{fill:none;stroke-width:38}
+.donut .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut .c .num{font-size:140px}
+.donut .c .cap{margin-top:12px}
+.funds{position:absolute;right:780px;top:420px;width:470px;display:grid;gap:18px}
+.funds div{display:grid;grid-template-columns:14px 1fr auto;gap:16px;align-items:baseline;font-size:20px;color:var(--ink)}
+.funds s{width:10px;height:10px;border-radius:50%;display:block;text-decoration:none;transform:translateY(-2px)}
+.funds .mono{color:var(--mute);font-size:19px}
+.tranche{position:absolute;left:120px;bottom:150px;display:flex;align-items:flex-end;gap:40px}
+.tranche .t .num{font-size:110px}
+.tranche .t p{font-size:18px;color:var(--mute);max-width:330px;margin-top:8px}
+.tranche .gate{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:40px}
+.tranche .gate svg{width:42px;height:42px;stroke:var(--gold-1);fill:none;stroke-width:1.5}
+.tranche .gate .cap{color:var(--gold-1)}
+.tranche .gate i{width:2px;height:120px;background:linear-gradient(180deg,transparent,var(--gold-1),transparent)}
+
+/* 17 roadmap: a ruler */
+.s-road h2{position:absolute;left:120px;top:110px;width:1300px;font-size:78px}
+.ruler{position:absolute;left:120px;right:120px;top:560px;height:300px}
+.ruler .line{position:absolute;left:0;right:0;top:60px;height:1px;background:rgba(255,255,255,.4)}
+.ruler .m{position:absolute;top:30px;font-family:var(--f-mono);font-size:14px;color:var(--dim);transform:translateX(-50%)}
+.ruler .m::after{content:"";position:absolute;left:50%;top:24px;width:1px;height:12px;background:rgba(255,255,255,.4)}
+.ruler .seg{position:absolute;top:58px;height:5px;border-radius:5px;transform-origin:left}
+.ruler .lbl{position:absolute;top:100px}
+.ruler .lbl h3{font-family:var(--f-brand);font-size:40px;color:var(--ink)}
+.ruler .lbl p{font-size:19px;line-height:1.45;color:var(--mute);margin-top:8px;max-width:300px}
+.ruler .gate{position:absolute;top:-70px;bottom:-10px;width:2px;background:linear-gradient(180deg,transparent,var(--gold-1) 20%,var(--gold-1) 80%,transparent);box-shadow:0 0 22px rgba(244,221,166,.6);transform-origin:top}
+.ruler .gtext{position:absolute;top:-110px;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.ruler .gtext b{font-family:var(--f-brand);font-weight:400;font-size:30px;color:var(--gold-1);letter-spacing:.08em}
+
+/* 18 risks */
+.s-risk h2{position:absolute;left:120px;top:110px;width:1300px;font-size:78px}
+.risks{position:absolute;left:120px;right:120px;bottom:120px;display:grid;grid-template-columns:1fr 1fr;column-gap:90px}
+.risks>div{display:grid;grid-template-columns:80px 1fr;padding:24px 0;border-top:1px solid rgba(255,255,255,.14)}
+.risks .num{font-size:62px;color:transparent;-webkit-text-stroke:1px var(--gold-2)}
+.risks h3{font-family:var(--f-brand);font-size:30px;color:var(--ink)}
+.risks p{font-size:19px;line-height:1.45;color:var(--mute);margin-top:8px}
+.risks p::before{content:"→ ";color:var(--ice)}
+
+/* 19 team */
+.s-team .kick{position:absolute;left:120px;top:110px}
+.s-team .name{position:absolute;left:116px;top:170px;font-family:var(--f-serif);font-style:italic;font-weight:500;font-size:130px;line-height:1}
+.s-team .role{position:absolute;left:122px;top:330px;font-family:var(--f-mono);font-size:16px;letter-spacing:.26em;text-transform:uppercase;color:var(--mute)}
+.s-team .txt{position:absolute;left:122px;top:410px;width:800px;display:grid;gap:22px}
+.s-team .txt p{font-size:23px;line-height:1.5;color:var(--mute)}
+.s-team .txt b{color:var(--ink);font-weight:600}
+.s-team .contact{position:absolute;left:122px;bottom:130px;display:flex;gap:70px}
+.s-team .contact span{display:block;font-family:var(--f-mono);font-size:26px;color:var(--ink);margin-top:8px;user-select:all}
+.s-team .thanks{position:absolute;right:120px;bottom:120px;text-align:right}
+.s-team .thanks img{width:150px;display:block;margin:0 0 20px auto}
+.s-team .thanks p{font-family:var(--f-serif);font-style:italic;font-size:120px;line-height:.9}
 
 /* chrome */
-.ui{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px max(18px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));pointer-events:none;z-index:5}
+.ui{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px max(22px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(22px,env(safe-area-inset-left,0px));pointer-events:none;z-index:5}
 .ui>*{pointer-events:auto}
-.prog{flex:1;height:3px;background:rgba(255,255,255,.14);border-radius:3px;overflow:hidden;max-width:520px}
-.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--sea),var(--gold),var(--ember));transform-origin:left;transform:scaleX(0);transition:transform .9s cubic-bezier(.7,0,.2,1)}
-.ctrl{display:flex;gap:8px;align-items:center}
-.ctrl button{width:44px;height:44px;border-radius:50%;border:1px solid var(--glass-line);background:rgba(5,12,22,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--sand);font-size:18px;cursor:pointer;display:grid;place-items:center}
-.ctrl button:hover{border-color:var(--gold)}
-.ctrl button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.count{font-family:var(--f-mono);font-size:13px;letter-spacing:.16em;color:var(--mist);min-width:76px;text-align:center}
-.secname{font-family:var(--f-mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mist)}
+.prog{flex:1;height:1px;background:rgba(255,255,255,.16);max-width:560px;position:relative}
+.prog i{position:absolute;left:0;top:-1px;height:3px;width:100%;background:linear-gradient(90deg,var(--ice-2),var(--gold-1));transform-origin:left;transform:scaleX(0);transition:transform .9s cubic-bezier(.7,0,.2,1)}
+.ctrl{display:flex;gap:10px;align-items:center}
+.ctrl button{width:42px;height:42px;border-radius:50%;border:1px solid rgba(244,221,166,.35);background:rgba(3,6,11,.6);color:var(--ink);font-size:16px;cursor:pointer;display:grid;place-items:center}
+.ctrl button:hover{border-color:var(--gold-1)}
+.ctrl button:focus-visible{outline:2px solid var(--gold-1);outline-offset:2px}
+.count{font-family:var(--f-mono);font-size:13px;letter-spacing:.18em;color:var(--mute);min-width:76px;text-align:center}
+.secname{font-family:var(--f-mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
 @media (max-width:640px){.secname{display:none}}
 
 /* intro */
-.intro{position:fixed;inset:0;z-index:20;background:var(--ink);display:grid;place-items:center}
-.intro .word{font-family:var(--f-display);font-weight:600;font-size:clamp(40px,9vw,140px);letter-spacing:.3em;padding-left:.3em}
-.intro .word span{display:inline-block}
-.intro .sub{font-family:var(--f-mono);font-size:12px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);text-align:center;margin-top:18px}
-
-@media (prefers-reduced-motion:reduce){.grain{animation:none}}
-
-/* interior + engineering slides */
-.inside{display:grid;grid-template-columns:760px 1fr;height:100%}
-.inside .col{display:flex;flex-direction:column}
-.facts{margin-top:auto;display:grid;gap:0;padding:12px 34px}
-.facts div{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--glass-line);font-size:24px;color:var(--sand);line-height:1.35}
-.facts div:last-child{border-bottom:none}
-.facts b{font-family:var(--f-mono);font-weight:400;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
-.lede{font-size:30px;color:var(--sand);max-width:700px;margin-top:30px;line-height:1.4}
-.scrim-bl::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 0% 100%,rgba(4,10,19,.9) 0%,rgba(4,10,19,.55) 35%,transparent 65%),linear-gradient(180deg,rgba(4,10,19,.75) 0%,transparent 30%)}
-.flowkey{display:flex;gap:26px;margin-top:22px;font-family:var(--f-mono);font-size:16px;letter-spacing:.12em;text-transform:uppercase;color:var(--mist)}
-.flowkey span{display:flex;align-items:center;gap:10px}
-.flowkey i{width:34px;height:4px;border-radius:4px;display:block}
-.eco{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}
-.eco .pill{font-size:17px}
-.lbl3d{font-size:14px}
+.intro{position:fixed;inset:0;z-index:20;background:var(--bg);display:grid;place-items:center}
+.intro .in{display:flex;flex-direction:column;align-items:center;gap:34px}
+.intro img.m{width:min(180px,30vw)}
+.intro img.wd{width:min(620px,70vw)}
+.intro .sub{font-family:var(--f-mono);font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold-1)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){.lbl3d i::after,.s-view .tc::before{animation:none}}
 </style>
 
 <canvas id="gl" aria-hidden="true"></canvas>
 <div class="vignette" aria-hidden="true"></div>
 <div id="labels" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gGold" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#8E6A32"/><stop offset=".45" stop-color="#F4DDA6"/><stop offset="1" stop-color="#CFA661"/></linearGradient>
+    <linearGradient id="gIce" x1="0" x2="1"><stop offset="0" stop-color="#4A9BD8"/><stop offset="1" stop-color="#D8F0FF"/></linearGradient>
+    <linearGradient id="gSun" x1="0" x2="1"><stop offset="0" stop-color="#9AD3F7"/><stop offset=".55" stop-color="#F4DDA6"/><stop offset="1" stop-color="#FF9B5E"/></linearGradient>
+    <filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+</svg>
+
 <main id="stage" aria-live="polite">
 
-  <section class="slide cover scrim-l" data-shot="cover" data-sec="The idea">
-    <p class="eyebrow a">Investor presentation · 2026</p>
-    <h1 aria-label="AQUAVAPOR" class="split-ch">AQUAVAPOR</h1>
-    <p class="lead a">A private floating sauna on the Dubai coast. Sauna, cold plunge and open sea, <em>for one group at a time.</em></p>
-    <div class="meta a">
-      <div><b>Founder</b>Dmitrii Iurov</div>
-      <div><b>Location</b>Anchorage off JBR, Dubai</div>
-      <div><b>Note</b>Figures are projections, not guarantees</div>
-    </div>
-    <div class="hint a"><kbd>→</kbd> next slide</div>
+  <!-- 01 -->
+  <section class="slide s-cover sc-l" data-shot="cover" data-sec="The idea">
+    <h1 class="sr">AQUAVAPOR</h1>
+    <img class="mark a" src="assets/logo-mark.png" alt="">
+    <img class="word a" src="assets/logo-word.png" alt="AQUAVAPOR">
+    <p class="tag a">A private floating sauna <span>on the Dubai coast.</span> Sauna, cold plunge and open sea, for one group at a time.</p>
+    <div class="credits a"><span>Investor presentation</span><i></i><span>2026</span><i></i><span>Dmitrii Iurov, founder</span><i></i><span>Anchorage off JBR</span></div>
+    <p class="fine a">Figures are projections, not guarantees</p>
+    <div class="hint a">Next</div>
   </section>
 
-  <section class="slide scrim-b" data-shot="opportunity" data-sec="The idea">
-    <p class="eyebrow a">The opportunity</p>
+  <!-- 02 -->
+  <section class="slide s-opp sc-b" data-shot="opportunity" data-sec="The idea">
+    <p class="kick a abs" style="left:120px;top:70px">The opportunity</p>
     <h2 class="split">Dubai loves saunas and yachts. <em>Nobody offers both.</em></h2>
-    <div class="cards">
-      <div class="card glass a"><span class="k">On land</span><div class="big gold-text">AED 200–250</div><p>per person per hour at sauna and ice-bath studios, in shared spaces. Sauna culture is growing.</p></div>
-      <div class="card glass a"><span class="k">At sea</span><h3>Yachts lack wellness</h3><p>Charters sell the sea and privacy, but offer no sauna, cold plunge or spa host.</p></div>
-      <div class="card glass a"><span class="k">For VIP guests</span><h3>Privacy is scarce</h3><p>Hotel spas are public. High-profile guests want a space for their group alone.</p></div>
+    <div class="trio">
+      <div class="a"><p class="cap">On land</p><div class="big gold">AED 200–250</div><p>per person per hour at sauna and ice-bath studios, in shared spaces. Sauna culture is growing.</p></div>
+      <div class="a"><p class="cap">At sea</p><div class="big">No <i class="ital">sauna</i></div><p>Yacht charters sell the sea and privacy, but offer no sauna, cold plunge or spa host.</p></div>
+      <div class="a"><p class="cap">For VIP guests</p><div class="big">No <i class="ital">privacy</i></div><p>Hotel spas are public. High-profile guests want a space for their group alone.</p></div>
     </div>
-    <p class="src a">Sources: Fresha sauna listings, Dubai (Nov 2026); GetMyBoat Dubai charter prices. Our desk search found no floating sauna operating in Dubai (Nov 2026).</p>
+    <p class="src a">Fresha sauna listings, Dubai (Nov 2026); GetMyBoat Dubai charter prices. Our desk search found no floating sauna operating in Dubai (Nov 2026).</p>
   </section>
 
-  <section class="slide scrim-l" data-shot="experience" data-sec="The experience">
-    <div class="xp">
-      <div>
-        <p class="eyebrow a">The experience</p>
-        <h2 class="split" style="font-size:96px">A private session <em>at sea</em></h2>
-        <ul>
-          <li class="a"><b>01</b>Boat transfer from the Dubai Marina pier</li>
-          <li class="a"><b>02</b>Finnish sauna with a panoramic skyline view</li>
-          <li class="a"><b>03</b>Cold plunge for contrast rounds</li>
-          <li class="a"><b>04</b>Shaded lounge deck, air-conditioned rest area</li>
-          <li class="a"><b>05</b>Trained host on board for safety and service</li>
-          <li class="a"><b>06</b>Add-ons: spa master ritual, healthy food and drinks</li>
-        </ul>
-      </div>
-      <div class="side">
-        <div class="bignum gold-text a"><span data-count="2.5" data-dec="1">2.5</span>h</div>
-        <div style="display:flex;gap:12px" class="a"><span class="pill">2–6 guests</span><span class="pill">One group at a time</span></div>
-        <span class="pill a">Next: step inside →</span>
-      </div>
-    </div>
+  <!-- 03 -->
+  <section class="slide s-xp sc-l" data-shot="experience" data-sec="The experience">
+    <p class="kick a abs" style="left:120px;top:70px">The experience</p>
+    <h2 class="split">A private session <em>at sea</em></h2>
+    <svg class="route a" viewBox="0 0 120 600" aria-hidden="true"><path id="routePath" data-draw pathLength="1" d="M60 0 C 10 110, 110 200, 60 300 S 10 490, 60 600"/></svg>
+    <div class="stop a" data-k="0"><span class="n">01 · Pier</span><p>Boat transfer from the Dubai Marina pier</p></div>
+    <div class="stop a" data-k="1"><span class="n">02 · Heat</span><p>Finnish sauna with a panoramic skyline view</p></div>
+    <div class="stop a" data-k="2"><span class="n">03 · Cold</span><p>Cold plunge for contrast rounds</p></div>
+    <div class="stop a" data-k="3"><span class="n">04 · Rest</span><p>Shaded deck, air-conditioned lounge</p></div>
+    <div class="stop a" data-k="4"><span class="n">05 · Care</span><p>A trained host on board throughout</p></div>
+    <div class="stop a" data-k="5"><span class="n">06 · Extras</span><p>Spa master ritual, healthy food and drinks</p></div>
+    <div class="dur a"><div class="num gold"><span data-count="2.5" data-dec="1">2.5</span>h</div><span class="cap">2–6 guests · one group at a time</span></div>
   </section>
 
-  <section class="slide scrim-bl" data-shot="sauna" data-sec="Inside the sauna">
-    <div class="inside">
-      <div class="col">
-        <p class="eyebrow a">Inside the sauna</p>
-        <h2 class="split" style="font-size:92px">Finnish heat, <em>skyline in front of you</em></h2>
-        <div class="facts glass a">
-          <div><b>Heater</b>Electric, 15 kW, for a ~15 m³ room</div>
-          <div><b>Seats</b>Benches for up to 6 guests, facing a panoramic window</div>
-          <div><b>Privacy</b>Mirror-tinted glass: you see the city, the city doesn't see you</div>
-          <div><b>Add-on</b>Spa master ritual</div>
-        </div>
-      </div>
+  <!-- 04 -->
+  <section class="slide s-room sc-bl" data-shot="sauna" data-sec="Inside the sauna">
+    <p class="kick a">Inside the sauna</p>
+    <h2 class="split">Finnish heat, <em>the skyline in front of you</em></h2>
+    <div class="aside a"><span>~15 m³ room</span><i></i><span>Up to 6 guests</span><i></i><span>Spa master ritual · add-on</span></div>
+  </section>
+
+  <!-- 05 -->
+  <section class="slide s-view" data-shot="view" data-sec="Inside the sauna">
+    <div class="lb t"></div><div class="lb b"></div>
+    <div class="tc a">TOP BENCH · SUNSET</div>
+    <div class="sub">
+      <p class="split">Sunset over Dubai, from the top bench.</p>
+      <span class="cap a">One group · 2.5 hours · heat, cold plunge, open deck</span>
     </div>
   </section>
 
-  <section class="slide scrim-bl" data-shot="view" data-sec="Inside the sauna">
-    <div class="inside">
-      <div class="col">
-        <p class="eyebrow a">The view from the top bench</p>
-        <h2 class="split" style="font-size:96px">Sunset over Dubai, <em>at 0 metres from the sea</em></h2>
-        <p class="lede a">One group, 2.5 hours. Heat in the sauna, then the cold plunge and the open deck, round after round.</p>
-      </div>
-    </div>
+  <!-- 06 -->
+  <section class="slide s-room sc-bl" data-shot="lounge" data-sec="Inside the cabin">
+    <p class="kick a">Rest area</p>
+    <h2 class="split">Cool down in an <em>air-conditioned lounge</em></h2>
+    <div class="aside a"><span>Host turns the cabin around in 30 minutes</span><i></i><span>Fresh linen for every group</span></div>
   </section>
 
-  <section class="slide scrim-bl" data-shot="lounge" data-sec="Inside the cabin">
-    <div class="inside">
-      <div class="col">
-        <p class="eyebrow a">Rest area</p>
-        <h2 class="split" style="font-size:92px">Cool down in an <em>air-conditioned lounge</em></h2>
-        <div class="facts glass a">
-          <div><b>Lounge</b>Sofa for the whole group, air-conditioning, sea on three sides</div>
-          <div><b>Shower</b>Rain shower between rounds, robes and fresh linen</div>
-          <div><b>Add-on</b>Healthy food and drinks served on board</div>
-          <div><b>Host</b>Turns the cabin around in 30 minutes between groups</div>
-        </div>
-      </div>
-    </div>
+  <!-- 07 -->
+  <section class="slide s-plunge sc-l" data-shot="plunge" data-sec="On deck">
+    <p class="kick a abs" style="left:120px;top:110px">Cold plunge and deck</p>
+    <div class="hc"><span class="heat a">HEAT</span><span class="slash a"></span><span class="cold ice a">COLD</span></div>
+    <p class="line a">Contrast rounds, under open sky.</p>
   </section>
 
-  <section class="slide scrim-bl" data-shot="plunge" data-sec="On deck">
-    <div class="inside">
-      <div class="col">
-        <p class="eyebrow a">Cold plunge and deck</p>
-        <h2 class="split" style="font-size:96px">Contrast rounds <em>under open sky</em></h2>
-        <div class="facts glass a">
-          <div><b>Cold</b>Cold plunge for contrast rounds, steps from the sauna door</div>
-          <div><b>Deck</b>Shaded loungers on a teak deck behind glass balustrades</div>
-          <div><b>Safety</b>Lifebuoys, boarding ladder, host always on board</div>
-        </div>
-      </div>
+  <!-- 08 -->
+  <section class="slide s-day sc-b" data-shot="day" data-sec="Operations">
+    <p class="kick a abs" style="left:120px;top:70px">How a day works</p>
+    <h2 class="split">Our own workboat tows, shuttles and <em>stays close</em></h2>
+    <div class="clock num a" id="clock">06:30</div>
+    <svg class="arc a" viewBox="0 0 1680 300" aria-hidden="true"><path class="path" id="sunArc" d="M0 290 Q 840 -230 1680 290"/><path class="done" id="sunDone" d="M0 290 Q 840 -230 1680 290"/><circle class="sun" id="sunDot" r="12" cx="0" cy="290"/></svg>
+    <div class="steps5">
+      <div class="a"><span class="t">06:30</span><h3>Prepare</h3><p>Safety checklist, pre-heat on shore power, linen and bar stocked</p></div>
+      <div class="a"><span class="t">07:00</span><h3>Tow out</h3><p>Low-speed tow to the approved anchorage off JBR; anchor ball up</p></div>
+      <div class="a"><span class="t">08:30 · 11:30 · 14:30</span><h3>3 sessions</h3><p>Workboat swaps groups; host turns the cabin around in 30 min</p></div>
+      <div class="a"><span class="t">17:15</span><h3>Tow back</h3><p>Last guests ashore, navigation lights on</p></div>
+      <div class="a"><span class="t">18:15</span><h3>Service</h3><p>Recharge, pump-out, fresh water, waste offloaded at the marina</p></div>
     </div>
+    <p class="src a" style="bottom:46px">A host is on board whenever guests are aboard. Plan B: if sea operation is not permitted, the platform runs moored at its berth.</p>
   </section>
 
-  <section class="slide scrim-b" data-shot="day" data-sec="Operations">
-    <div class="day-head">
-      <div>
-        <p class="eyebrow a">How a day works</p>
-        <h2 class="split" style="font-size:92px">Our own workboat tows,<br>shuttles and <em>stays close</em></h2>
-      </div>
-      <div class="clock a" id="clock">06:30</div>
+  <!-- 09 -->
+  <section class="slide s-layers sc-r" data-shot="platform" data-sec="Engineering">
+    <p class="kick a abs" style="left:120px;top:70px">The platform</p>
+    <h2 class="split">Built in <em>four layers</em></h2>
+    <div class="layers">
+      <div class="a"><span class="num">04</span><div><h3>Roof</h3><p>~5 kW solar array, no chimney</p></div></div>
+      <div class="a"><span class="num">03</span><div><h3>Cabin</h3><p>Sauna, rain shower, air-conditioned lounge</p></div></div>
+      <div class="a"><span class="num">02</span><div><h3>Deck</h3><p>Teak, cold plunge, shaded loungers</p></div></div>
+      <div class="a"><span class="num">01</span><div><h3>Hull</h3><p>Aluminium 5083 catamaran, 12 × 4.2 m</p></div></div>
     </div>
-    <div class="timeline">
-      <div class="rail"><i id="dayRail"></i></div>
-      <div class="tstep glass a"><span class="t">06:30</span><h3>Prepare</h3><p>Safety checklist, pre-heat on shore power, linen and bar stocked</p></div>
-      <div class="tstep glass a"><span class="t">07:00</span><h3>Tow out</h3><p>Low-speed tow to the approved anchorage off JBR; anchor ball up</p></div>
-      <div class="tstep glass a"><span class="t">08:30 · 11:30 · 14:30</span><h3>3 sessions</h3><p>Workboat swaps groups; host turns the cabin around in 30 min</p></div>
-      <div class="tstep glass a"><span class="t">17:15</span><h3>Tow back</h3><p>Last guests ashore, navigation lights on</p></div>
-      <div class="tstep glass a"><span class="t">18:15</span><h3>Service</h3><p>Recharge, pump-out, fresh water, waste offloaded at the marina</p></div>
-    </div>
-    <p class="src a">A host is on board whenever guests are aboard. Plan B: if sea operation is not permitted, the platform runs moored at its berth.</p>
+    <div class="meta a"><div><span class="cap">Capacity</span>6 guests + 1 host</div><div><span class="cap">Heater</span>Electric 15 kW, ~15 m³ room</div></div>
+    <p class="src a" style="left:auto;right:120px;width:640px">Estimates; hull, draft and stability to be confirmed by a naval architect.</p>
   </section>
 
-  <section class="slide scrim-r" data-shot="platform" data-sec="Engineering">
-    <div class="plat">
-      <div>
-        <p class="eyebrow a">The platform</p>
-        <h2 class="split" style="font-size:90px;max-width:900px">Built in <em>four layers</em></h2>
-      </div>
-      <div class="panel glass a">
-        <div class="specs" style="border-top:none;padding-top:0">
-          <div><small>Roof</small>~5 kW solar array</div>
-          <div><small>Cabin</small>Sauna, shower, lounge</div>
-          <div><small>Deck</small>Teak, cold plunge, loungers</div>
-          <div><small>Hull</small>Aluminium 5083 catamaran, 12 × 4.2 m</div>
-          <div><small>Capacity</small>6 guests + 1 host</div>
-          <div><small>Heater</small>Electric 15 kW, ~15 m³ room</div>
-        </div>
-      </div>
+  <!-- 10 -->
+  <section class="slide s-blue sc-l" data-shot="hull" data-sec="Engineering">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <p class="dim-line a">SECTION A–A · HULL · NOT TO SCALE</p>
+    <p class="kick a abs" style="left:120px;top:110px">Inside the hull</p>
+    <h2 class="split">Everything the guests <em>never see</em></h2>
+    <div class="sheet a">
+      <div><span>Battery</span><i></i><span>100 kWh LiFePO4, 90% usable</span></div>
+      <div><span>Water</span><i></i><span>1,000 L fresh · 1,000 L grey · 200 L black</span></div>
+      <div><span>Discharge</span><i></i><span>Zero, pumped out nightly</span></div>
+      <div><span>Charging</span><i></i><span>Overnight, 63 A shore power</span></div>
     </div>
-    <p class="src a">Estimates; hull, draft and stability to be confirmed by a naval architect.</p>
+    <div class="flowkey a"><span><s style="background:#F6C85F"></s>Solar to battery</span><span><s style="background:#9AD3F7"></s>Battery to heater</span><span><s style="background:#8FB4FF;opacity:.7"></s>Shore power</span></div>
   </section>
 
-  <section class="slide scrim-bl" data-shot="hull" data-sec="Engineering">
-    <div class="inside">
-      <div class="col">
-        <p class="eyebrow a">Inside the hull</p>
-        <h2 class="split" style="font-size:92px">Everything the guests <em>never see</em></h2>
-        <div class="flowkey a"><span><i style="background:#F6C85F"></i>Solar</span><span><i style="background:#53E0D2"></i>Battery to heater</span><span><i style="background:#8FB4FF"></i>Shore power</span></div>
-        <div class="facts glass a" style="margin-top:28px">
-          <div><b>Battery</b>100 kWh LiFePO4, 90% usable</div>
-          <div><b>Water</b>1,000 L fresh · 1,000 L grey · 200 L black</div>
-          <div><b>Discharge</b>Zero: pumped out nightly at the marina</div>
-          <div><b>Charging</b>Overnight from 63 A shore power at the berth</div>
-        </div>
-      </div>
+  <!-- 11 -->
+  <section class="slide s-solar sc-l" data-shot="solar" data-sec="Engineering">
+    <p class="kick a abs" style="left:120px;top:90px">All-electric</p>
+    <div class="no"><span class="a">No fuel.</span><span class="a">No exhaust.</span><span class="a">No chimney.</span></div>
+    <p class="body a">The heater, air-conditioning, cold plunge and lights all run on electricity: <b>~5 kW of solar on the roof</b> and a <b>100 kWh battery</b>, topped up overnight from shore power.</p>
+    <div class="ring a">
+      <svg viewBox="0 0 620 620" aria-hidden="true"><circle class="base" cx="310" cy="310" r="296"/><circle class="have" data-draw pathLength="1" cx="310" cy="310" r="296"/><circle class="base" cx="310" cy="310" r="262"/><circle class="need" data-draw data-frac=".887" pathLength="1" cx="310" cy="310" r="262"/></svg>
+      <div class="c"><span class="num gold"><span data-count="102">102</span></span><span class="of">of ~115 kWh a day</span><span class="cap">Demand · available</span></div>
     </div>
+    <div class="tags a"><span>~5 kW solar</span><i></i><span>Zero discharge</span><i></i><span>Estimates</span></div>
   </section>
 
-  <section class="slide scrim-r" data-shot="solar" data-sec="Engineering">
-    <div class="plat">
-      <div></div>
-      <div class="panel glass a" style="align-self:center">
-        <p class="eyebrow" style="margin:0">All-electric</p>
-        <h3 style="font-size:58px">Solar roof, battery, <em style="color:var(--gold)">no chimney</em></h3>
-        <p style="font-size:22px">No fuel is burned on board: the heater, air-conditioning, cold plunge and lights all run on electricity.</p>
-        <div class="meter need"><div class="row"><span>Daily demand</span><b><span data-count="102" data-prefix="~">~102</span> kWh</b></div><div class="bar"><i></i></div></div>
-        <div class="meter have"><div class="row"><span>Available: battery + solar</span><b><span data-count="115" data-prefix="~">~115</span> kWh</b></div><div class="bar"><i></i></div></div>
-        <div class="eco"><span class="pill">~5 kW solar</span><span class="pill">No exhaust</span><span class="pill">Zero discharge</span></div>
-      </div>
+  <!-- 12 -->
+  <section class="slide s-safe sc-b" data-shot="safety" data-sec="Operations">
+    <p class="kick a abs" style="left:120px;top:70px">Safety and permits</p>
+    <h2 class="split">Licensed by the Dubai Maritime Authority <em>before the first guest</em></h2>
+    <div class="icons3">
+      <div class="a"><svg viewBox="0 0 84 84" aria-hidden="true"><circle data-draw pathLength="1" cx="42" cy="42" r="34"/><circle data-draw pathLength="1" cx="42" cy="42" r="16"/><path data-draw pathLength="1" d="M18 18 L30 30 M66 18 L54 30 M18 66 L30 54 M66 66 L54 54"/></svg><h3>Host always aboard</h3><p>10 lifejackets, 2 lifebuoys, fire suppression, defibrillator, VHF radio, COLREGs lights and anchor ball.</p></div>
+      <div class="a"><svg viewBox="0 0 84 84" aria-hidden="true"><path data-draw pathLength="1" d="M18 8 H54 L66 20 V76 H18 Z M28 30 H56 M28 40 H56 M28 50 H44"/><circle data-draw pathLength="1" cx="54" cy="62" r="9"/></svg><h3>DMA + Civil Defence</h3><p>DMA design review, vessel registration and licence; permit for the day anchorage and towing; berth contract.</p></div>
+      <div class="a"><svg viewBox="0 0 84 84" aria-hidden="true"><path data-draw pathLength="1" d="M42 6 L72 18 V40 C72 60 58 72 42 78 C26 72 12 60 12 40 V18 Z M28 42 L38 52 L58 30"/></svg><h3>Insured from day one</h3><p>Hull &amp; machinery and third-party liability before launch. No alcohol before rounds; round time limits.</p></div>
     </div>
-    <p class="src a">Battery (90% usable) plus solar covers a full operating day; the battery is topped up overnight from shore power. Estimates.</p>
+    <p class="src a">Federal Decree-Law 43/2023; Dubai Law 11/2010 and its bylaw (Exec. Council Res. 11/2013); DMA Admin. Res. 5/2024 and 1/2025. To be confirmed by a UAE lawyer.</p>
   </section>
 
-  <section class="slide scrim-b" data-shot="safety" data-sec="Operations">
-    <p class="eyebrow a">Safety and permits</p>
-    <h2 class="split" style="font-size:96px">Licensed by the Dubai Maritime Authority <em>before the first guest</em></h2>
-    <div class="cards">
-      <div class="card glass a"><span class="k">On board</span><h3>Host always present</h3><p>10 lifejackets, 2 lifebuoys, fire suppression, defibrillator, VHF radio, COLREGs lights and anchor ball.</p></div>
-      <div class="card glass a"><span class="k">Permits</span><h3>DMA + Civil Defence</h3><p>DMA design review, vessel registration and licence; permit for the day anchorage and towing; berth contract.</p></div>
-      <div class="card glass a"><span class="k">Insurance</span><h3>Covered from day one</h3><p>Hull &amp; machinery and third-party liability before launch. No alcohol before rounds; round time limits.</p></div>
+  <!-- 13 -->
+  <section class="slide s-mkt sc-r" data-shot="market" data-sec="The business">
+    <p class="kick a">Market and pricing</p>
+    <h2 class="split">Priced like a yacht charter, <em>with the spa included</em></h2>
+    <div class="spec a">
+      <div class="rl" style="left:83px;bottom:232px">Sauna + ice studio<small>AED 200–250 / person</small></div><i class="rng" data-bar style="left:83px;width:21px;bottom:220px"></i>
+      <div class="rl" style="left:166px;bottom:162px">Small yacht with captain<small>AED 400–900</small></div><i class="rng" data-bar style="left:166px;width:208px;bottom:150px"></i>
+      <div class="rl" style="left:416px;bottom:92px">Mid-size yacht, 50–70 ft<small>AED 1,000–2,500</small></div><i class="rng" data-bar style="left:416px;width:624px;bottom:80px"></i>
+      <i class="beam" data-barv style="left:790px;height:190px"></i>
+      <div class="us" style="left:790px;bottom:236px"><img src="assets/logo-mark.png" alt=""><b>AQUAVAPOR</b><small>~AED 1,900 / h · 4 guests</small></div>
+      <i class="axis"></i>
+      <span class="tick" style="left:0">0</span><span class="tick" style="left:208px">500</span><span class="tick" style="left:416px">1,000</span><span class="tick" style="left:624px">1,500</span><span class="tick" style="left:832px">2,000</span><span class="tick" style="left:1040px">2,500 AED/h</span>
     </div>
-    <p class="src a">Legal basis: Federal Decree-Law 43/2023; Dubai Law 11/2010 and its bylaw (Exec. Council Res. 11/2013); DMA Admin. Res. 5/2024 and 1/2025. To be confirmed by a UAE lawyer.</p>
+    <p class="who a"><b>Who books:</b> affluent residents and couples, 5-star hotel guests via concierges, yacht-charter groups adding a stop, small corporate teams.</p>
+    <p class="src a" style="left:760px">Fresha (sauna studios, Dubai); GetMyBoat (Dubai charter price guide), checked Nov 2026. Studio price is per person.</p>
   </section>
 
-  <section class="slide scrim-r" data-shot="market" data-sec="The business">
-    <div class="mk">
-      <div></div>
-      <div style="display:flex;flex-direction:column">
-        <p class="eyebrow a">Market and pricing</p>
-        <h2 class="split" style="font-size:80px">Priced like a mid-size yacht charter, <em>with the spa included</em></h2>
-        <div class="panel glass a" style="margin-top:40px">
-          <div class="rb"><div class="n">Sauna + ice bath studio<small>AED 200–250 / person / h</small></div><div class="tr"><i class="r" style="left:8%;width:2%"></i></div></div>
-          <div class="rb"><div class="n">Small yacht, with captain<small>AED 400–900 / h</small></div><div class="tr"><i class="r" style="left:16%;width:20%"></i></div></div>
-          <div class="rb"><div class="n">Mid-size yacht, 50–70 ft<small>AED 1,000–2,500 / h</small></div><div class="tr"><i class="r" style="left:40%;width:60%"></i></div></div>
-          <div class="rb us"><div class="n">AQUAVAPOR<small>~AED 1,900 / h · 4 guests</small></div><div class="tr"><i class="r" style="left:74%;width:4%"></i></div></div>
-          <div class="axis"><div></div><div class="tk"><span style="left:0">AED 0</span><span style="left:40%">1,000</span><span style="left:80%">2,000</span><span style="left:100%">2,500 / h</span></div></div>
-        </div>
-        <div class="chips a"><span class="pill">Affluent residents</span><span class="pill">Couples</span><span class="pill">Hotel concierges</span><span class="pill">Yacht-charter groups</span><span class="pill">Corporate teams</span></div>
-      </div>
+  <!-- 14 -->
+  <section class="slide s-model sc-full" data-shot="model" data-sec="The business">
+    <p class="kick a abs" style="left:120px;top:70px">Business model</p>
+    <h2 class="split">Revenue comes from private sessions, <em>priced per guest-hour</em></h2>
+    <div class="formula f1">
+      <div class="term a"><span class="num">$130</span><span class="cap">per guest-hour</span></div><span class="op a">×</span>
+      <div class="term a"><span class="num">4</span><span class="cap">guests</span></div><span class="op a">×</span>
+      <div class="term a"><span class="num">2.5 h</span><span class="cap">session</span></div><span class="op a">+</span>
+      <div class="term a"><span class="num">$150</span><span class="cap">add-ons</span></div><span class="op a">=</span>
+      <div class="term res a"><span class="num gold"><span data-count="1450" data-prefix="$" data-sep="1">$1,450</span></span><span class="cap">average session</span></div>
     </div>
-    <p class="src a">Sources: Fresha (sauna studios, Dubai); GetMyBoat (Dubai charter price guide), checked Nov 2026. Studio price is per person.</p>
+    <div class="formula f2">
+      <div class="term a"><span class="num">3 × 26</span><span class="cap">sessions a day × days a month</span></div><span class="op a">×</span>
+      <div class="term a"><span class="num">50<span class="ital" style="font-size:.5em"> / </span>20%</span><span class="cap">slots sold Oct–Apr / May–Sep</span></div><span class="op a">→</span>
+      <div class="term a"><span class="num"><span data-count="351">351</span></span><span class="cap">sessions a year</span></div><span class="op a">→</span>
+      <div class="term res a"><span class="num gold">$509k</span><span class="cap">revenue, steady state</span></div>
+    </div>
+    <p class="src a">Half of bookings come through hotel concierges and yacht brokers at 15% commission, included with card fees, linen, consumables and spa-master fee. Utilization is a hypothesis to test with pre-sales before the hull is ordered.</p>
   </section>
 
-  <section class="slide scrim-b" data-shot="model" data-sec="The business">
-    <p class="eyebrow a">Business model</p>
-    <h2 class="split" style="font-size:92px">Revenue comes from private sessions, <em>priced per guest-hour</em></h2>
-    <div class="stats">
-      <div class="stat glass a"><div class="n gold-text"><span data-count="1450" data-prefix="$" data-sep="1">$1,450</span></div><p class="l">Average session: USD 130 × 4 guests × 2.5 h, plus USD 150 add-ons</p></div>
-      <div class="stat glass a"><div class="n">3 × 26</div><p class="l">Sessions a day × operating days a month</p></div>
-      <div class="stat glass a"><div class="n">50/20<span style="font-size:.5em">%</span></div><p class="l">Slots sold in high season (Oct–Apr) / summer (May–Sep)</p></div>
-      <div class="stat glass a"><div class="n"><span data-count="351">351</span></div><p class="l">Sessions a year in steady state, USD 509k revenue</p></div>
+  <!-- 15 -->
+  <section class="slide s-fin sc-full" data-shot="financials" data-sec="The business">
+    <p class="kick a abs" style="left:120px;top:70px">Financials</p>
+    <h2 class="split">Base case: <em>USD 164k EBITDA</em> a year from year 2</h2>
+    <div class="trio-v">
+      <div class="a"><span class="num"><span data-count="357" data-prefix="$" data-suffix="k">$357k</span></span><p>Year 1 revenue (ramp-up), EBITDA USD 38k</p></div>
+      <div class="a"><span class="num gold"><span data-count="509" data-prefix="$" data-suffix="k">$509k</span></span><p>Year 2+ revenue, EBITDA USD 164k (32%)</p></div>
+      <div class="a"><span class="num"><span data-count="3.2" data-dec="1" data-suffix=" yrs">3.2 yrs</span></span><p>Payback after launch, on USD 400k</p></div>
     </div>
-    <p class="src a">Half of bookings come through hotel concierges and yacht brokers at 15% commission; included in the model with card fees, linen, consumables and spa-master fee. Utilization is a hypothesis to test with pre-sales before the hull is ordered.</p>
+    <div class="beams a">
+      <div><span class="v">$25k</span><i class="bar" data-barv style="height:25px"></i><span class="lab">Conservative<b>15.7 yrs</b></span></div>
+      <div><span class="v">$69k</span><i class="bar" data-barv style="height:70px"></i><span class="lab">Original $100 price<b>5.8 yrs</b></span></div>
+      <div class="base"><span class="v">$164k</span><i class="bar" data-barv style="height:167px"></i><span class="lab">Base<b>2.4 yrs</b></span></div>
+      <div class="up"><span class="v">$304k</span><i class="bar" data-barv style="height:309px"></i><span class="lab">Base + sunset slot<b>1.3 yrs</b></span></div>
+      <div class="up"><span class="v">$393k</span><i class="bar" data-barv style="height:400px"></i><span class="lab">Optimistic<b>1.0 yr</b></span></div>
+    </div>
+    <p class="src a">Steady-state EBITDA per scenario; payback = USD 400k ÷ EBITDA. Corporate tax 0% under UAE Small Business Relief (revenue under AED 3M, to 2029).</p>
   </section>
 
-  <section class="slide scrim-b" data-shot="financials" data-sec="The business">
-    <p class="eyebrow a">Financials</p>
-    <h2 class="split" style="font-size:80px">Base case: <em>USD 164k EBITDA</em> a year from year 2</h2>
-    <div class="fin">
-      <div class="col">
-        <div class="stat glass a"><div class="n"><span data-count="357" data-prefix="$" data-suffix="k">$357k</span></div><p class="l">Year 1 revenue (ramp-up), EBITDA USD 38k</p></div>
-        <div class="stat glass a"><div class="n gold-text"><span data-count="509" data-prefix="$" data-suffix="k">$509k</span></div><p class="l">Year 2+ revenue, EBITDA USD 164k (32%)</p></div>
-        <div class="stat glass a"><div class="n"><span data-count="3.2" data-dec="1" data-suffix=" yrs">3.2 yrs</span></div><p class="l">Payback after launch, on USD 400k</p></div>
-      </div>
-      <div class="chart glass a">
-        <div class="ttl">EBITDA per year by scenario · payback</div>
-        <div class="sc"><span class="nm">Conservative</span><div class="bw"><i class="b" style="width:41px"></i><span class="v">$25k · 15.7 yrs</span></div></div>
-        <div class="sc"><span class="nm">Original $100 price</span><div class="bw"><i class="b" style="width:114px"></i><span class="v">$69k · 5.8 yrs</span></div></div>
-        <div class="sc base"><span class="nm">Base</span><div class="bw"><i class="b" style="width:271px"></i><span class="v">$164k · 2.4 yrs</span></div></div>
-        <div class="sc up"><span class="nm">Base + sunset slot</span><div class="bw"><i class="b" style="width:503px"></i><span class="v">$304k · 1.3 yrs</span></div></div>
-        <div class="sc up"><span class="nm">Optimistic</span><div class="bw"><i class="b" style="width:650px"></i><span class="v">$393k · 1.0 yr</span></div></div>
-      </div>
+  <!-- 16 -->
+  <section class="slide s-inv sc-full" data-shot="invest" data-sec="The ask">
+    <p class="kick a abs" style="left:120px;top:70px">The ask</p>
+    <h2 class="split">USD 400,000, <em>released at milestones</em></h2>
+    <div class="funds a">
+      <div><s style="background:#E9C98A"></s>Platform build incl. 10% contingency<span class="mono">282,000</span></div>
+      <div><s style="background:#9AD3F7"></s>Workboat (tow + shuttle)<span class="mono">50,000</span></div>
+      <div><s style="background:#FF9B5E"></s>Pre-opening: company, permits, berth, insurance, launch<span class="mono">40,000</span></div>
+      <div><s style="background:#7D8A97"></s>Working-capital reserve<span class="mono">28,000</span></div>
     </div>
-    <p class="src a">Payback per scenario = USD 400k ÷ steady-state EBITDA. Corporate tax 0% under UAE Small Business Relief (revenue under AED 3M, to 2029). Full model with formulas available.</p>
-  </section>
-
-  <section class="slide scrim-b" data-shot="invest" data-sec="The ask">
-    <p class="eyebrow a">The ask</p>
-    <h2 class="split" style="font-size:96px">USD 400,000 in two tranches, <em>released at milestones</em></h2>
-    <div class="inv">
-      <div class="funds glass a">
-        <div class="mono" style="font-size:17px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase">Use of funds, USD</div>
-        <div class="stack">
-          <i style="width:70.5%;background:linear-gradient(90deg,var(--gold-2),var(--gold))"></i>
-          <i style="width:12.5%;background:var(--sea)"></i>
-          <i style="width:10%;background:var(--ember)"></i>
-          <i style="width:7%;background:#7E93AA"></i>
-        </div>
-        <div class="legend">
-          <div><s style="background:var(--gold)"></s>Platform build incl. 10% contingency<span class="mono">282,000</span></div>
-          <div><s style="background:var(--sea)"></s>Workboat (tow + shuttle)<span class="mono">50,000</span></div>
-          <div><s style="background:var(--ember)"></s>Pre-opening: company, permits, berth, insurance, launch<span class="mono">40,000</span></div>
-          <div><s style="background:#7E93AA"></s>Working-capital reserve<span class="mono">28,000</span></div>
-        </div>
-      </div>
-      <div class="tranches">
-        <div class="tranche glass a"><span class="k">Tranche 1</span><div class="big">$120k</div><p>Company, naval design, DMA review, demand tests, shipyard deposit</p></div>
-        <div class="tranche glass gated a"><span class="k">Tranche 2 · gated</span><div class="big gold-text">$280k</div><p>After DMA approval in principle, fixed-price shipyard contract and 100 pre-sold sessions</p></div>
-      </div>
+    <div class="donut a">
+      <svg viewBox="0 0 560 560" aria-hidden="true">
+        <circle cx="280" cy="280" r="240" stroke="rgba(255,255,255,.06)"/>
+        <circle cx="280" cy="280" r="240" stroke="#E9C98A" pathLength="1000" stroke-dasharray="699 1000" stroke-dashoffset="0"/>
+        <circle cx="280" cy="280" r="240" stroke="#9AD3F7" pathLength="1000" stroke-dasharray="119 1000" stroke-dashoffset="-705"/>
+        <circle cx="280" cy="280" r="240" stroke="#FF9B5E" pathLength="1000" stroke-dasharray="94 1000" stroke-dashoffset="-830"/>
+        <circle cx="280" cy="280" r="240" stroke="#7D8A97" pathLength="1000" stroke-dasharray="64 1000" stroke-dashoffset="-930"/>
+      </svg>
+      <div class="c"><span class="num gold">$400k</span><span class="cap">use of funds</span></div>
+    </div>
+    <div class="tranche">
+      <div class="t a"><span class="cap">Tranche 1</span><div class="num">$120k</div><p>Company, naval design, DMA review, demand tests, shipyard deposit</p></div>
+      <div class="gate a"><svg viewBox="0 0 42 42" aria-hidden="true"><rect x="9" y="19" width="24" height="18" rx="2"/><path d="M14 19 V13 a7 7 0 0 1 14 0 V19"/></svg><i></i><span class="cap">Gate</span></div>
+      <div class="t a"><span class="cap" style="color:var(--gold-1)">Tranche 2</span><div class="num gold">$280k</div><p>After DMA approval in principle, a fixed-price shipyard contract and 100 pre-sold sessions</p></div>
     </div>
     <p class="src a">Proposed: 100% of distributable cash to the investor until USD 400k is returned, then profit split by equity (50/50 proposed, negotiable). Terms to be drafted by a UAE lawyer.</p>
   </section>
 
-  <section class="slide scrim-b" data-shot="roadmap" data-sec="The ask">
-    <p class="eyebrow a">Roadmap</p>
-    <h2 class="split" style="font-size:96px">Ten months from funding to launch, <em>timed for October</em></h2>
-    <div class="road">
-      <div class="rail"><i></i></div>
-      <div class="ms glass a"><span class="t">Months 1–2</span><h3>Validate</h3><p>Company, naval design, DMA pre-consultation, 3 shipyard quotes, pre-sales and hotel LOIs</p></div>
-      <div class="ms glass gate a"><span class="t">Gate</span><h3>Go / no-go</h3><p>DMA approval in principle, fixed-price contract, demand proof → tranche 2</p></div>
-      <div class="ms glass a"><span class="t">Months 3–8</span><h3>Build</h3><p>Hull, systems and interior; workboat bought and licensed; crew hired</p></div>
-      <div class="ms glass a"><span class="t">Month 9</span><h3>Certify</h3><p>Sea trials, DMA inspection and licence, Civil Defence, insurance, berth</p></div>
-      <div class="ms glass a"><span class="t">Month 10</span><h3>Launch</h3><p>Soft launch with partners and creators, then public sales</p></div>
+  <!-- 17 -->
+  <section class="slide s-road sc-full" data-shot="roadmap" data-sec="The ask">
+    <p class="kick a abs" style="left:120px;top:70px">Roadmap</p>
+    <h2 class="split">Ten months from funding to launch, <em>timed for October</em></h2>
+    <div class="ruler a">
+      <i class="line"></i>
+      <span class="m" style="left:84px">M1</span><span class="m" style="left:252px">M2</span><span class="m" style="left:420px">M3</span><span class="m" style="left:588px">M4</span><span class="m" style="left:756px">M5</span><span class="m" style="left:924px">M6</span><span class="m" style="left:1092px">M7</span><span class="m" style="left:1260px">M8</span><span class="m" style="left:1428px">M9</span><span class="m" style="left:1596px">M10</span>
+      <i class="seg" data-bar style="left:0;width:330px;background:var(--ice)"></i>
+      <i class="seg" data-bar style="left:342px;width:1002px;background:linear-gradient(90deg,#CFA661,#F4DDA6)"></i>
+      <i class="seg" data-bar style="left:1350px;width:162px;background:#F4DDA6"></i>
+      <i class="seg" data-bar style="left:1518px;width:162px;background:var(--ember)"></i>
+      <i class="gate" data-barv style="left:336px"></i>
+      <div class="gtext" style="left:336px"><b>GO / NO-GO</b><span class="cap" style="display:block;margin-top:6px">tranche 2 released</span></div>
+      <div class="lbl" style="left:0"><h3>Validate</h3><p>Company, naval design, DMA pre-consultation, 3 shipyard quotes, pre-sales and hotel LOIs</p></div>
+      <div class="lbl" style="left:420px"><h3>Build</h3><p>Hull, systems and interior; workboat bought and licensed; crew hired</p></div>
+      <div class="lbl" style="left:1092px"><h3>Certify</h3><p>Sea trials, DMA inspection and licence, Civil Defence, insurance, berth</p></div>
+      <div class="lbl" style="right:0;text-align:right"><h3>Launch</h3><p style="margin-left:auto">Soft launch with partners and creators, then public sales</p></div>
     </div>
+    <p class="src a">Gate: DMA approval in principle, fixed-price contract and demand proof before any hull money is spent.</p>
   </section>
 
-  <section class="slide scrim-b" data-shot="risks" data-sec="The ask">
-    <p class="eyebrow a">Risks</p>
-    <h2 class="split" style="font-size:96px">The main risks, <em>and what we do about each</em></h2>
+  <!-- 18 -->
+  <section class="slide s-risk sc-b" data-shot="risks" data-sec="The ask">
+    <p class="kick a abs" style="left:120px;top:70px">Risks</p>
+    <h2 class="split">The main risks, <em>and what we do about each</em></h2>
     <div class="risks">
-      <div class="risk glass a"><h3>Demand below 50% / 20%</h3><p><b>Mitigation</b>Pre-sell 100 sessions and sign hotel LOIs before ordering the hull</p></div>
-      <div class="risk glass a"><h3>Anchorage or towing not permitted</h3><p><b>Mitigation</b>DMA pre-consultation before tranche 2; Plan B: operate moored at the berth</p></div>
-      <div class="risk glass a"><h3>Summer demand drop</h3><p><b>Mitigation</b>Cold plunge focus, early and late slots, haul-out in August</p></div>
-      <div class="risk glass a"><h3>Wind over ~22 kn, waves over ~1.2 m</h3><p><b>Mitigation</b>Booking freeze, early tow back, rebook policy</p></div>
-      <div class="risk glass a"><h3>Guest health incident</h3><p><b>Mitigation</b>Host on board, defibrillator, round limits, no alcohol before rounds, insurance</p></div>
-      <div class="risk glass a"><h3>Build cost overrun</h3><p><b>Mitigation</b>Fixed-price contract, 10% contingency, milestone payments</p></div>
+      <div class="a"><span class="num">1</span><div><h3>Demand below 50% / 20%</h3><p>Pre-sell 100 sessions and sign hotel LOIs before ordering the hull</p></div></div>
+      <div class="a"><span class="num">2</span><div><h3>Anchorage or towing not permitted</h3><p>DMA pre-consultation before tranche 2; Plan B: operate moored at the berth</p></div></div>
+      <div class="a"><span class="num">3</span><div><h3>Summer demand drop</h3><p>Cold plunge focus, early and late slots, haul-out in August</p></div></div>
+      <div class="a"><span class="num">4</span><div><h3>Wind over ~22 kn, waves over ~1.2 m</h3><p>Booking freeze, early tow back, rebook policy</p></div></div>
+      <div class="a"><span class="num">5</span><div><h3>Guest health incident</h3><p>Host on board, defibrillator, round limits, no alcohol before rounds, insurance</p></div></div>
+      <div class="a"><span class="num">6</span><div><h3>Build cost overrun</h3><p>Fixed-price contract, 10% contingency, milestone payments</p></div></div>
     </div>
   </section>
 
-  <section class="slide scrim-l" data-shot="team" data-sec="The ask">
-    <div class="team">
-      <div style="display:flex;flex-direction:column">
-        <p class="eyebrow a">Team and contact</p>
-        <h2 class="split" style="font-size:88px">A young founder building <em>the right team</em></h2>
-        <div class="txt">
-          <p class="a"><b>Dmitrii Iurov, founder, 16.</b> Concept, brand and partnerships. Until 18 his shares are held and signed for by his legal guardian, as UAE law allows.</p>
-          <p class="a"><b>To hire before launch:</b> operations manager, licensed skipper, on-board host. <b>To contract:</b> naval architect, UAE lawyer, accountant.</p>
-          <p class="a"><b>Looking for:</b> an investor who also brings Dubai hospitality or marine experience as a mentor.</p>
-        </div>
-        <div class="contact glass a">
-          <div><small>Email</small><span>yurovdima2009@gmail.com</span></div>
-          <div><small>Phone</small><span>+7 924 403 6843</span></div>
-        </div>
-      </div>
-      <div class="thanks gold-text a">Thank<br>you</div>
+  <!-- 19 -->
+  <section class="slide s-team sc-l" data-shot="team" data-sec="The ask">
+    <p class="kick a">Team and contact</p>
+    <div class="name gold a">Dmitrii Iurov</div>
+    <div class="role a">Founder, 16 · concept, brand, partnerships</div>
+    <div class="txt">
+      <p class="a">Until 18 his shares are held and signed for by his legal guardian, as UAE law allows.</p>
+      <p class="a"><b>To hire before launch:</b> operations manager, licensed skipper, on-board host. <b>To contract:</b> naval architect, UAE lawyer, accountant.</p>
+      <p class="a"><b>Looking for:</b> an investor who also brings Dubai hospitality or marine experience as a mentor.</p>
     </div>
+    <div class="contact a"><div><span class="cap">Email</span><span>yurovdima2009@gmail.com</span></div><div><span class="cap">Phone</span><span>+7 924 403 6843</span></div></div>
+    <div class="thanks a"><img src="assets/logo-mark.png" alt=""><p class="gold">Thank you</p></div>
   </section>
 </main>
 
@@ -558,12 +616,12 @@ p{margin:0;font-size:28px;line-height:1.45;color:var(--mist)}
 </div>
 
 <div class="intro" id="intro" aria-hidden="true">
-  <div>
-    <div class="word" id="introWord">AQUAVAPOR</div>
-    <div class="sub" id="introSub">Loading the sea</div>
+  <div class="in">
+    <img class="m" id="introMark" src="assets/logo-mark.png" alt="">
+    <img class="wd" id="introWord" src="assets/logo-word.png" alt="">
+    <div class="sub" id="introSub">Private floating sauna · Dubai</div>
   </div>
 </div>
-<div class="grain" aria-hidden="true"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -576,6 +634,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 window.__aq = true;
 const gsap = window.gsap;
@@ -597,13 +657,17 @@ $$('.split').forEach(h=>{ (function walk(node){ Array.from(node.childNodes).forE
   if(n.nodeType===3){ const f=document.createDocumentFragment(); n.textContent.split(/(\s+)/).forEach(p=>{ if(!p) return; if(/^\s+$/.test(p)){f.appendChild(document.createTextNode(p));return;} const w=document.createElement('span'); w.className='w'; const i=document.createElement('span'); i.textContent=p; w.appendChild(i); f.appendChild(w); }); n.replaceWith(f); }
   else if(n.nodeType===1 && n.tagName!=='BR') walk(n); }); })(h); });
 $$('.split-ch').forEach(h=>{ h.innerHTML=h.textContent.split('').map(c=>`<span class="w"><span class="ch">${c}</span></span>`).join(''); });
-$('#introWord').innerHTML=$('#introWord').textContent.split('').map(c=>`<span>${c}</span>`).join('');
+
 const slides=$$('.slide'), N=slides.length;
+/* the itinerary: dots and stops placed along the drawn route */
+(function(){ const path=$('#routePath'); if(!path) return; const svg=path.ownerSVGElement, L=path.getTotalLength(), fr=[0,.19,.39,.6,.8,1];
+  $$('.s-xp .stop').forEach((el,i)=>{ const q=path.getPointAtLength(L*fr[i]); const c=document.createElementNS('http://www.w3.org/2000/svg','circle'); c.setAttribute('class','dot'); c.setAttribute('cx',q.x); c.setAttribute('cy',q.y); c.setAttribute('r',7); svg.appendChild(c);
+    el.style.left=(100+q.x+34)+'px'; el.style.top=(290+q.y-22)+'px'; }); })();
 
 /* ============ renderer ============ */
 const canvas=$('#gl');
 const renderer=new THREE.WebGLRenderer({canvas, antialias:false, powerPreference:'high-performance'});
-const DPR=LITE?1:Math.min(devicePixelRatio||1, isSmall?1.5:1.75);
+const DPR_MAX=LITE?1:Math.min(devicePixelRatio||1,2); let DPR=LITE?1:Math.min(DPR_MAX,1.5);
 renderer.setPixelRatio(DPR); renderer.setSize(innerWidth,innerHeight,false);
 renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=.6;
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -617,8 +681,12 @@ const camPos=V(90,60,120), camTgt=V(0,0,0);
 const composer=new EffectComposer(renderer, new THREE.WebGLRenderTarget(innerWidth*DPR, innerHeight*DPR, {type:THREE.HalfFloatType, samples:LITE?0:4}));
 composer.setPixelRatio(DPR); composer.setSize(innerWidth, innerHeight);
 composer.addPass(new RenderPass(scene,camera));
+let gtao=null; try{ gtao=new GTAOPass(scene,camera,innerWidth,innerHeight); gtao.output=GTAOPass.OUTPUT.Default; gtao.blendIntensity=1;
+  gtao.updateGtaoMaterial({radius:.32,distanceExponent:1.6,thickness:1.4,scale:1.15,samples:12,distanceFallOff:1});
+  gtao.updatePdMaterial({lumaPhi:10,depthPhi:2,normalPhi:3,radius:5,rings:2,samples:16}); gtao.enabled=false; composer.addPass(gtao); }catch(e){ gtao=null; }
 const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight), .3, .55, .88);
 composer.addPass(bloom); composer.addPass(new OutputPass());
+function setDPR(d){ DPR=d; renderer.setPixelRatio(d); composer.setPixelRatio(d); composer.setSize(innerWidth,innerHeight); }
 addEventListener('resize',()=>{ renderer.setSize(innerWidth,innerHeight,false); composer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); });
 
 /* ============ procedural textures ============ */
@@ -643,29 +711,34 @@ T.marble=ctex(1024,1024,(g,w,h)=>{ g.fillStyle='#ECE9E4'; g.fillRect(0,0,w,h); g
 T.fabric=ctex(256,256,(g,w,h)=>{ g.fillStyle='#d6ccbb'; g.fillRect(0,0,w,h); for(let y=0;y<h;y+=2) for(let x=0;x<w;x+=2){ const v=rr(-14,14)+((x+y)%4?6:-6); g.fillStyle=`rgb(${214+v},${204+v},${187+v})`; g.fillRect(x,y,2,2);} },{rep:[4,4]});
 T.rug=ctex(1024,1024,(g,w,h)=>{ g.fillStyle='#bfb19a'; g.fillRect(0,0,w,h); for(let i=0;i<40000;i++){ g.fillStyle=`rgba(${rr(150,220)|0},${rr(140,205)|0},${rr(120,180)|0},.35)`; g.fillRect(rr(0,w),rr(0,h),2,2);} g.strokeStyle='#8a7a62'; g.lineWidth=14; g.strokeRect(50,50,w-100,h-100); g.lineWidth=4; g.strokeRect(84,84,w-168,h-168); });
 T.solar=ctex(600,1000,(g,w,h)=>{ g.fillStyle='#d9dde3'; g.fillRect(0,0,w,h); const cw=w/6, chh=h/10; for(let i=0;i<6;i++) for(let j=0;j<10;j++){ const x=i*cw+3, y=j*chh+3, a=cw-6, b=chh-6, c=9; const gr=g.createLinearGradient(x,y,x+a,y+b); gr.addColorStop(0,'#101a2c'); gr.addColorStop(1,'#0b1322'); g.fillStyle=gr; g.beginPath(); g.moveTo(x+c,y); g.lineTo(x+a-c,y); g.lineTo(x+a,y+c); g.lineTo(x+a,y+b-c); g.lineTo(x+a-c,y+b); g.lineTo(x+c,y+b); g.lineTo(x,y+b-c); g.lineTo(x,y+c); g.closePath(); g.fill(); g.fillStyle='rgba(190,200,215,.55)'; for(let k=1;k<5;k++) g.fillRect(x+a*k/5-1,y,1.6,b); g.fillStyle='rgba(120,140,170,.12)'; for(let k=2;k<b;k+=5) g.fillRect(x,y+k,a,.6);} });
-T.logo=ctex(2048,256,(g,w,h)=>{ g.clearRect(0,0,w,h); g.save(); g.translate(120,128); g.strokeStyle='#E8C88E'; g.lineWidth=9; g.beginPath(); g.moveTo(0,-74); g.bezierCurveTo(-58,-12,-52,18,-52,30); g.arc(0,30,52,Math.PI,0,true); g.bezierCurveTo(52,18,58,-12,0,-74); g.stroke(); g.beginPath(); g.arc(0,30,30,Math.PI*.55,Math.PI*.95); g.stroke(); g.restore(); g.font='600 128px "Inter", Arial, sans-serif'; g.fillStyle='#E8C88E'; g.textBaseline='middle'; g.fillText('AQUAVAPOR',230,136); });
+T.logo=new THREE.TextureLoader().load('assets/logo-hull.png'); T.logo.colorSpace=THREE.SRGBColorSpace; T.logo.anisotropy=ANISO;
 T.leaf=ctex(128,256,(g,w,h)=>{ g.clearRect(0,0,w,h); const gr=g.createLinearGradient(0,0,w,0); gr.addColorStop(0,'#1f5a2c'); gr.addColorStop(.5,'#3f8a46'); gr.addColorStop(1,'#1f5a2c'); g.fillStyle=gr; g.beginPath(); g.moveTo(w/2,4); g.bezierCurveTo(w*1.05,h*.3,w*.85,h*.8,w/2,h-4); g.bezierCurveTo(w*.15,h*.8,-w*.05,h*.3,w/2,4); g.fill(); g.strokeStyle='rgba(190,230,170,.55)'; g.lineWidth=2.5; g.beginPath(); g.moveTo(w/2,8); g.lineTo(w/2,h-8); g.stroke(); g.lineWidth=1; for(let y=30;y<h-20;y+=18){ g.beginPath(); g.moveTo(w/2,y); g.lineTo(w*.15,y-14); g.moveTo(w/2,y); g.lineTo(w*.85,y-14); g.stroke(); } });
 T.buoy=ctex(512,64,(g,w,h)=>{ for(let i=0;i<4;i++){ g.fillStyle='#F05A24'; g.fillRect(i*w/4,0,w/8,h); g.fillStyle='#F4F1EA'; g.fillRect(i*w/4+w/8,0,w/8,h);} });
-function facade(base,line,kind){ return ctex(256,512,(g,w,h)=>{ const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,base[0]); gr.addColorStop(1,base[1]); g.fillStyle=gr; g.fillRect(0,0,w,h);
-  for(let y=0;y<h;y+=16){ g.fillStyle=line; g.fillRect(0,y,w,kind==='stone'?5:2); }
-  for(let x=0;x<w;x+=kind==='stone'?16:12){ g.fillStyle=line; g.fillRect(x,0,kind==='stone'?4:1.5,h); }
-  if(kind!=='stone') for(let i=0;i<120;i++){ g.fillStyle=`rgba(255,255,255,${rr(.02,.12)})`; g.fillRect((rr(0,w/12)|0)*12,(rr(0,h/16)|0)*16,12,16); } }); }
-function windows(p){ return ctex(256,512,(g,w,h)=>{ g.fillStyle='#000'; g.fillRect(0,0,w,h); for(let y=0;y<h;y+=16){ const floorLit=rand()<.12; for(let x=0;x<w;x+=12){ if(floorLit||rand()<p){ const warm=rand()<.7; g.fillStyle=warm?`rgba(255,${rr(190,225)|0},${rr(130,170)|0},${rr(.5,1)})`:`rgba(${rr(200,235)|0},${rr(225,245)|0},255,${rr(.5,1)})`; g.fillRect(x+2,y+4,8,9);} } } }); }
+function facade(base,line,kind){ return ctex(512,1024,(g,w,h)=>{ const gr=g.createLinearGradient(0,0,w,h); gr.addColorStop(0,base[0]); gr.addColorStop(1,base[1]); g.fillStyle=gr; g.fillRect(0,0,w,h);
+  for(let y=0;y<h;y+=32){ g.fillStyle=line; g.fillRect(0,y,w,kind==='stone'?9:3); g.fillStyle='rgba(255,255,255,.05)'; g.fillRect(0,y+3,w,1); }
+  for(let x=0;x<w;x+=kind==='stone'?32:24){ g.fillStyle=line; g.fillRect(x,0,kind==='stone'?7:2,h); }
+  if(kind!=='stone') for(let i=0;i<260;i++){ g.fillStyle=`rgba(255,255,255,${rr(.02,.14)})`; g.fillRect((rr(0,w/24)|0)*24+2,(rr(0,h/32)|0)*32+3,22,29); }
+  const sky=g.createLinearGradient(0,0,0,h); sky.addColorStop(0,'rgba(255,255,255,.12)'); sky.addColorStop(1,'rgba(0,0,0,.15)'); g.fillStyle=sky; g.fillRect(0,0,w,h); }); }
+function windows(p){ return ctex(512,1024,(g,w,h)=>{ g.fillStyle='#000'; g.fillRect(0,0,w,h); for(let y=0;y<h;y+=32){ const floorLit=rand()<.12; for(let x=0;x<w;x+=24){ if(floorLit||rand()<p){ const warm=rand()<.7; const a=rr(.45,1); g.fillStyle=warm?`rgba(255,${rr(190,225)|0},${rr(130,170)|0},${a})`:`rgba(${rr(200,235)|0},${rr(225,245)|0},255,${a})`; g.fillRect(x+4,y+7,17,20); g.fillStyle=`rgba(0,0,0,${rr(0,.5)})`; g.fillRect(x+4,y+7,rr(0,17),20);} } } }); }
 T.f1=facade(['#6e8ea7','#9ab3c6'],'rgba(30,45,60,.55)','glass'); T.f2=facade(['#c9bba3','#d8cbb4'],'rgba(70,82,96,.7)','stone'); T.f3=facade(['#34475a','#4c6175'],'rgba(15,22,30,.6)','glass'); T.f4=facade(['#a9b8c4','#cfd9e1'],'rgba(60,72,86,.5)','glass');
 T.w1=windows(.32); T.w2=windows(.42); T.w3=windows(.22);
 
+function nmap(src,str=2.5){ const c=src.image, w=c.width, h=c.height; const d=c.getContext('2d').getImageData(0,0,w,h).data; const o=document.createElement('canvas'); o.width=w; o.height=h; const og=o.getContext('2d'); const out=og.createImageData(w,h); const L=(x,y)=>{ x=(x+w)%w; y=(y+h)%h; const i=(y*w+x)*4; return (d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255; };
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){ const dx=(L(x+1,y)-L(x-1,y))*str, dy=(L(x,y+1)-L(x,y-1))*str; const l=Math.hypot(dx,dy,1); const i=(y*w+x)*4; out.data[i]=(-dx/l*.5+.5)*255; out.data[i+1]=(dy/l*.5+.5)*255; out.data[i+2]=(1/l*.5+.5)*255; out.data[i+3]=255; }
+  og.putImageData(out,0,0); const t=new THREE.CanvasTexture(o); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.copy(src.repeat); t.anisotropy=ANISO; return t; }
+const NM={teak:nmap(T.teak,3), sauna:nmap(T.sauna,2.2), thermo:nmap(T.thermo,2.2), oak:nmap(T.oak,2), fabric:nmap(T.fabric,1.5), floor:nmap(T.floor,1.5)};
 /* ============ materials ============ */
 const M=(o)=>new THREE.MeshStandardMaterial(o), P=(o)=>new THREE.MeshPhysicalMaterial(o);
 const mats={
   hull:P({color:0x0f1922,metalness:.55,roughness:.3,clearcoat:1,clearcoatRoughness:.06,transparent:true,opacity:1}),
   gold:M({color:0xcaa465,metalness:1,roughness:.22}),
-  logo:M({map:T.logo,transparent:true,metalness:.9,roughness:.25,color:0xffffff,emissive:0x6b4f22,emissiveIntensity:.25,depthWrite:false}),
+  logo:M({map:T.logo,transparent:true,metalness:.75,roughness:.28,color:0xffffff,emissive:0xffffff,emissiveMap:T.logo,emissiveIntensity:.18,depthWrite:false}),
   rubber:M({color:0x141619,roughness:.7}),
-  teak:M({map:T.teak,bumpMap:T.teak,bumpScale:1.2,roughness:.62}),
-  oak:M({map:T.oak,bumpMap:T.oak,bumpScale:.6,roughness:.55}),
-  floor:M({map:T.floor,roughness:.5}),
-  sauna:M({map:T.sauna,bumpMap:T.sauna,bumpScale:.8,roughness:.8}),
-  thermo:M({map:T.thermo,bumpMap:T.thermo,bumpScale:.8,roughness:.75}),
+  teak:M({map:T.teak,normalMap:NM.teak,normalScale:new THREE.Vector2(.8,.8),roughness:.6}),
+  oak:M({map:T.oak,normalMap:NM.oak,normalScale:new THREE.Vector2(.5,.5),roughness:.5}),
+  floor:M({map:T.floor,normalMap:NM.floor,normalScale:new THREE.Vector2(.4,.4),roughness:.45}),
+  sauna:M({map:T.sauna,normalMap:NM.sauna,normalScale:new THREE.Vector2(.6,.6),roughness:.78}),
+  thermo:M({map:T.thermo,normalMap:NM.thermo,normalScale:new THREE.Vector2(.6,.6),roughness:.7}),
   alu:M({color:0xcfd4d9,metalness:1,roughness:.28}),
   black:M({color:0x16191d,metalness:.75,roughness:.32}),
   steel:M({color:0xb9bdc2,metalness:1,roughness:.22}),
@@ -675,7 +748,7 @@ const mats={
   window:P({color:0xc9dde6,metalness:.4,roughness:.03,transparent:true,opacity:.2,envMapIntensity:1.8,side:THREE.DoubleSide,depthWrite:false}),
   mirror:M({color:0xffffff,metalness:1,roughness:.02}),
   marble:M({map:T.marble,roughness:.18}),
-  fabric:P({map:T.fabric,bumpMap:T.fabric,bumpScale:.4,roughness:.95,sheen:.6,sheenColor:0xffffff,color:0xffffff}),
+  fabric:P({map:T.fabric,normalMap:NM.fabric,normalScale:new THREE.Vector2(.35,.35),roughness:.95,sheen:.6,sheenColor:0xffffff,color:0xffffff}),
   cushion:P({color:0xf2efe8,roughness:.9,sheen:.5,sheenColor:0xffffff}),
   towel:P({color:0xfaf8f3,roughness:1,sheen:1,sheenColor:0xffffff}),
   towelTeal:P({color:0x2f7173,roughness:1,sheen:1,sheenColor:0x9fe0dc}),
@@ -714,7 +787,7 @@ const mats={
   fruitO:M({color:0xf08a24,roughness:.5}), fruitG:M({color:0x8fbf3a,roughness:.45}), fruitR:M({color:0xb3202a,roughness:.35}), lemon:M({color:0xf4dd4a,roughness:.5}),
   juice:P({color:0xffa640,roughness:.1,transparent:true,opacity:.85})
 };
-mats.teak.map.repeat.set(3,2.2); mats.teak.bumpMap=T.teak;
+
 
 /* ============ helpers ============ */
 function rb(w,h,d,r,mat,x,y,z,par,o={}){ r=Math.min(r,Math.min(w,h,d)/2-.0005); const g=r>.003?new RoundedBoxGeometry(w,h,d,o.seg||3,r):new THREE.BoxGeometry(w,h,d); const m=new THREE.Mesh(g,mat); m.position.set(x,y,z); if(o.rx)m.rotation.x=o.rx; if(o.ry)m.rotation.y=o.ry; if(o.rz)m.rotation.z=o.rz; m.castShadow=o.cs!==false; m.receiveShadow=true; par.add(m); return m; }
@@ -733,13 +806,37 @@ const sky=new Sky(); sky.scale.setScalar(45000); scene.add(sky);
 const su=sky.material.uniforms;
 const envScene=new THREE.Scene(); const envSky=new Sky(); envSky.scale.setScalar(9000); envScene.add(envSky);
 const pmrem=new THREE.PMREMGenerator(renderer); let envRT=null;
-function regenEnv(){ const eu=envSky.material.uniforms; ['turbidity','rayleigh','mieCoefficient','mieDirectionalG'].forEach(k=>eu[k].value=su[k].value); eu.sunPosition.value.copy(su.sunPosition.value); const rt=pmrem.fromScene(envScene,0,1,20000); if(envRT) envRT.dispose(); envRT=rt; scene.environment=rt.texture; }
+const ENVS={};
+function bakeEnv(name){ const p=PAL[name], eu=envSky.material.uniforms; eu.turbidity.value=p.turb; eu.rayleigh.value=p.ray; eu.mieCoefficient.value=p.mie; eu.mieDirectionalG.value=p.g; eu.sunPosition.value.setFromSphericalCoords(1,THREE.MathUtils.degToRad(90-Math.max(p.elev,-4)),THREE.MathUtils.degToRad(p.az)); ENVS[name]=pmrem.fromScene(envScene,0,1,20000).texture; }
 
 const waterNormals=new THREE.TextureLoader().load('assets/waternormals.jpg', t=>{ t.wrapS=t.wrapT=THREE.RepeatWrapping; });
 waterNormals.wrapS=waterNormals.wrapT=THREE.RepeatWrapping;
 const water=new Water(new THREE.PlaneGeometry(60000,60000),{textureWidth:isSmall?512:1024,textureHeight:isSmall?512:1024,waterNormals,sunDirection:V(0,1,0),sunColor:0xffffff,waterColor:0x0b5560,distortionScale:2.6,fog:true});
 water.rotation.x=-Math.PI/2; water.material.uniforms.size.value=3.2; scene.add(water);
 const wu=water.material.uniforms;
+
+/* clouds: a high layer lit by the sun, reflected in the sea */
+const cloudMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,fog:false,side:THREE.DoubleSide,
+  uniforms:{uT:{value:0},uSun:{value:V(0,1,0)},uSunC:{value:new THREE.Color()},uBase:{value:new THREE.Color()},uCov:{value:.4},uCam:{value:V(0,0,0)}},
+  vertexShader:'varying vec3 vW; void main(){ vec4 w=modelMatrix*vec4(position,1.); vW=w.xyz; gl_Position=projectionMatrix*viewMatrix*w; }',
+  fragmentShader:`uniform float uT,uCov; uniform vec3 uSun,uSunC,uBase,uCam; varying vec3 vW;
+  float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+  float n(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f); return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y); }
+  float fbm(vec2 p){ float s=0.,a=.5; for(int i=0;i<6;i++){ s+=a*n(p); p=p*2.03+vec2(1.7,9.2); a*=.5; } return s; }
+  void main(){ vec2 p=vW.xz*.00019+vec2(uT*.0035,uT*.0018); p.x*=.55;
+    float base=fbm(p), det=fbm(p*3.3+3.);
+    float d=smoothstep(1.-uCov,1.-uCov+.3,base*.9+det*.2);
+    vec3 v=normalize(vW-uCam); float dist=length(vW.xz-uCam.xz);
+    float fade=smoothstep(44000.,8000.,dist);
+    float sunF=pow(max(dot(normalize(vec3(v.x,0.,v.z)),normalize(vec3(uSun.x,0.,uSun.z))),0.),5.);
+    float thin=1.-smoothstep(.0,.75,d);
+    vec3 col=mix(uBase,uSunC,clamp(sunF*.9+thin*.55,0.,1.));
+    col*=mix(.72,1.08,thin);
+    gl_FragColor=vec4(col,d*fade*.9);
+    #include <tonemapping_fragment>
+    #include <colorspace_fragment>
+  }`});
+const clouds=new THREE.Mesh(new THREE.PlaneGeometry(100000,100000),cloudMat); clouds.rotation.x=-Math.PI/2; clouds.position.y=2400; clouds.renderOrder=-1; scene.add(clouds);
 
 /* stars */
 { const n=2200, pos=new Float32Array(n*3); for(let i=0;i<n;i++){ const th=rand()*Math.PI*2, ph=Math.acos(rr(.04,1)); pos[i*3]=Math.sin(ph)*Math.cos(th)*30000; pos[i*3+1]=Math.cos(ph)*30000; pos[i*3+2]=Math.sin(ph)*Math.sin(th)*30000; }
@@ -795,6 +892,17 @@ const wheelRot=new THREE.Group(); wheelRot.position.set(0,140,0); wheel.add(whee
     const cab=new THREE.Mesh(new THREE.CapsuleGeometry(2.6,7,4,10),M({color:0xdde6ec,metalness:.4,roughness:.15,emissive:0xfff0d0,emissiveIntensity:0})); cab.position.set(Math.cos(a)*131,Math.sin(a)*131,0); cab.rotation.x=Math.PI/2; cab.userData.cab=true; wheelRot.add(cab); }
   const hub=new THREE.Mesh(new THREE.CylinderGeometry(9,9,24,24),wheelMat); hub.rotation.x=Math.PI/2; wheelRot.add(hub);
   [[-70,-28],[70,-28],[-70,28],[70,28]].forEach(([lx,lz])=>{ const a=V(lx,0,lz), b=V(0,140,lz*.3), len=a.distanceTo(b); const leg=new THREE.Mesh(new THREE.CylinderGeometry(2.2,4.5,len,12),wheelMat); leg.position.copy(a).add(b).multiplyScalar(.5); leg.lookAt(b); leg.rotateX(Math.PI/2); wheel.add(leg); }); }
+// sail-shaped hotel on its own island
+const sailMat=M({color:0xf3f1ec,roughness:.45,metalness:.08,emissive:0xb8d4ff,emissiveIntensity:0});
+{ const g=new THREE.Group(); g.position.set(5600,0,-4600); g.rotation.y=-.6; city.add(g);
+  const sh=new THREE.Shape(); sh.moveTo(0,0); sh.lineTo(0,300); sh.quadraticCurveTo(80,230,112,0); sh.closePath();
+  const sail=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:46,bevelEnabled:true,bevelThickness:5,bevelSize:5,bevelSegments:3,curveSegments:32}),sailMat); sail.position.z=-23; g.add(sail);
+  const mast=new THREE.Mesh(new THREE.CylinderGeometry(1.5,3.5,330,8),crownMat); mast.position.set(-6,165,0); g.add(mast);
+  const legs=new THREE.Mesh(new THREE.CylinderGeometry(2.5,3,250,8),crownMat); legs.position.set(-14,120,0); legs.rotation.z=.08; g.add(legs);
+  const isl=new THREE.Mesh(new THREE.CylinderGeometry(130,140,6,40),M({color:0xd8c8a8,roughness:1})); isl.position.y=3; g.add(isl); }
+// promenade lights along the beach (they come on at dusk)
+const promMat=new THREE.PointsMaterial({color:0xffd49a,size:7,sizeAttenuation:true,transparent:true,opacity:0,depthWrite:false});
+{ const pts=[]; for(let x=-9000;x<=9000;x+=18){ pts.push(x,6,-2192+Math.sin(x*.01)*3); if(rand()<.5) pts.push(x+rr(-8,8),rr(10,30),-2230-rr(0,200)); } const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pts,3)); city.add(new THREE.Points(g,promMat)); }
 // Downtown on the horizon with the world's tallest tower
 const downtown=new THREE.Group(); downtown.position.set(6500,0,-17000); city.add(downtown);
 { const bm=M({color:0xc3ccd4,metalness:.8,roughness:.18,emissive:0xffe8c0,emissiveIntensity:0}); downtown.userData.mat=bm;
@@ -823,7 +931,7 @@ const FL=.9, CL=3.33;
 { const s=new THREE.Shape(); s.moveTo(-5.3,-.38); s.lineTo(5.65,-.38); s.quadraticCurveTo(6.1,-.38,6.12,.02); s.lineTo(6.12,.82); s.lineTo(-6.12,.82); s.lineTo(-6.12,.6); s.quadraticCurveTo(-6.02,-.28,-5.3,-.38);
   const g=new THREE.ExtrudeGeometry(s,{depth:4.26,bevelEnabled:true,bevelThickness:.05,bevelSize:.05,bevelSegments:4,curveSegments:24}); g.translate(0,0,-2.13);
   const hull=new THREE.Mesh(g,mats.hull); hull.castShadow=true; hull.receiveShadow=true; hullG.add(hull);
-  [2.19,-2.19].forEach((z,i)=>{ const lg=new THREE.Mesh(new THREE.PlaneGeometry(4.6,.575),mats.logo); lg.position.set(-1.6,.36,z+(i?-.012:.012)); if(i) lg.rotation.y=Math.PI; hullG.add(lg);
+  [2.19,-2.19].forEach((z,i)=>{ const lg=new THREE.Mesh(new THREE.PlaneGeometry(2.75,.593),mats.logo); lg.position.set(-2.4,.4,z+(i?-.012:.012)); if(i) lg.rotation.y=Math.PI; hullG.add(lg);
     rb(12.2,.03,.02,0,mats.gold,0,.08,z+(i?-.01:.01),hullG,{cs:false}); rb(12.3,.12,.12,.05,mats.rubber,0,.82,z,hullG); });
   rb(.06,.11,.04,0,mats.yellow,6.16,.45,1.6,hullG,{cs:false});
   // structure + systems inside (seen in the x-ray view)
@@ -918,10 +1026,12 @@ const saunaG=new THREE.Group(); cabinG.add(saunaG);
   [1.0,2.3].forEach(x=>rb(.32,.05,.2,.02,mats.sauna,x,FL+1.06,.5,saunaG,{rx:-.5}));
   rb(.46,.06,.3,.025,mats.towel,1.6,FL+1.05,.35,saunaG); rb(.46,.06,.3,.025,mats.towel,2.15,FL+1.05,.38,saunaG,{ry:.2});
   // electric heater with stones and a wooden guard
-  const hx=2.62, hz=-1.52; rb(.48,.72,.46,.03,mats.charcoal,hx,FL+.36,hz,saunaG); rb(.5,.05,.48,.01,mats.steel,hx,FL+.73,hz,saunaG);
-  for(let i=0;i<55;i++){ const s=new THREE.Mesh(new THREE.DodecahedronGeometry(rr(.035,.06),0),mats.stone[i%4]); s.position.set(hx+rr(-.2,.2),FL+.78+rr(0,.12),hz+rr(-.19,.19)); s.rotation.set(rr(0,3),rr(0,3),rr(0,3)); s.scale.set(1,rr(.6,.9),rr(.8,1.1)); s.castShadow=true; saunaG.add(s); }
-  for(let i=0;i<7;i++) rb(.04,.75,.025,.01,mats.sauna,hx-.3+i*.085,FL+.42,hz+.36,saunaG);
-  for(let i=0;i<5;i++) rb(.025,.75,.04,.01,mats.sauna,hx-.36,FL+.42,hz+.3-i*.085,saunaG);
+  const hx=2.6, hz=-1.5; cyl(.27,.27,.06,mats.charcoal,hx,FL+.03,hz,saunaG,{seg:40});
+  for(let i=0;i<30;i++){ const a=i/30*Math.PI*2; cyl(.007,.007,1.0,mats.steel,hx+Math.cos(a)*.25,FL+.53,hz+Math.sin(a)*.25,saunaG,{seg:6,cs:false}); }
+  [.1,.55,1.02].forEach(y=>{ const r=new THREE.Mesh(new THREE.TorusGeometry(.25,.009,6,56),mats.steel); r.rotation.x=Math.PI/2; r.position.set(hx,FL+y,hz); saunaG.add(r); });
+  for(let i=0;i<170;i++){ const s=new THREE.Mesh(new THREE.DodecahedronGeometry(rr(.035,.065),0),mats.stone[i%4]); const a=rand()*Math.PI*2, r=Math.sqrt(rand())*.2, top=i>130; s.position.set(hx+Math.cos(a)*r,FL+(top?1.02+rr(0,.12)*(1-r*4):rr(.1,1.0)),hz+Math.sin(a)*r); s.rotation.set(rr(0,3),rr(0,3),rr(0,3)); s.scale.set(1,rr(.6,.9),rr(.8,1.1)); s.castShadow=top; saunaG.add(s); }
+  for(let i=0;i<10;i++){ const th=Math.PI*(.45+i*.075); rb(.05,.82,.022,.01,mats.sauna,hx+Math.cos(th)*.4,FL+.45,hz+Math.sin(th)*.4,saunaG,{ry:-th+Math.PI/2}); }
+
   rb(.14,.22,.03,.01,mats.black,sx0+.06,FL+1.25,-.75,saunaG,{ry:Math.PI/2}); rb(.09,.04,.01,0,mats.display,sx0+.078,FL+1.3,-.75,saunaG,{ry:Math.PI/2,cs:false});
   // bucket + ladle, hygrometer, hourglass
   const bx=2.35, bz=-.28; cyl(.13,.105,.2,mats.thermo,bx,FL+.62,bz,saunaG,{seg:28}); [.56,.68].forEach(y=>{ const t=new THREE.Mesh(new THREE.TorusGeometry(.121,.006,6,32),mats.steel); t.rotation.x=Math.PI/2; t.position.set(bx,FL+y,bz); saunaG.add(t); });
@@ -979,44 +1089,53 @@ const work=new THREE.Group(); { const L=6, H=.9, W=2.2; const hg=new THREE.Extru
   rb(1.6,1.1,1.5,.08,mats.hull,-.6,H+.4,0,work); rb(.06,.6,1.4,0,mats.tint,.22,H+.6,0,work,{rz:-.3,cs:false}); rb(1.9,.05,1.7,.02,mats.white,-.6,H+1.0,0,work); }
 work.position.set(-20,.2,14); work.rotation.y=.6; scene.add(work);
 
+/* ============ merge static meshes per material ============ */
+function mergeStatic(root){ const groups=[]; root.traverse(o=>{ if(o.isGroup||o===root) groups.push(o); });
+  groups.forEach(g=>{ const by=new Map(); g.children.slice().forEach(c=>{ if(!c.isMesh||Array.isArray(c.material)||c.material.isShaderMaterial) return; const k=c.material.uuid+(c.castShadow?'s':'n'); if(!by.has(k)) by.set(k,[]); by.get(k).push(c); });
+    by.forEach(list=>{ if(list.length<2) return; const geos=[]; for(const m of list){ m.updateMatrix(); const src=m.geometry.index?m.geometry.toNonIndexed():m.geometry.clone(); if(!src.attributes.uv||!src.attributes.normal) return; const ng=new THREE.BufferGeometry(); ['position','normal','uv'].forEach(a=>ng.setAttribute(a,src.attributes[a])); ng.applyMatrix4(m.matrix); geos.push(ng); }
+      const merged=mergeGeometries(geos,false); if(!merged) return; const mm=new THREE.Mesh(merged,list[0].material); mm.castShadow=list[0].castShadow; mm.receiveShadow=true; list.forEach(m=>g.remove(m)); g.add(mm); }); }); }
+[boat,city,work,...yachts].forEach(mergeStatic);
+
 /* ============ palettes + shots ============ */
 const PAL={
-  day:  {elev:40,az:150,turb:2.2,ray:2.0,mie:.003,g:.8, expo:.5,sunI:3.2,sun:0xfff3e2,water:0x1fb3b6,fog:0xc9d8e2,dens:.00006,bloom:.18,glow:.25,win:0,stars:0,hemi:.15},
-  gold: {elev:3.0,az:-104,turb:10,ray:3.2,mie:.005,g:.9,expo:.5,sunI:2.4,sun:0xffae66,water:0x1a4f5c,fog:0xd8a98a,dens:.00007,bloom:.22,glow:.9,win:.35,stars:0,hemi:.12},
-  dusk: {elev:-1.4,az:-145,turb:9,ray:3,mie:.005,g:.83,expo:.95,sunI:.35,sun:0xff8a66,water:0x0b2232,fog:0x6f5866,dens:.00008,bloom:.7,glow:1.6,win:1.4,stars:.2,hemi:.12},
-  night:{elev:-9,az:-140,turb:2,ray:.6,mie:.003,g:.8, expo:1.05,sunI:.12,sun:0x9fb6ff,water:0x02080f,fog:0x0d1626,dens:.00008,bloom:.95,glow:2.1,win:2.4,stars:1,hemi:.18}
+  day:  {elev:40,az:150,turb:2.2,ray:2.0,mie:.003,g:.8, expo:.5,sunI:3.2,sun:0xfff3e2,water:0x1fb3b6,fog:0xc9d8e2,dens:.00006,bloom:.18,glow:.25,win:0,stars:0,hemi:.15,cloud:0xeef2f6,cloudSun:0xffffff,cov:.36},
+  gold: {elev:3.0,az:-104,turb:10,ray:3.2,mie:.005,g:.9,expo:.5,sunI:2.4,sun:0xffae66,water:0x1a4f5c,fog:0xd8a98a,dens:.00007,bloom:.22,glow:.9,win:.35,stars:0,hemi:.12,cloud:0x6e6475,cloudSun:0xffb47a,cov:.5},
+  dusk: {elev:-1.4,az:-145,turb:9,ray:3,mie:.005,g:.83,expo:.95,sunI:.35,sun:0xff8a66,water:0x0b2232,fog:0x6f5866,dens:.00008,bloom:.7,glow:1.6,win:1.4,stars:.2,hemi:.12,cloud:0x3a3450,cloudSun:0xff7f62,cov:.55},
+  night:{elev:-9,az:-140,turb:2,ray:.6,mie:.003,g:.8, expo:1.05,sunI:.12,sun:0x9fb6ff,water:0x02080f,fog:0x0d1626,dens:.00008,bloom:.95,glow:2.1,win:2.4,stars:1,hemi:.18,cloud:0x0e1320,cloudSun:0x2c3a58,cov:.32}
 };
-const cur={...PAL.gold, sun:new THREE.Color(PAL.gold.sun), water:new THREE.Color(PAL.gold.water), fog:new THREE.Color(PAL.gold.fog), explode:0, xray:0, flow:0};
+const CK=['sun','water','fog','cloud','cloudSun'];
+const cur={...PAL.gold, sun:new THREE.Color(PAL.gold.sun), water:new THREE.Color(PAL.gold.water), fog:new THREE.Color(PAL.gold.fog), cloud:new THREE.Color(PAL.gold.cloud), cloudSun:new THREE.Color(PAL.gold.cloudSun), explode:0, xray:0, flow:0};
+Object.keys(PAL).forEach(bakeEnv); scene.environment=ENVS.gold;
 function toPal(name,dur=1.8,ease='power2.inOut'){ const p=PAL[name], tl=gsap.timeline();
-  const nums={}; Object.keys(p).forEach(k=>{ if(typeof p[k]==='number' && !['sun','water','fog'].includes(k)) nums[k]=p[k]; });
-  tl.to(cur,{...nums,duration:dur,ease},0); ['sun','water','fog'].forEach(k=>{ const c=new THREE.Color(p[k]); tl.to(cur[k],{r:c.r,g:c.g,b:c.b,duration:dur,ease},0); }); return tl; }
+  const nums={}; Object.keys(p).forEach(k=>{ if(typeof p[k]==='number' && !CK.includes(k)) nums[k]=p[k]; });
+  tl.to(cur,{...nums,duration:dur,ease},0); CK.forEach(k=>{ const c=new THREE.Color(p[k]); tl.to(cur[k],{r:c.r,g:c.g,b:c.b,duration:dur,ease},0); }); return tl; }
 
 const SHOTS={
   cover:      {p:[13.5,3.6,19], t:[-8,4.4,-8],  pal:'gold', fov:35},
   opportunity:{p:[-30,22,36],  t:[-10.8,-14,-9],    pal:'day',  fov:38},
-  experience: {p:[11,3.4,13],  t:[-2.5,2.4,0], pal:'gold', fov:38},
-  sauna:      {p:[.82,FL+1.62,.42], t:[2.75,FL+.62,-1.75], pal:'gold', fov:64, via:[[2.0,FL+1.7,-9],[1.6,FL+1.6,-2.6]], drift:.05},
-  view:       {p:[1.75,FL+1.5,.38], t:[1.3,FL+1.25,-6], pal:'dusk', fov:62, drift:.05},
-  lounge:     {p:[-2.35,FL+1.45,1.35], t:[-5.0,FL+.55,-1.0], pal:'dusk', fov:62, via:[[.2,FL+1.5,.1],[-1.2,FL+1.5,1.2]], drift:.05},
-  plunge:     {p:[7.9,FL+1.75,3.7], t:[4.6,FL+.6,-.9], pal:'gold', fov:52, via:[[-1,FL+1.6,4.5],[4,FL+2.2,6]], drift:.2},
+  experience: {p:[11,3.4,13],  t:[-7,2.8,-2], pal:'gold', fov:38},
+  sauna:      {p:[.82,FL+1.62,.42], t:[2.75,FL+.62,-1.75], pal:'gold', fov:64, ao:1, via:[[2.0,FL+1.7,-9],[1.6,FL+1.6,-2.6]], drift:.05},
+  view:       {p:[1.75,FL+1.5,.38], t:[1.3,FL+1.25,-6], pal:'dusk', fov:62, ao:1, drift:.05},
+  lounge:     {p:[-2.35,FL+1.45,1.35], t:[-5.0,FL+.55,-1.0], pal:'dusk', fov:62, ao:1, via:[[.2,FL+1.5,.1],[-1.2,FL+1.5,1.2]], drift:.05},
+  plunge:     {p:[7.9,FL+1.75,3.7], t:[4.6,FL+.6,-.9], pal:'gold', fov:52, ao:1, via:[[-1,FL+1.6,4.5],[4,FL+2.2,6]], drift:.2},
   day:        {p:[0,9,46],     t:[0,6,-60],    pal:'day',  fov:38},
-  platform:   {p:[13,10.5,22], t:[5,4.8,0],    pal:'day',  fov:38, explode:1},
+  platform:   {p:[13,10.5,22], t:[9.5,5.2,0],    pal:'day',  fov:38, explode:1},
   hull:       {p:[2.4,3.3,5.4], t:[-3.6,-.2,-.4], pal:'day',  fov:50, xray:1, flow:1, explode:7, drift:.12},
-  solar:      {p:[3.2,15.5,10], t:[4.2,2.2,0], pal:'day',  fov:40, flow:1},
+  solar:      {p:[-6,15.5,9], t:[-5.5,1.5,-1], pal:'day',  fov:40, flow:1},
   safety:     {p:[-15,3.6,13], t:[0,2.4,0],    pal:'dusk', fov:38},
-  market:     {p:[2,4.8,27],   t:[11,3.2,0],   pal:'day',  fov:38},
+  market:     {p:[2,4.8,27],   t:[11,3.2,0],   pal:'dusk',  fov:38},
   model:      {p:[26,28,32],   t:[0,0,0],      pal:'gold', fov:38},
-  financials: {p:[-36,14,30],  t:[-8,6,-14],   pal:'day',  fov:38},
+  financials: {p:[-36,14,30],  t:[-8,6,-14],   pal:'gold',  fov:38},
   invest:     {p:[19,3.2,17],  t:[0,2,-2],     pal:'dusk', fov:38},
   roadmap:    {p:[2,1.5,30],   t:[0,6,0],      pal:'gold', fov:38},
   risks:      {p:[-11,7,16],   t:[0,1.5,0],    pal:'dusk', fov:38},
   team:       {p:[12,4.2,19],  t:[-9,3.6,0],   pal:'night',fov:38}
 };
 const LBL={
-  platform:[['~5 kW solar roof',roofG,[-1.45,CL+.26,1.2]],['Sauna · shower · lounge',cabinG,[-1.2,FL+1.6,1.95]],['Teak deck · cold plunge',deckG,[5.12,FL+.85,-1.22]],['Aluminium 5083 catamaran · 12 × 4.2 m',hullG,[3.5,.45,2.2]]],
+  platform:[],
   hull:[['LiFePO4 battery · 100 kWh',hullG,[-.9,.45,.42]],['Inverter / charger',hullG,[1.35,.65,-.95]],['Fresh water · 1,000 L',hullG,[-4.25,.55,-1.0]],['Grey water · 1,000 L',hullG,[-4.25,.55,1.0]],['Black water · 200 L',hullG,[3.95,.45,-1.3]],['Shore power · 63 A',hullG,[6.13,.45,1.6]]],
   solar:[['24 solar modules · ~5 kW',roofG,[-3.6,CL+.26,.5]],['Above the sauna: panels, no chimney',roofG,[1.8,CL+.26,-.6]],['Cables down to the battery',deckG,[2.98,1.6,1.98]]],
-  sauna:[['Electric heater · 15 kW',saunaG,[2.62,FL+.95,-1.52]],['Benches for up to 6 guests',saunaG,[1.2,FL+1.05,.3]],['Panoramic window',saunaG,[1.6,FL+1.9,-1.95]]],
+  sauna:[['Electric heater · 15 kW',saunaG,[2.6,FL+1.1,-1.5]],['Benches for up to 6 guests',saunaG,[1.2,FL+1.05,.3]],['Panoramic window · mirror-tinted',saunaG,[1.6,FL+1.9,-1.95]]],
   lounge:[['Air-conditioning',cabinG,[-3.1,CL-.3,-1.75]],['Healthy food & drinks',cabinG,[-4.0,FL+.6,-.05]],['Rain shower',cabinG,[0,CL-.15,-1.3]],['Robes & linen',cabinG,[-1.55,FL+1.5,1.5]]],
   plunge:[['Cold plunge',deckG,[5.12,FL+.85,-1.22]],['Shaded loungers',deckG,[4.6,FL+.5,.85]],['Boarding ladder',deckG,[4.32,FL+.2,2.26]]]
 };
@@ -1024,17 +1143,17 @@ const lblLayer=$('#labels'); let lblEls=[]; const lblState={a:0,set:null};
 function setLabels(name){ lblLayer.innerHTML=''; lblEls=(LBL[name]||[]).map(([t,o,v])=>{ const d=document.createElement('div'); d.className='lbl3d'; d.innerHTML=`<i></i><b></b><span>${t}</span>`; lblLayer.appendChild(d); return {el:d,o,v:V(...v)}; }); }
 
 /* ============ frame loop ============ */
-const clock=new THREE.Clock(), tmp=V(0,0,0), sunV=V(0,1,0), lightV=V(0,1,0); let envKey='', envT=0; const drift={a:1};
+const clock=new THREE.Clock(), tmp=V(0,0,0), sunV=V(0,1,0), lightV=V(0,1,0); const fr={n:0,t:0}; const drift={a:1};
 function frame(){
   const t=clock.getElapsedTime();
   // sky + sun
   sunV.setFromSphericalCoords(1,THREE.MathUtils.degToRad(90-cur.elev),THREE.MathUtils.degToRad(cur.az));
   su.sunPosition.value.copy(sunV); su.turbidity.value=cur.turb; su.rayleigh.value=cur.ray; su.mieCoefficient.value=cur.mie; su.mieDirectionalG.value=cur.g;
-  const key=cur.elev.toFixed(1)+'|'+cur.turb.toFixed(1)+'|'+cur.ray.toFixed(2)+'|'+cur.az.toFixed(0);
-  if(key!==envKey && t-envT>.3){ envKey=key; envT=t; regenEnv(); }
   lightV.setFromSphericalCoords(1,THREE.MathUtils.degToRad(90-Math.max(cur.elev,12)),THREE.MathUtils.degToRad(cur.az));
   sunL.position.copy(lightV).multiplyScalar(80); sunL.target.position.set(0,1,0); sunL.intensity=cur.sunI; sunL.color.copy(cur.sun);
   hemi.intensity=cur.hemi;
+  cloudMat.uniforms.uT.value=t; cloudMat.uniforms.uSun.value.copy(sunV); cloudMat.uniforms.uSunC.value.copy(cur.cloudSun); cloudMat.uniforms.uBase.value.copy(cur.cloud); cloudMat.uniforms.uCov.value=cur.cov; cloudMat.uniforms.uCam.value.copy(camera.position);
+  promMat.opacity=Math.min(1,cur.win*.8); sailMat.emissiveIntensity=cur.win*.35; sailMat.emissive.setHSL((.58+Math.sin(t*.05)*.08)%1,.6,.6);
   wu.time.value=t*.55; wu.sunDirection.value.copy(sunV.y>0?sunV:lightV).normalize(); wu.sunColor.value.copy(cur.sun).multiplyScalar(Math.max(.15,Math.min(1,cur.sunI/2.5))); wu.waterColor.value.copy(cur.water);
   scene.fog.color.copy(cur.fog); scene.fog.density=cur.dens; renderer.toneMappingExposure=cur.expo; bloom.strength=cur.bloom; starMat.opacity=cur.stars;
   // lights and glow
@@ -1057,6 +1176,7 @@ function frame(){
   // labels
   lblEls.forEach((l,i)=>{ tmp.copy(l.v); l.o.localToWorld(tmp); tmp.project(camera); const vis=tmp.z<1&&Math.abs(tmp.x)<1.05&&Math.abs(tmp.y)<1.05; l.el.style.transform=`translate(${(tmp.x*.5+.5)*innerWidth-6}px,${(-tmp.y*.5+.5)*innerHeight-6}px)`; l.el.style.opacity=vis?Math.max(0,Math.min(1,lblState.a*1.6-i*.12)):0; });
   composer.render();
+  if(!LITE){ fr.n++; if(t-fr.t>2){ const fps=fr.n/(t-fr.t); fr.n=0; fr.t=t; if(t>6){ if(fps<42&&DPR>1) setDPR(Math.max(1,DPR-.25)); else if(fps>57&&DPR<DPR_MAX) setDPR(Math.min(DPR_MAX,DPR+.25)); } } }
   requestAnimationFrame(frame);
 }
 
@@ -1068,14 +1188,19 @@ function animIn(s){ const tl=gsap.timeline(); const ch=$$('.split-ch .ch',s), wo
   if(words.length) tl.fromTo(words,{yPercent:115,rotate:3,opacity:1,y:0,filter:'blur(0px)'},{yPercent:0,rotate:0,duration:1.1,stagger:.04,ease:'expo.out'},.05);
   tl.fromTo(a,{y:46,opacity:0,filter:'blur(14px)'},{y:0,opacity:1,filter:'blur(0px)',duration:1,stagger:.07,ease:'power3.out',clearProps:'filter'},.25);
   $$('[data-count]',s).forEach(el=>{ const end=parseFloat(el.dataset.count), o={v:0}; tl.to(o,{v:end,duration:1.8,ease:'power3.out',onUpdate:()=>el.textContent=fmt(el,o.v)},.4); });
-  const bars=$$('.meter .bar i, .rb .r, .sc .b, .stack i, .road .rail i',s); if(bars.length) tl.fromTo(bars,{scaleX:0},{scaleX:1,duration:1.4,stagger:.08,ease:'expo.out'},.6); return tl; }
+  $$('[data-draw]',s).forEach(el=>{ const f=parseFloat(el.dataset.frac||1); el.style.strokeDasharray='1 1'; tl.fromTo(el,{strokeDashoffset:1},{strokeDashoffset:1-f,duration:1.9,ease:'power2.inOut'},.35); });
+  const bx=$$('[data-bar]',s); if(bx.length) tl.fromTo(bx,{scaleX:0},{scaleX:1,duration:1.4,stagger:.1,ease:'expo.out'},.55);
+  const bv=$$('[data-barv]',s); if(bv.length) tl.fromTo(bv,{scaleY:0},{scaleY:1,duration:1.5,stagger:.1,ease:'expo.out'},.55);
+  const lb=$$('.lb',s); if(lb.length) tl.fromTo(lb,{scaleY:0},{scaleY:1,duration:1.3,ease:'expo.inOut'},0);
+  return tl; }
 function animOut(s){ return gsap.to($$('.split .w>span, .split-ch .ch',s).concat($$('.a',s)),{y:-30,opacity:0,filter:'blur(10px)',duration:.45,stagger:.006,ease:'power2.in'}); }
-function dayRun(s){ const steps=$$('.tstep',s), clockEl=$('#clock'), rail=$('#dayRail'); const T0=390, T1=1095, mins={v:T0};
-  dayTL=gsap.timeline({delay:.6});
-  dayTL.fromTo(rail,{scaleX:0},{scaleX:1,duration:9,ease:'none'},0);
+function dayRun(s){ const steps=$$('.steps5>div',s), arc=$('#sunArc'), dot=$('#sunDot'), done=$('#sunDone'), AL=arc.getTotalLength(), sp={p:0}, clockEl=$('#clock'); const T0=390, T1=1095, mins={v:T0};
+  dayTL=gsap.timeline({delay:.6}); done.style.strokeDasharray=AL; done.style.strokeDashoffset=AL;
+  dayTL.to(sp,{p:1,duration:9,ease:'none',onUpdate(){ const q=arc.getPointAtLength(AL*sp.p); dot.setAttribute('cx',q.x); dot.setAttribute('cy',q.y); done.style.strokeDashoffset=AL*(1-sp.p); }},0);
+  dayTL.add(()=>scene.environment=ENVS.day,0).add(()=>scene.environment=ENVS.gold,6).add(()=>scene.environment=ENVS.dusk,7.8);
   dayTL.to(mins,{v:T1,duration:9,ease:'none',onUpdate(){ const m=Math.round(mins.v); clockEl.textContent=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }},0);
   dayTL.fromTo(cur,{elev:6,az:95},{elev:62,az:170,duration:3.6,ease:'sine.out'},0).to(cur,{elev:14,az:-100,duration:3,ease:'sine.in'},3.6).add(toPal('gold',1.8),5.4).add(toPal('dusk',1.8),7.2).to(cur,{elev:-1.2,az:-112,duration:2.4,ease:'sine.inOut'},6.6);
-  [0,.3,1.2,6.1,7.8].forEach((at,i)=>dayTL.add(()=>{ steps.forEach(x=>x.classList.remove('on')); steps[i].classList.add('on'); },at+.2));
+  [0,.3,1.2,6.1,7.8].forEach((at,i)=>dayTL.add(()=>{ steps.forEach((x,j)=>x.classList.toggle('on',j<=i)); },at+.2));
   dayTL.fromTo(work.position,{x:-60,z:30},{x:-11,z:7,duration:3.2,ease:'sine.inOut'},.4).to(work.position,{x:-50,z:34,duration:3.2,ease:'sine.inOut'},4.6); }
 function fly(sh,back,dur){ const from=camPos.clone(), to=V(...sh.p), fromT=camTgt.clone(), toT=V(...sh.t);
   let via=sh.via; if(back){ const leaving=SHOTS[slides[back].dataset.shot]; via=leaving.via?[...leaving.via].reverse():null; }
@@ -1084,12 +1209,11 @@ function fly(sh,back,dur){ const from=camPos.clone(), to=V(...sh.p), fromT=camTg
 function go(n,instant){ n=Math.max(0,Math.min(N-1,n)); if(n===idx||busy) return; busy=true; const prev=idx; idx=n;
   const s=slides[n], name=s.dataset.shot, sh=SHOTS[name]; if(dayTL){ dayTL.kill(); dayTL=null; }
   const out=prev>=0?animOut(slides[prev]):null; const goingBack=prev>n && prev>=0; const dur=instant?.01:(sh.via||goingBack&&SHOTS[slides[prev].dataset.shot].via?3.0:2.3);
-  if(!instant&&prev>=0){ canvas.classList.add('whoosh'); setTimeout(()=>canvas.classList.remove('whoosh'),500); }
   lblState.a=0; gsap.killTweensOf(lblState); setLabels(name);
   fly(sh,goingBack?prev:0,dur);
   gsap.to(camera,{fov:sh.fov||38,duration:dur,ease:'power2.inOut',onUpdate:()=>camera.updateProjectionMatrix()});
   gsap.to(drift,{a:sh.drift??1,duration:dur});
-  toPal(sh.pal,dur); gsap.to(cur,{explode:sh.explode||0,xray:sh.xray||0,flow:sh.flow||0,duration:dur*.9,ease:'power3.inOut'});
+  toPal(sh.pal,dur); gsap.delayedCall(instant?0:dur*.45,()=>{ scene.environment=ENVS[sh.pal]; if(gtao) gtao.enabled=!!sh.ao&&!LITE; }); gsap.to(cur,{explode:sh.explode||0,xray:sh.xray||0,flow:sh.flow||0,duration:dur*.9,ease:'power3.inOut'});
   if(LBL[name]) gsap.to(lblState,{a:1,duration:1,delay:dur*.75});
   if(name!=='day') gsap.to(work.position,{x:-20,z:14,duration:dur,ease:'power2.inOut'});
   const showNew=()=>{ if(prev>=0) slides[prev].classList.remove('active'); s.classList.add('active'); animIn(s); if(name==='day') dayRun(s); setTimeout(()=>busy=false,600); };
@@ -1107,12 +1231,14 @@ let tx=null; addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passiv
 stage.addEventListener('click',e=>{ if(e.target.closest('button,a')) return; if(String(getSelection())) return; (e.clientX>innerWidth*.35)?next():prev(); });
 
 /* start */
-regenEnv(); requestAnimationFrame(frame);
+requestAnimationFrame(frame);
 const intro=$('#intro');
 if(reduce||LITE){ intro.remove(); drift.a=0; camPos.set(...SHOTS.cover.p); camTgt.set(...SHOTS.cover.t); go(0,true); }
 else { gsap.timeline()
-  .from('#introWord span',{yPercent:100,opacity:0,duration:1,stagger:.06,ease:'expo.out'}).from('#introSub',{opacity:0,duration:.6},'-=.4')
-  .to('#introWord span',{opacity:0,y:-20,filter:'blur(10px)',duration:.6,stagger:.03,ease:'power2.in'},'+=.6')
+  .from('#introMark',{y:30,opacity:0,scale:.92,duration:1.5,ease:'expo.out'})
+  .from('#introWord',{clipPath:'inset(0 100% 0 0)',opacity:0,duration:1.5,ease:'expo.inOut'},'-=1')
+  .from('#introSub',{opacity:0,y:10,duration:.7},'-=.5')
+  .to('.intro .in',{opacity:0,y:-24,scale:.98,duration:.8,ease:'power2.in'},'+=.7')
   .to(intro,{opacity:0,duration:1.1,onComplete:()=>intro.remove()},'-=.3')
   .add(()=>{ gsap.to(camPos,{x:SHOTS.cover.p[0],y:SHOTS.cover.p[1],z:SHOTS.cover.p[2],duration:4,ease:'expo.inOut'}); gsap.to(camTgt,{x:SHOTS.cover.t[0],y:SHOTS.cover.t[1],z:SHOTS.cover.t[2],duration:4,ease:'expo.inOut'});
     idx=0; const s=slides[0]; s.classList.add('active'); gsap.set($$('.a',s),{opacity:0}); gsap.set($$('.ch',s),{yPercent:115}); gsap.delayedCall(2.6,()=>animIn(s)); },'-=1'); }
@@ -1122,7 +1248,7 @@ else { gsap.timeline()
 setTimeout(function(){ if(window.__aq) return; var i=document.getElementById('intro'); if(i) i.remove();
   var s=[].slice.call(document.querySelectorAll('.slide')), k=0, st=document.getElementById('stage');
   function fit(){ var c=Math.min(innerWidth/1920, innerHeight/1080); st.style.transform='translate('+(-960*c)+'px,'+(-540*c)+'px) scale('+c+')'; } fit(); addEventListener('resize',fit);
-  document.body.style.background='linear-gradient(160deg,#0B1A2B,#173248)';
+  document.body.style.background='radial-gradient(ellipse at 70% 30%,#16324a,#04070C 70%)';
   function show(n){ k=Math.max(0,Math.min(s.length-1,n)); s.forEach(function(x,j){ x.classList.toggle('active',j===k); }); document.getElementById('count').textContent=(k+1)+' / '+s.length; }
   show(0); addEventListener('keydown',function(e){ if(['ArrowRight',' ','PageDown'].indexOf(e.key)>-1) show(k+1); if(['ArrowLeft','PageUp'].indexOf(e.key)>-1) show(k-1); });
   document.getElementById('next').onclick=function(){show(k+1)}; document.getElementById('prev').onclick=function(){show(k-1)};
