@@ -1,0 +1,4 @@
+# old build sources kept locally, not used by the presentation
+src/base.css
+src/extra.css
+src/scene.v3.bak.js
