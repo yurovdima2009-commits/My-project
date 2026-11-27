@@ -25,7 +25,7 @@
 html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--f-sans)}
 *{box-sizing:border-box}
 #gl{position:fixed;inset:0;width:100%;height:100%;display:block}
-.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 120% 90% at 50% 50%,transparent 58%,rgba(2,4,8,.62) 100%)}
+.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 120% 90% at 50% 50%,transparent 58%,rgba(2,4,8,.38) 100%)}
 
 /* 3D callouts: a dot, a hairline, words. No boxes. */
 #labels{position:fixed;inset:0;pointer-events:none}
@@ -42,8 +42,8 @@ html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--
 .slide{position:absolute;inset:0;visibility:hidden}
 .slide.active{visibility:visible}
 .slide::before{content:"";position:absolute;inset:0;pointer-events:none}
-.sc-l::before{background:linear-gradient(90deg,rgba(3,6,11,.82) 0%,rgba(3,6,11,.5) 34%,transparent 58%)}
-.sc-r::before{background:linear-gradient(270deg,rgba(3,6,11,.82) 0%,rgba(3,6,11,.5) 36%,transparent 60%)}
+.sc-l::before{background:linear-gradient(90deg,rgba(3,6,11,.72) 0%,rgba(3,6,11,.36) 32%,transparent 55%)}
+.sc-r::before{background:linear-gradient(270deg,rgba(3,6,11,.72) 0%,rgba(3,6,11,.36) 34%,transparent 58%)}
 .sc-b::before{background:linear-gradient(0deg,rgba(3,6,11,.88) 0%,rgba(3,6,11,.45) 40%,transparent 62%),linear-gradient(180deg,rgba(3,6,11,.7) 0%,transparent 30%)}
 .sc-bl::before{background:radial-gradient(ellipse 70% 80% at 0% 100%,rgba(3,6,11,.85) 0%,rgba(3,6,11,.4) 45%,transparent 70%),linear-gradient(180deg,rgba(3,6,11,.65) 0%,transparent 28%)}
 .sc-full::before{background:radial-gradient(ellipse 90% 80% at 60% 45%,rgba(3,6,11,.5),rgba(3,6,11,.82))}
@@ -317,6 +317,10 @@ p{margin:0}
 .intro .sub{font-family:var(--f-mono);font-size:12px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold-1)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:reduce){.lbl3d i::after,.s-view .tc::before{animation:none}}
+
+/* steam drift between sections */
+#mist{position:fixed;inset:-20%;pointer-events:none;opacity:0;z-index:4;background:radial-gradient(ellipse 40% 35% at 30% 45%,rgba(255,250,244,.9),rgba(255,250,244,0) 70%),radial-gradient(ellipse 45% 40% at 65% 55%,rgba(255,246,236,.85),rgba(255,246,236,0) 70%),radial-gradient(ellipse 60% 50% at 50% 50%,rgba(240,244,248,.6),rgba(240,244,248,0) 75%)}
+.s-view .sub{bottom:150px}
 </style>
 
 <canvas id="gl" aria-hidden="true"></canvas>
@@ -379,8 +383,6 @@ p{margin:0}
 
   <!-- 05 -->
   <section class="slide s-view" data-shot="view" data-sec="Inside the sauna">
-    <div class="lb t"></div><div class="lb b"></div>
-    <div class="tc a">TOP BENCH · SUNSET</div>
     <div class="sub">
       <p class="split">Sunset over Dubai, from the top bench.</p>
       <span class="cap a">One group · 2.5 hours · heat, cold plunge, open deck</span>
@@ -604,6 +606,7 @@ p{margin:0}
   </section>
 </main>
 
+<div id="mist" aria-hidden="true"></div>
 <div class="ui">
   <span class="secname" id="secname">The idea</span>
   <div class="prog"><i id="prog"></i></div>
@@ -667,7 +670,7 @@ const slides=$$('.slide'), N=slides.length;
 /* ============ renderer ============ */
 const canvas=$('#gl');
 const renderer=new THREE.WebGLRenderer({canvas, antialias:false, powerPreference:'high-performance'});
-const DPR_MAX=LITE?1:Math.min(devicePixelRatio||1,2); let DPR=LITE?1:Math.min(DPR_MAX,1.5);
+const DPR_MAX=LITE?1:Math.max(1,Math.min(2.5,Math.sqrt(8.3e6/(innerWidth*innerHeight)))); let DPR=DPR_MAX;
 renderer.setPixelRatio(DPR); renderer.setSize(innerWidth,innerHeight,false);
 renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=.6;
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -811,8 +814,14 @@ function bakeEnv(name){ const p=PAL[name], eu=envSky.material.uniforms; eu.turbi
 
 const waterNormals=new THREE.TextureLoader().load('assets/waternormals.jpg', t=>{ t.wrapS=t.wrapT=THREE.RepeatWrapping; });
 waterNormals.wrapS=waterNormals.wrapT=THREE.RepeatWrapping;
-const water=new Water(new THREE.PlaneGeometry(60000,60000),{textureWidth:isSmall?512:1024,textureHeight:isSmall?512:1024,waterNormals,sunDirection:V(0,1,0),sunColor:0xffffff,waterColor:0x0b5560,distortionScale:2.6,fog:true});
-water.rotation.x=-Math.PI/2; water.material.uniforms.size.value=3.2; scene.add(water);
+const water=new Water(new THREE.PlaneGeometry(60000,60000),{textureWidth:isSmall?1024:2048,textureHeight:isSmall?1024:2048,waterNormals,sunDirection:V(0,1,0),sunColor:0xffffff,waterColor:0x0b5560,distortionScale:1.7,fog:true});
+water.rotation.x=-Math.PI/2; water.material.uniforms.size.value=1.5; scene.add(water);
+/* Gulf-coloured water: physically based Fresnel (rf0 0.02) so the sea shows its turquoise body when seen from above, and mirrors the sky only at grazing angles */
+water.material.fragmentShader=water.material.fragmentShader
+  .replace('float rf0 = 0.3;','float rf0 = 0.035;')
+  .replace('vec3 albedo = mix( ( sunColor * diffuseLight * 0.3 + scatter ) * getShadowMask(), ( vec3( 0.1 ) + reflectionSample * 0.9 + reflectionSample * specularLight ), reflectance);',
+   'vec3 body = waterColor * ( 0.62 + 0.55 * max( 0.0, dot( surfaceNormal, eyeDirection ) ) ) + sunColor * diffuseLight * 0.05; vec3 refl = reflectionSample * 0.92 + sunColor * specularLight * 0.9; vec3 albedo = mix( body * getShadowMask(), refl, clamp( reflectance * 1.25, 0.0, 0.92 ) );');
+water.material.needsUpdate=true;
 const wu=water.material.uniforms;
 
 /* clouds: a high layer lit by the sun, reflected in the sea */
@@ -910,16 +919,31 @@ const downtown=new THREE.Group(); downtown.position.set(6500,0,-17000); city.add
   const sp=new THREE.Mesh(new THREE.CylinderGeometry(.6,7,140,10),bm); sp.position.y=720+70; downtown.add(sp);
   for(let i=0;i<34;i++){ const t=new THREE.Mesh(new THREE.BoxGeometry(rr(30,60),1,rr(30,60)),cityMats[(rand()*4)|0]); const h=rr(90,330); t.scale.y=h; t.position.set(rr(-1600,1600),h/2,rr(-900,900)); if(Math.hypot(t.position.x,t.position.z)>120) downtown.add(t);} }
 
+/* smooth lofted hull: x from stern (-L/2) to bow (+L/2); group 0 = hull, group 1 = deck */
+function hullGeo(L,W,H){ const S=64,R=14,row=2*R+1,P=[],I=[];
+  const sec=u=>{ const b=Math.max(0,(u-.45)/.55); return {half:W/2*Math.sqrt(Math.max(0,1-b*b))*(1-.05*(1-u)), keel:-H*.5+H*.45*b*b, sheer:H*.5+H*.14*b*b}; };
+  for(let i=0;i<=S;i++){ const u=i/S, x=-L/2+u*L, s=sec(u); for(let k=-R;k<=R;k++){ const v=Math.abs(k)/R; P.push(x, s.keel+(s.sheer-s.keel)*Math.pow(v,1.8), Math.sign(k)*s.half*Math.pow(v,.5)); } }
+  for(let i=0;i<S;i++) for(let k=0;k<row-1;k++){ const a=i*row+k,b=a+1,c=a+row,d=c+1; I.push(a,c,b,b,c,d); }
+  const ci=P.length/3, s0=sec(0); P.push(-L/2,(s0.keel+s0.sheer)/2,0); for(let k=0;k<row-1;k++) I.push(ci,k,k+1);
+  const hullCount=I.length, base=P.length/3; for(let i=0;i<=S;i++){ const u=i/S, s=sec(u), x=-L/2+u*L; P.push(x,s.sheer-.01,-s.half*.97, x,s.sheer-.01,s.half*.97); }
+  for(let i=0;i<S;i++){ const a=base+i*2; I.push(a,a+1,a+2,a+1,a+3,a+2); }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(P,3)); const uv=[]; for(let k=0;k<P.length/3;k++) uv.push(P[k*3]/2,P[k*3+2]/2); g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  g.setIndex(I); g.computeVertexNormals(); g.addGroup(0,hullCount,0); g.addGroup(hullCount,I.length-hullCount,1); return g; }
+const gelWhite=P({color:0xf7f8f8,roughness:.12,clearcoat:1,clearcoatRoughness:.03,side:THREE.DoubleSide});
+const darkGlass=P({color:0x0e1822,metalness:.9,roughness:.05,envMapIntensity:1.6,emissive:0xffd6a0,emissiveIntensity:0});
+function superProfile(L,h,front){ const s=new THREE.Shape(); s.moveTo(-L/2,0); s.lineTo(L/2,0); s.lineTo(L/2-front,h); s.lineTo(-L/2+h*.15,h); s.closePath(); return s; }
+function extr(shape,depth,mat,x,y,par){ const g=new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelThickness:.04*depth,bevelSize:.03*depth,bevelSegments:4,curveSegments:16}); g.translate(0,0,-depth/2); const m=new THREE.Mesh(g,mat); m.position.set(x,y,0); m.castShadow=true; par.add(m); return m; }
 /* yachts on the water */
 function hullShape(L,H,bow=.28){ const s=new THREE.Shape(); s.moveTo(-L/2,H*.15); s.lineTo(L/2-L*bow,-H*.4); s.quadraticCurveTo(L/2,-H*.35,L/2,H*.5); s.lineTo(-L/2,H*.5); s.closePath(); return s; }
-function yacht(L,x,z,ry){ const g=new THREE.Group(); const W=L*.24, H=L*.12;
-  const hg=new THREE.ExtrudeGeometry(hullShape(L,H),{depth:W,bevelEnabled:true,bevelThickness:W*.08,bevelSize:H*.12,bevelSegments:4,curveSegments:12}); hg.translate(0,0,-W/2);
-  const hm=new THREE.Mesh(hg,P({color:0xf5f6f6,roughness:.18,clearcoat:1})); g.add(hm);
-  rb(L*.45,H*.55,W*.8,H*.12,P({color:0xf3f4f4,roughness:.2,clearcoat:1}),-L*.05,H*.8,0,g,{cs:false});
-  rb(L*.42,H*.18,W*.82,H*.05,M({color:0x1a2530,metalness:.8,roughness:.1,emissive:0xffd6a0,emissiveIntensity:0}),-L*.05,H*.85,0,g,{cs:false}).userData.win=true;
-  rb(L*.26,H*.45,W*.7,H*.1,P({color:0xf3f4f4,roughness:.2,clearcoat:1}),-L*.1,H*1.3,0,g,{cs:false});
+function yacht(L,x,z,ry){ const g=new THREE.Group(); const W=L*.25, H=L*.11;
+  g.add(new THREE.Mesh(hullGeo(L,W,H),[gelWhite,mats.teak]));
+  extr(superProfile(L*.5,H*.62,H*.55),W*.74,gelWhite,-L*.06,H*.55,g);
+  extr(superProfile(L*.46,H*.22,H*.3),W*.76,darkGlass,-L*.06,H*.75,g);
+  extr(superProfile(L*.3,H*.42,H*.4),W*.62,gelWhite,-L*.12,H*1.17,g);
+  extr(superProfile(L*.27,H*.15,H*.2),W*.64,darkGlass,-L*.12,H*1.28,g);
   g.position.set(x,H*.1,z); g.rotation.y=ry; scene.add(g); return g; }
 const yachts=[yacht(34,-420,-700,.4),yacht(26,380,-980,-.3),yacht(22,-820,-420,1.2),yacht(40,700,-1250,.1),yacht(18,160,-520,2.2)];
+yachts.forEach(y=>y.position.y=0);
 
 /* ============ THE PLATFORM ============ */
 const boat=new THREE.Group(); scene.add(boat);
@@ -1085,9 +1109,16 @@ const flows=[ flow([[-3.2,CL+.27,.6],[1.2,CL+.27,1.6],[2.95,CL+.1,1.98],[2.98,1.
   flow([[6.12,.45,1.6],[5.0,.42,1.35],[2.2,.42,.9],[.6,.45,.42]],0x8FB4FF) ];
 
 /* workboat */
-const work=new THREE.Group(); { const L=6, H=.9, W=2.2; const hg=new THREE.ExtrudeGeometry(hullShape(L,H,.35),{depth:W,bevelEnabled:true,bevelThickness:.1,bevelSize:.1,bevelSegments:3}); hg.translate(0,0,-W/2); const h=new THREE.Mesh(hg,P({color:0xf4f4f2,roughness:.25,clearcoat:1})); h.castShadow=true; work.add(h);
-  rb(1.6,1.1,1.5,.08,mats.hull,-.6,H+.4,0,work); rb(.06,.6,1.4,0,mats.tint,.22,H+.6,0,work,{rz:-.3,cs:false}); rb(1.9,.05,1.7,.02,mats.white,-.6,H+1.0,0,work); }
-work.position.set(-20,.2,14); work.rotation.y=.6; scene.add(work);
+const work=new THREE.Group(); { const L=7.2, W=2.6, H=1.0;
+  const h=new THREE.Mesh(hullGeo(L,W,H),[gelWhite,mats.teak]); h.castShadow=true; work.add(h);
+  rb(L*.98,.05,.07,.02,mats.alu,0,H*.52,W/2-.05,work); rb(L*.98,.05,.07,.02,mats.alu,0,H*.52,-W/2+.05,work);
+  rb(1.0,.95,1.05,.12,gelWhite,.2,H*.5+.47,0,work); const ws=rb(.05,.45,1.0,.02,mats.tint,.72,H*.5+1.12,0,work,{rz:-.5,cs:false});
+  rb(.9,.45,.5,.08,mats.cushion,-.85,H*.5+.22,0,work); rb(.4,.4,.5,.08,mats.cushion,-.85,H*.5+.6,0,work,{rz:.2});
+  [[-.35,.95],[-.35,-.95],[.8,.95],[.8,-.95]].forEach(([x,z])=>cyl(.025,.025,1.9,mats.steel,x,H*.5+.95,z*.95,work,{cs:false}));
+  rb(1.6,.06,2.1,.03,gelWhite,.22,H*.5+1.92,0,work);
+  [-.42,.42].forEach(z=>{ rb(.32,.7,.36,.1,mats.black,-L/2-.18,H*.1,z,work); rb(.2,.55,.12,.05,mats.charcoal,-L/2-.2,-.4,z,work); });
+  sph(.05,mats.navW,.22,H*.5+2.0,0,work,{cs:false}); }
+work.position.set(-20,.12,14); work.rotation.y=.6; scene.add(work);
 
 /* ============ merge static meshes per material ============ */
 function mergeStatic(root){ const groups=[]; root.traverse(o=>{ if(o.isGroup||o===root) groups.push(o); });
@@ -1098,10 +1129,10 @@ function mergeStatic(root){ const groups=[]; root.traverse(o=>{ if(o.isGroup||o=
 
 /* ============ palettes + shots ============ */
 const PAL={
-  day:  {elev:40,az:150,turb:2.2,ray:2.0,mie:.003,g:.8, expo:.5,sunI:3.2,sun:0xfff3e2,water:0x1fb3b6,fog:0xc9d8e2,dens:.00006,bloom:.18,glow:.25,win:0,stars:0,hemi:.15,cloud:0xeef2f6,cloudSun:0xffffff,cov:.36},
-  gold: {elev:3.0,az:-104,turb:10,ray:3.2,mie:.005,g:.9,expo:.5,sunI:2.4,sun:0xffae66,water:0x1a4f5c,fog:0xd8a98a,dens:.00007,bloom:.22,glow:.9,win:.35,stars:0,hemi:.12,cloud:0x6e6475,cloudSun:0xffb47a,cov:.5},
-  dusk: {elev:-1.4,az:-145,turb:9,ray:3,mie:.005,g:.83,expo:.95,sunI:.35,sun:0xff8a66,water:0x0b2232,fog:0x6f5866,dens:.00008,bloom:.7,glow:1.6,win:1.4,stars:.2,hemi:.12,cloud:0x3a3450,cloudSun:0xff7f62,cov:.55},
-  night:{elev:-9,az:-140,turb:2,ray:.6,mie:.003,g:.8, expo:1.05,sunI:.12,sun:0x9fb6ff,water:0x02080f,fog:0x0d1626,dens:.00008,bloom:.95,glow:2.1,win:2.4,stars:1,hemi:.18,cloud:0x0e1320,cloudSun:0x2c3a58,cov:.32}
+  day:  {elev:42,az:150,turb:2.0,ray:1.8,mie:.003,g:.8, expo:.6,sunI:3.4,sun:0xfff3e2,water:0x1aa7ad,fog:0xb9d1e0,dens:.000042,bloom:.18,glow:.25,win:0,stars:0,hemi:.15,cloud:0xeef2f6,cloudSun:0xffffff,cov:.36},
+  gold: {elev:7,az:-110,turb:6,ray:2.4,mie:.005,g:.88,expo:.68,sunI:3.0,sun:0xffbf80,water:0x1f8a92,fog:0xdcb497,dens:.00005,bloom:.2,glow:.8,win:.25,stars:0,hemi:.22,cloud:0x6e6475,cloudSun:0xffb47a,cov:.5},
+  dusk: {elev:-.8,az:-145,turb:8,ray:3,mie:.005,g:.83,expo:1.2,sunI:.6,sun:0xff8a66,water:0x0b2232,fog:0x6f5866,dens:.00008,bloom:.7,glow:1.6,win:1.4,stars:.2,hemi:.12,cloud:0x3a3450,cloudSun:0xff7f62,cov:.55},
+  night:{elev:-9,az:-140,turb:2,ray:.6,mie:.003,g:.8, expo:1.25,sunI:.12,sun:0x9fb6ff,water:0x02080f,fog:0x0d1626,dens:.00008,bloom:.95,glow:2.1,win:2.4,stars:1,hemi:.18,cloud:0x0e1320,cloudSun:0x2c3a58,cov:.32}
 };
 const CK=['sun','water','fog','cloud','cloudSun'];
 const cur={...PAL.gold, sun:new THREE.Color(PAL.gold.sun), water:new THREE.Color(PAL.gold.water), fog:new THREE.Color(PAL.gold.fog), cloud:new THREE.Color(PAL.gold.cloud), cloudSun:new THREE.Color(PAL.gold.cloudSun), explode:0, xray:0, flow:0};
@@ -1114,21 +1145,21 @@ const SHOTS={
   cover:      {p:[13.5,3.6,19], t:[-8,4.4,-8],  pal:'gold', fov:35},
   opportunity:{p:[-30,22,36],  t:[-10.8,-14,-9],    pal:'day',  fov:38},
   experience: {p:[11,3.4,13],  t:[-7,2.8,-2], pal:'gold', fov:38},
-  sauna:      {p:[.82,FL+1.62,.42], t:[2.75,FL+.62,-1.75], pal:'gold', fov:64, ao:1, via:[[2.0,FL+1.7,-9],[1.6,FL+1.6,-2.6]], drift:.05},
+  sauna:      {p:[1.0,FL+1.6,.12], t:[2.6,FL+.7,-1.5], pal:'gold', fov:64, ao:1, via:[[3.5,FL+2.3,7.5],[-.15,FL+1.6,3.2],[-.15,FL+1.6,.6],[.45,FL+1.6,.14]], drift:.04},
   view:       {p:[1.75,FL+1.5,.38], t:[1.3,FL+1.25,-6], pal:'dusk', fov:62, ao:1, drift:.05},
-  lounge:     {p:[-2.35,FL+1.45,1.35], t:[-5.0,FL+.55,-1.0], pal:'dusk', fov:62, ao:1, via:[[.2,FL+1.5,.1],[-1.2,FL+1.5,1.2]], drift:.05},
-  plunge:     {p:[7.9,FL+1.75,3.7], t:[4.6,FL+.6,-.9], pal:'gold', fov:52, ao:1, via:[[-1,FL+1.6,4.5],[4,FL+2.2,6]], drift:.2},
+  lounge:     {p:[-2.35,FL+1.45,1.35], t:[-5.0,FL+.55,-1.0], pal:'gold', fov:62, ao:1, via:[[.95,FL+1.55,.12],[.4,FL+1.55,.14],[-.4,FL+1.5,.8]], drift:.05},
+  plunge:     {p:[7.9,FL+1.75,3.7], t:[4.6,FL+.6,-.9], pal:'gold', fov:52, ao:1, via:[[-1.6,FL+1.6,3.4],[1.5,FL+2.6,7.5]], drift:.2},
   day:        {p:[0,9,46],     t:[0,6,-60],    pal:'day',  fov:38},
-  platform:   {p:[13,10.5,22], t:[9.5,5.2,0],    pal:'day',  fov:38, explode:1},
+  platform:   {p:[20,17,29], t:[6.5,2.2,0],    pal:'day',  fov:36, explode:1},
   hull:       {p:[2.4,3.3,5.4], t:[-3.6,-.2,-.4], pal:'day',  fov:50, xray:1, flow:1, explode:7, drift:.12},
   solar:      {p:[-6,15.5,9], t:[-5.5,1.5,-1], pal:'day',  fov:40, flow:1},
-  safety:     {p:[-15,3.6,13], t:[0,2.4,0],    pal:'dusk', fov:38},
-  market:     {p:[2,4.8,27],   t:[11,3.2,0],   pal:'dusk',  fov:38},
+  safety:     {p:[-15,3.6,13], t:[0,2.4,0],    pal:'gold', fov:38},
+  market:     {p:[2,4.8,27],   t:[11,3.2,0],   pal:'gold',  fov:38},
   model:      {p:[26,28,32],   t:[0,0,0],      pal:'gold', fov:38},
   financials: {p:[-36,14,30],  t:[-8,6,-14],   pal:'gold',  fov:38},
-  invest:     {p:[19,3.2,17],  t:[0,2,-2],     pal:'dusk', fov:38},
+  invest:     {p:[19,3.2,17],  t:[0,2,-2],     pal:'gold', fov:38},
   roadmap:    {p:[2,1.5,30],   t:[0,6,0],      pal:'gold', fov:38},
-  risks:      {p:[-11,7,16],   t:[0,1.5,0],    pal:'dusk', fov:38},
+  risks:      {p:[-11,7,16],   t:[0,1.5,0],    pal:'day', fov:38},
   team:       {p:[12,4.2,19],  t:[-9,3.6,0],   pal:'night',fov:38}
 };
 const LBL={
@@ -1153,7 +1184,7 @@ function frame(){
   sunL.position.copy(lightV).multiplyScalar(80); sunL.target.position.set(0,1,0); sunL.intensity=cur.sunI; sunL.color.copy(cur.sun);
   hemi.intensity=cur.hemi;
   cloudMat.uniforms.uT.value=t; cloudMat.uniforms.uSun.value.copy(sunV); cloudMat.uniforms.uSunC.value.copy(cur.cloudSun); cloudMat.uniforms.uBase.value.copy(cur.cloud); cloudMat.uniforms.uCov.value=cur.cov; cloudMat.uniforms.uCam.value.copy(camera.position);
-  promMat.opacity=Math.min(1,cur.win*.8); sailMat.emissiveIntensity=cur.win*.35; sailMat.emissive.setHSL((.58+Math.sin(t*.05)*.08)%1,.6,.6);
+  darkGlass.emissiveIntensity=cur.win*1.2; promMat.opacity=Math.min(1,cur.win*.8); sailMat.emissiveIntensity=cur.win*.35; sailMat.emissive.setHSL((.58+Math.sin(t*.05)*.08)%1,.6,.6);
   wu.time.value=t*.55; wu.sunDirection.value.copy(sunV.y>0?sunV:lightV).normalize(); wu.sunColor.value.copy(cur.sun).multiplyScalar(Math.max(.15,Math.min(1,cur.sunI/2.5))); wu.waterColor.value.copy(cur.water);
   scene.fog.color.copy(cur.fog); scene.fog.density=cur.dens; renderer.toneMappingExposure=cur.expo; bloom.strength=cur.bloom; starMat.opacity=cur.stars;
   // lights and glow
@@ -1162,13 +1193,13 @@ function frame(){
   const blink=Math.sin(t*2.4)>0?1:.25; mats.red.emissiveIntensity=mats.green.emissiveIntensity=(.8+cur.glow)*1.5; mats.navW.emissiveIntensity=.8+cur.glow*1.5;
   cityMats.forEach(m=>m.emissiveIntensity=cur.win); roofLightMat.emissiveIntensity=cur.win*3*blink; downtown.userData.mat.emissiveIntensity=cur.win*.15;
   wheelMat.emissiveIntensity=cur.win*.05; wheelLed.emissive.setHSL((t*.03)%1,.7,.6); wheelLed.emissiveIntensity=cur.win*2.2; wheelRot.rotation.z=t*.004;
-  yachts.forEach((y,i)=>{ y.position.y=Math.sin(t*.6+i)*.15; y.rotation.z=Math.sin(t*.5+i)*.02; y.children.forEach(c=>{ if(c.userData.win) c.material.emissiveIntensity=cur.win*1.2; }); });
+  yachts.forEach((y,i)=>{ y.position.y=Math.sin(t*.6+i)*.15; y.rotation.z=Math.sin(t*.5+i)*.02;  });
   // platform state
   const e=cur.explode; boat.position.y=Math.sin(t*.75)*.045; boat.rotation.z=Math.sin(t*.55)*.008; boat.rotation.x=Math.sin(t*.65)*.006;
   deckG.position.y=e*.9; cabinG.position.y=e*1.9; roofG.position.y=e*3.6;
   mats.hull.opacity=1-cur.xray*.86; mats.hull.depthWrite=cur.xray<.5; mats.logo.opacity=1-cur.xray*.8;
   flows.forEach(f=>{ f.uniforms.uT.value=t; f.uniforms.uO.value=cur.flow; });
-  work.position.y=.2+Math.sin(t*1.1+1)*.08; work.rotation.z=Math.sin(t*.9)*.025;
+  work.position.y=.12+Math.sin(t*1.1+1)*.08; work.rotation.z=Math.sin(t*.9)*.025;
   // sauna steam
   for(let i=0;i<STEAM;i++){ const s=stD[i]; s.l+=.0025*s.sp; if(s.l>1) s.l=0; stP[i*3]=2.62+s.dx*(1+s.l*3)+Math.sin(t+i)*.08*s.l; stP[i*3+1]=FL+.85+s.l*1.4; stP[i*3+2]=-1.52+s.dz-s.l*.3; } stG.attributes.position.needsUpdate=true; stMat.opacity=.07*Math.min(1,cur.glow);
   // camera
@@ -1176,7 +1207,7 @@ function frame(){
   // labels
   lblEls.forEach((l,i)=>{ tmp.copy(l.v); l.o.localToWorld(tmp); tmp.project(camera); const vis=tmp.z<1&&Math.abs(tmp.x)<1.05&&Math.abs(tmp.y)<1.05; l.el.style.transform=`translate(${(tmp.x*.5+.5)*innerWidth-6}px,${(-tmp.y*.5+.5)*innerHeight-6}px)`; l.el.style.opacity=vis?Math.max(0,Math.min(1,lblState.a*1.6-i*.12)):0; });
   composer.render();
-  if(!LITE){ fr.n++; if(t-fr.t>2){ const fps=fr.n/(t-fr.t); fr.n=0; fr.t=t; if(t>6){ if(fps<42&&DPR>1) setDPR(Math.max(1,DPR-.25)); else if(fps>57&&DPR<DPR_MAX) setDPR(Math.min(DPR_MAX,DPR+.25)); } } }
+  if(!LITE){ fr.n++; if(t-fr.t>2){ const fps=fr.n/(t-fr.t); fr.n=0; fr.t=t; if(t>6){ if(fps<28&&DPR>1.25) setDPR(Math.max(1.25,DPR-.25)); else if(fps>55&&DPR<DPR_MAX) setDPR(Math.min(DPR_MAX,DPR+.25)); } } }
   requestAnimationFrame(frame);
 }
 
@@ -1204,12 +1235,15 @@ function dayRun(s){ const steps=$$('.steps5>div',s), arc=$('#sunArc'), dot=$('#s
   dayTL.fromTo(work.position,{x:-60,z:30},{x:-11,z:7,duration:3.2,ease:'sine.inOut'},.4).to(work.position,{x:-50,z:34,duration:3.2,ease:'sine.inOut'},4.6); }
 function fly(sh,back,dur){ const from=camPos.clone(), to=V(...sh.p), fromT=camTgt.clone(), toT=V(...sh.t);
   let via=sh.via; if(back){ const leaving=SHOTS[slides[back].dataset.shot]; via=leaving.via?[...leaving.via].reverse():null; }
-  const pts=[from,...(via||[]).map(v=>V(...v)),to]; const curve=pts.length>2?new THREE.CatmullRomCurve3(pts,false,'centripetal'):null;
-  const o={k:0}; return gsap.to(o,{k:1,duration:dur,ease:'power2.inOut',onUpdate(){ if(curve) camPos.copy(curve.getPoint(o.k)); else camPos.lerpVectors(from,to,o.k); const kt=curve?Math.pow(o.k,.6):o.k; camTgt.lerpVectors(fromT,toT,kt); }}); }
+  let mids=(via||[]).map(v=>V(...v)); const D=from.distanceTo(to);
+  if(!mids.length && D>8){ const m=from.clone().add(to).multiplyScalar(.5), out=V(m.x,0,m.z); if(out.lengthSq()<1) out.set(1,0,1); out.normalize(); m.addScaledVector(out,D*.28); m.y+=D*.1; mids=[m]; }
+  const pts=[from,...mids,to]; const curve=pts.length>2?new THREE.CatmullRomCurve3(pts,false,'centripetal'):null;
+  const o={k:0}; return gsap.to(o,{k:1,duration:dur,ease:'power3.inOut',onUpdate(){ if(curve) camPos.copy(curve.getPoint(o.k)); else camPos.lerpVectors(from,to,o.k); const kt=curve?Math.pow(o.k,.6):o.k; camTgt.lerpVectors(fromT,toT,kt); }}); }
 function go(n,instant){ n=Math.max(0,Math.min(N-1,n)); if(n===idx||busy) return; busy=true; const prev=idx; idx=n;
   const s=slides[n], name=s.dataset.shot, sh=SHOTS[name]; if(dayTL){ dayTL.kill(); dayTL=null; }
-  const out=prev>=0?animOut(slides[prev]):null; const goingBack=prev>n && prev>=0; const dur=instant?.01:(sh.via||goingBack&&SHOTS[slides[prev].dataset.shot].via?3.0:2.3);
+  const out=prev>=0?animOut(slides[prev]):null; const goingBack=prev>n && prev>=0; const dur=instant?.01:(sh.via||goingBack&&SHOTS[slides[prev].dataset.shot].via?3.4:2.6);
   lblState.a=0; gsap.killTweensOf(lblState); setLabels(name);
+  if(!instant && prev>=0 && (slides[prev].dataset.sec!==s.dataset.sec || sh.via)){ const mist=$('#mist'); gsap.killTweensOf(mist); gsap.timeline().fromTo(mist,{opacity:0,xPercent:-18,scale:1.25},{opacity:.9,xPercent:0,scale:1.1,duration:dur*.42,ease:'power2.in'}).to(mist,{opacity:0,xPercent:16,scale:1,duration:dur*.55,ease:'power2.out'}); }
   fly(sh,goingBack?prev:0,dur);
   gsap.to(camera,{fov:sh.fov||38,duration:dur,ease:'power2.inOut',onUpdate:()=>camera.updateProjectionMatrix()});
   gsap.to(drift,{a:sh.drift??1,duration:dur});
