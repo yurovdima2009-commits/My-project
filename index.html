@@ -33,7 +33,6 @@
     </nav>
     <div class="header__cta">
       <a class="header__phone" href="tel:+74212455522"><span class="dot-live"></span>+7 (4212) 45-55-22</a>
-      <a href="#booking" class="btn btn--primary btn--sm">Забронировать</a>
     </div>
     <button class="burger" id="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
@@ -77,8 +76,8 @@
       </div>
 
       <div class="hero__actions">
-        <a href="#booking" class="btn btn--primary">Забрать бесплатный час <span class="btn__arrow">→</span></a>
-        <a href="#prices" class="btn btn--ghost">Смотреть цены</a>
+        <a href="#prices" class="btn btn--primary">Смотреть цены <span class="btn__arrow">→</span></a>
+        <a href="#zones" class="btn btn--ghost">Выбрать зону</a>
       </div>
 
       <ul class="stats">
@@ -185,7 +184,6 @@
         <div class="zone__price">
           <span>от</span><b class="pixel" id="zone-price">110 ₽</b><span>/ час</span>
         </div>
-        <a href="#booking" class="btn btn--primary" id="zone-book">Забронировать</a>
       </div>
     </div>
   </div>
@@ -258,9 +256,6 @@
       <p><span class="ring"></span><span>Свой аккаунт Steam / Battle.net — заходи под ним, все сохранения на месте.</span></p>
     </aside>
   </div>
-  <div class="container games__cta">
-    <a href="#booking" class="btn btn--hud">ЗАБРОНИРОВАТЬ</a>
-  </div>
 </section>
 
 <!-- ============ EVENTS ============ -->
@@ -278,68 +273,6 @@
     </div>
     <div class="ev-actions">
       <a href="https://vk.ru/phygitalcenterkhv" target="_blank" rel="noopener" class="btn btn--vk"><span class="vk-ico" aria-hidden="true">VK</span> Все турниры и регистрация — в нашей группе</a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ BOOKING ============ -->
-<section class="section" id="booking">
-  <div class="container">
-    <div class="booking hud-frame">
-      <div class="booking__left">
-        <h2 class="h2">Забронируй —<br><span class="grad">первый час в подарок</span></h2>
-        <p class="section__note">Выбери зону и время: калькулятор сразу покажет цену. Оставь телефон — администратор перезвонит и подтвердит бронь.</p>
-        <ul class="booking__bullets">
-          <li>Работаем ежедневно с 10:00 до 21:00</li>
-          <li>Пакеты на 3, 5 и 8 часов — выгоднее почасовой оплаты</li>
-          <li>Можно забронировать несколько мест рядом для компании</li>
-        </ul>
-        <p class="booking__call">Или позвони: <a href="tel:+74212455522">+7 (4212) 45-55-22</a></p>
-      </div>
-
-      <form class="form" id="booking-form" novalidate>
-        <div class="form__row">
-          <label class="field">
-            <span>Зона</span>
-            <select name="zone" id="f-zone"></select>
-          </label>
-          <label class="field">
-            <span>Дата</span>
-            <input type="date" name="date" id="f-date" required>
-          </label>
-        </div>
-        <div class="form__row">
-          <label class="field">
-            <span>Начало</span>
-            <select name="start" id="f-start"></select>
-          </label>
-          <label class="field">
-            <span>Пакет</span>
-            <select name="hours" id="f-hours"></select>
-          </label>
-        </div>
-        <div class="form__row">
-          <label class="field">
-            <span>Имя</span>
-            <input type="text" name="name" id="f-name" placeholder="Никнейм тоже подойдёт" required autocomplete="name">
-          </label>
-          <label class="field">
-            <span>Телефон</span>
-            <input type="tel" name="phone" id="f-phone" placeholder="+7 (___) ___-__-__" required autocomplete="tel">
-          </label>
-        </div>
-
-        <div class="calc">
-          <div class="calc__lines" id="calc-lines"></div>
-          <div class="calc__total"><span>Итого</span><b class="pixel" id="calc-total">0 ₽</b></div>
-        </div>
-        <label class="check check--consent" id="consent-label">
-          <input type="checkbox" name="consent" id="f-consent">
-          <span class="check__box" aria-hidden="true"></span>
-          <span>Даю <a href="consent.html" target="_blank">согласие на обработку персональных данных</a> и подтверждаю, что ознакомлен(а) с <a href="privacy.html" target="_blank">политикой обработки персональных данных</a></span>
-        </label>
-        <button type="submit" class="btn btn--primary btn--block">Отправить заявку <span class="btn__arrow">→</span></button>
-      </form>
     </div>
   </div>
 </section>
@@ -386,7 +319,7 @@
       <details class="faq__item"><summary>Как получить бесплатный час?</summary><p>Просто приходи: первый час игры мы дарим всегда. Подробности уточни у администратора на месте или по телефону +7 (4212) 45-55-22.</p></details>
       <details class="faq__item"><summary>Чем цены в будни отличаются от выходных?</summary><p>В будни дешевле: например, час за ПК стоит 110 ₽, а в выходные — 140 ₽. Полный прейскурант — в разделе «Цены».</p></details>
       <details class="faq__item"><summary>Можно прийти со своей мышкой или наушниками?</summary><p>Да, приносите свою периферию — администратор поможет подключить.</p></details>
-      <details class="faq__item"><summary>Можно арендовать площадку для команды?</summary><p>Да: зоны стритбола и футбола сдаются почасово, зона воркаута — на 1 или 3 часа. Забронируйте заранее, особенно на выходные.</p></details>
+      <details class="faq__item"><summary>Можно арендовать площадку для команды?</summary><p>Да: зоны стритбола и футбола сдаются почасово, зона воркаута — на 1 или 3 часа.</p></details>
     </div>
   </div>
 </section>
@@ -413,7 +346,6 @@
     <div class="footer__col">
       <h4>Связь</h4>
       <p><a href="tel:+74212455522">+7 (4212) 45-55-22</a><br><a href="https://vk.ru/phygitalcenterkhv" target="_blank" rel="noopener">vk.ru/phygitalcenterkhv</a></p>
-      <a href="#booking" class="btn btn--primary btn--sm">Забронировать</a>
     </div>
     <a class="footer__map cut-frame" href="https://yandex.ru/maps/-/CXWbrEYD" target="_blank" rel="noopener" aria-label="Открыть Фиджитал центр на Яндекс Картах">
       <img class="footer__map-art" src="assets/zones/entrance.jpg" alt="Вход в Фиджитал центр Хабаровск" loading="lazy">
@@ -427,7 +359,6 @@
   </div>
   <div class="container footer__bottom">
     <span>© <span id="year">2026</span> Фиджитал центр Хабаровск</span>
-    <a href="privacy.html">Политика обработки персональных данных</a>
     <span>Цены указаны в рублях, актуальность уточняйте у администратора</span>
   </div>
 </footer>

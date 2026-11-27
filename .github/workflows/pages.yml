@@ -25,7 +25,7 @@ jobs:
       - name: Собрать файлы сайта
         run: |
           mkdir _site
-          cp -r index.html privacy.html consent.html css js assets vendor _site/
+          cp -r index.html css js assets vendor _site/
           if [ -f CNAME ]; then cp CNAME _site/; fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

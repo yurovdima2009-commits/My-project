@@ -536,7 +536,7 @@ function init() {
   const FACE_ORDER = ['triangle', 'circle', 'cross', 'square'];
   function checkCombos() {
     const last = history.slice(-KONAMI.length);
-    if (last.join() === KONAMI.join()) { triggerParty('Konami Code! 🎉 Промокод KONAMI — +1 час к первой брони'); history.length = 0; return; }
+    if (last.join() === KONAMI.join()) { triggerParty('Konami Code! 🎉 Ты настоящий геймер'); history.length = 0; return; }
     const last4 = history.slice(-4);
     if (last4.length === 4 && FACE_ORDER.every((id) => last4.includes(id)) && new Set(last4).size === 4) {
       toast('Комбо △○✕□! Ты точно наш игрок — забирай бесплатный час 👇');
@@ -706,7 +706,7 @@ function init() {
     if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     keyHist.push(e.code); if (keyHist.length > 10) keyHist.shift();
-    if (keyHist.join() === konamiKeys.join()) { triggerParty('Konami Code! 🎉 Промокод KONAMI — +1 час к первой брони'); keyHist.length = 0; }
+    if (keyHist.join() === konamiKeys.join()) { triggerParty('Konami Code! 🎉 Ты настоящий геймер'); keyHist.length = 0; }
     if (!heroVisible) return;
     if (e.code in stickKeys) { stickKeys[e.code] = true; return; }
     const id = KEYMAP[e.code];

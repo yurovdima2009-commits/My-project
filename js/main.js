@@ -1,4 +1,4 @@
-/* Фиджитал центр Хабаровск — UI logic (zones, price list, booking calculator) */
+/* Фиджитал центр Хабаровск — UI logic (zones, price list) */
 (function () {
   'use strict';
 
@@ -164,8 +164,6 @@
     $('#zone-desc').textContent = z.desc;
     $('#zone-price').textContent = fmt(z.from);
     rub($('#zone-price'));
-    $('#zone-book').textContent = 'Забронировать ' + z.title;
-    $('#zone-book').dataset.zone = z.book;
     const ul = $('#zone-features');
     ul.innerHTML = '';
     z.features.forEach((f, i) => {
@@ -181,10 +179,6 @@
     renderZone(t.dataset.zone, true);
   }));
   renderZone('pc', false);
-  $('#zone-book').addEventListener('click', (e) => {
-    const zone = e.currentTarget.dataset.zone;
-    if (zone) { fZone.value = zone; fillHours(); updateCalc(); }
-  });
 
   /* ---------------- Price list with weekday / weekend toggle ---------------- */
   const grid = $('#price-grid');
@@ -212,10 +206,6 @@
       grid.append(h, row);
       Object.entries(PRICES).filter(([, z]) => z.game === isGame).forEach(([key, z]) => renderCard(row, key, z));
     });
-    $$('.price-card__btn', grid).forEach((b) => b.addEventListener('click', () => {
-      fZone.value = b.dataset.zone; fillHours(); updateCalc();
-      $('#booking').scrollIntoView({ behavior: 'smooth' });
-    }));
   }
   function renderCard(row, key, z) {
       const card = document.createElement('article');
@@ -225,122 +215,12 @@
       ).join('');
       card.innerHTML = `
         <div class="price-card__head"><h3>${z.name}</h3>${z.game ? '<span class="price-card__gift">1-й час 0 ₽</span>' : '<span class="price-card__kind">аренда</span>'}</div>
-        <ul>${rows}</ul>
-        <button class="price-card__btn" type="button" data-zone="${key}">Выбрать →</button>`;
+        <ul>${rows}</ul>`;
       row.appendChild(card);
   }
   $$('.daytoggle__btn').forEach((b) => b.addEventListener('click', () => { dayType = b.dataset.day; renderPrices(); }));
 
-  /* ---------------- Booking calculator ---------------- */
-  const fZone = $('#f-zone'), fDate = $('#f-date'), fStart = $('#f-start'), fHours = $('#f-hours');
-
-  Object.entries(PRICES).forEach(([key, z]) => {
-    const o = document.createElement('option');
-    o.value = key; o.textContent = z.name;
-    fZone.appendChild(o);
-  });
-  for (let h = OPEN_H; h < CLOSE_H; h++) {
-    const o = document.createElement('option');
-    o.value = h; o.textContent = String(h).padStart(2, '0') + ':00';
-    fStart.appendChild(o);
-  }
-  const nowK = khvNow();
-  let startDay = new Date(nowK);
-  if (nowK.getHours() >= CLOSE_H - 1) startDay.setDate(startDay.getDate() + 1);
-  const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  fDate.value = iso(startDay);
-  fDate.min = iso(nowK);
-  const nextHour = nowK.getHours() + 1;
-  fStart.value = String(nextHour >= OPEN_H && nextHour < CLOSE_H ? nextHour : OPEN_H);
-
-  function fillHours() {
-    const z = PRICES[fZone.value];
-    const prev = fHours.value;
-    fHours.innerHTML = '';
-    Object.keys(z.wd).forEach((h) => {
-      const o = document.createElement('option');
-      o.value = h; o.textContent = `${h} ${hoursWord(+h)}`;
-      fHours.appendChild(o);
-    });
-    if ([...fHours.options].some((o) => o.value === prev)) fHours.value = prev;
-  }
-
-  function selectedDayType() {
-    const [y, m, d] = (fDate.value || iso(nowK)).split('-').map(Number);
-    return isWeekend(new Date(y, m - 1, d)) ? 'we' : 'wd';
-  }
-
-  function updateCalc() {
-    const z = PRICES[fZone.value];
-    const dt = selectedDayType();
-    const hours = +fHours.value;
-    const start = +fStart.value;
-    const price = z[dt][hours];
-    const lines = $('#calc-lines');
-    lines.innerHTML = '';
-    const add = (l, r, cls) => {
-      const div = document.createElement('div');
-      if (cls) div.className = cls;
-      div.innerHTML = `<span>${l}</span><span>${r}</span>`;
-      lines.appendChild(div);
-    };
-    add(`${z.name} · ${dt === 'we' ? 'выходные' : 'будни'} · ${hours} ${hoursWord(hours)}`, fmt(price));
-    let total = price;
-    if (z.game) {
-      const gift = Math.min(z[dt][1], price);
-      add('🎁 Первый час бесплатно', '−' + fmt(gift), 'is-bonus');
-      total -= gift;
-    }
-    if (start + hours > CLOSE_H) {
-      add(`⚠ Центр закрывается в 21:00 — начни не позже ${String(CLOSE_H - hours).padStart(2, '0')}:00`, '', 'is-warn');
-    }
-    $('#calc-total').textContent = total + ' ₽';
-    rub($('#calc-total'));
-  }
-  fZone.addEventListener('input', () => { fillHours(); updateCalc(); });
-  [fStart, fHours, fDate].forEach((el) => el.addEventListener('input', updateCalc));
-  fillHours();
-  fHours.value = '3';
   renderPrices();
-  updateCalc();
-
-  $('#booking-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    let ok = true;
-    $$('input[required]', form).forEach((inp) => {
-      const bad = !inp.value.trim() || (inp.type === 'tel' && inp.value.replace(/\D/g, '').length < 11);
-      inp.classList.toggle('is-invalid', bad);
-      if (bad) ok = false;
-    });
-    if (!ok) { toast('Заполни имя и телефон — мы перезвоним для подтверждения'); return; }
-    if (!$('#f-consent').checked) {
-      $('#consent-label').classList.add('is-invalid');
-      toast('Отметь согласие на обработку персональных данных — без него мы не можем принять заявку');
-      return;
-    }
-    if (+fStart.value + +fHours.value > CLOSE_H) { toast('Центр работает до 21:00 — выбери время начала пораньше'); return; }
-    toast(`Заявка принята! ${PRICES[fZone.value].name}, ${fDate.value.split('-').reverse().join('.')} в ${fStart.options[fStart.selectedIndex].text}. Администратор перезвонит 🎮`, 5000);
-    $('#f-name').value = ''; $('#f-phone').value = ''; $('#f-consent').checked = false;
-  });
-  $$('#booking-form input[required]').forEach((i) => i.addEventListener('input', () => i.classList.remove('is-invalid')));
-  $('#f-consent').addEventListener('change', () => $('#consent-label').classList.remove('is-invalid'));
-
-  // simple phone mask
-  const phone = $('#f-phone');
-  phone.addEventListener('input', () => {
-    let d = phone.value.replace(/\D/g, '');
-    if (!d) { phone.value = ''; return; }
-    if (d.startsWith('8')) d = '7' + d.slice(1);
-    if (!d.startsWith('7')) d = '7' + d;
-    d = d.slice(0, 11);
-    const p = ['+7'];
-    if (d.length > 1) p.push(' (' + d.slice(1, 4));
-    if (d.length >= 4) p.push(') ' + d.slice(4, 7));
-    if (d.length >= 7) p.push('-' + d.slice(7, 9));
-    if (d.length >= 9) p.push('-' + d.slice(9, 11));
-    phone.value = p.join('');
-  });
 
   initCommon();
 
